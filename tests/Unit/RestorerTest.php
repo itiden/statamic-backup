@@ -1,7 +1,7 @@
 <?php
 
-describe('restorer', function () {
-    it('can restore from path', function () {
-        //
-    });
+uses()->group('restorer');
+
+it('can restore from path', function () {
+    //
 });

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Itiden\Backup\Clients;
 
 use Illuminate\Support\Facades\File;

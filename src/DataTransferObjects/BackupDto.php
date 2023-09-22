@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Itiden\Backup\DataTransferObjects;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class BackupDto
+readonly class BackupDto
 {
     public function __construct(
         public string $name,

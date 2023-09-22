@@ -1,7 +1,7 @@
 <?php
 
-describe('backuper', function () {
-    it('can backup', function () {
-        //
-    });
+uses()->group('backuper');
+
+it('can backup', function () {
+    //
 });

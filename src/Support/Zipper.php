@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Itiden\Backup\Support;
 
 use Illuminate\Support\Facades\File;
@@ -8,7 +10,7 @@ use ZipArchive;
 
 class Zipper
 {
-    public static function zipDir(string $path, ZipArchive $zip, string $prefix)
+    public static function zipDir(string $path, ZipArchive $zip, string $prefix): bool
     {
         collect(File::allFiles($path))->each(function (SplFileInfo $file) use ($zip, $prefix) {
             $zip->addFile($file->getPathname(), $prefix . '/' . $file->getRelativePathname());
@@ -17,7 +19,7 @@ class Zipper
         return true;
     }
 
-    public static function zip(callable $cb)
+    public static function zip(callable $cb): string
     {
         $zip = new ZipArchive();
 

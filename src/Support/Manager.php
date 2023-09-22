@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Itiden\Backup\Support;
 
 use Itiden\Backup\Contracts\Restorer;

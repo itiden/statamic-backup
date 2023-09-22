@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Itiden\Backup;
 
 use Itiden\Backup\Console\Commands\BackupCommand;
