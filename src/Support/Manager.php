@@ -3,6 +3,7 @@
 namespace Itiden\Backup\Support;
 
 use Itiden\Backup\Contracts\Restorer;
+use Itiden\Backup\Exceptions\ManagerException;
 
 abstract class Manager
 {
@@ -17,6 +18,10 @@ abstract class Manager
 
     public function client(string $type): Restorer
     {
+        if (!isset($this->clients[$type])) {
+            throw ManagerException::clientNotFound($type);
+        }
+
         return new $this->clients[$type]();
     }
 
