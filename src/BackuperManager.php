@@ -32,6 +32,8 @@ class BackuperManager extends Manager
 
         unlink($temp_path);
 
+        $this->enforceMaxBackups();
+
         return Storage::disk($disk)->path($path);
     }
 
@@ -52,5 +54,20 @@ class BackuperManager extends Manager
                 ];
             })
             ->sort(fn ($a, $b) => $b['timestamp'] <=> $a['timestamp']);
+    }
+
+    private function enforceMaxBackups(): void
+    {
+        if (!$maxBackups = config('backup.backup.max_backups', false)) {
+            return;
+        }
+
+        $backups = $this->getBackups();
+
+        if ($backups->count() > $maxBackups) {
+            $backups->slice($maxBackups)->each(function ($backup) {
+                Storage::disk(config('backup.backup.disk'))->delete($backup['path']);
+            });
+        }
     }
 }

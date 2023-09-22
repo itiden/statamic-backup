@@ -5,6 +5,7 @@ return [
     'backup' => [
         'disk' => 'local',
         'path' => 'statamic-backups',
+        'max_backups' => 10,
     ],
     'backup_clients' => [
         Itiden\Backup\Clients\ContentRestorer::class,
