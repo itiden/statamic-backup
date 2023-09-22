@@ -17,6 +17,6 @@ class BackupCommand extends Command
 
         $backup_location = Backuper::backup();
 
-        $this->components->info('Backup saved to ' . $backup_location);
+        $this->components->info('Backup saved to ' . $backup_location->path);
     }
 }

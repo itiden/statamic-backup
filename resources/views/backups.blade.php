@@ -21,9 +21,9 @@
 <ul class="card flex flex-col gap-3">
     @foreach($backups as $backup)
     <li class="flex items-center justify-between gap-3">
-        <h2 class="flex-1">{{ $backup['name'] }}</h2>
-        <span>{{ $backup['size'] }} bytes</span>
-        <a href="{{ cp_route('itiden.backup.download', ['timestamp' => $backup['timestamp']]) }}" class="btn-primary">Download</a>
+        <h2 class="flex-1">{{ $backup->name }}</h2>
+        <span>{{ $backup->size }} bytes</span>
+        <a href="{{ cp_route('itiden.backup.download', ['timestamp' => $backup->timestamp]) }}" class="btn-primary">Download</a>
     </li>
     @endforeach
 </ul>

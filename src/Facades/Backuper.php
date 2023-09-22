@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Facade;
 use Itiden\Backup\BackuperManager;
 
 /**
- * @method static string backup()
+ * @method static \Itiden\Backup\DataTransferObjects\BackupDto backup()
  * @method static \Illuminate\Support\Collection getBackups()
  *
  * @see \Itiden\Backup\BackuperManager

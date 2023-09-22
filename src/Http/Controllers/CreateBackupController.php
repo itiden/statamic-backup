@@ -11,6 +11,6 @@ class CreateBackupController extends Controller
     {
         $backup = Backuper::backup();
 
-        return redirect()->back()->with('success', 'Backup created ' . $backup);
+        return redirect()->back()->with('success', 'Backup created ' . $backup->name);
     }
 }
