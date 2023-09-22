@@ -26,10 +26,6 @@ class AssetsRestorer implements Restorer
 
     public function backup(ZipArchive $zip): bool
     {
-        if (!request()->input('include_assets', false)) {
-            return true;
-        }
-
         $zip->addEmptyDir('assets');
 
         AssetContainer::all()->each(function ($container) use ($zip) {

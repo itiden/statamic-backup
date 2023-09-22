@@ -5,10 +5,10 @@ namespace Itiden\Backup\Http\Controllers;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Http\Requests\DownloadBackupRequest;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class DownloadBackupController extends Controller
 {
@@ -18,12 +18,8 @@ class DownloadBackupController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(DownloadBackupRequest $request, string $timestamp): StreamedResponse
+    public function __invoke(DownloadBackupRequest $request): BinaryFileResponse
     {
-        $backup =  Backuper::getBackups()->first(function ($backup) use ($timestamp) {
-            return $backup['timestamp'] === $timestamp;
-        });
-
-        return Storage::download($backup['path']);
+        return Response::download(Backuper::backup())->deleteFileAfterSend(true);
     }
 }

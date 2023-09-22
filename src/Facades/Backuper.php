@@ -7,6 +7,7 @@ use Itiden\Backup\BackuperManager;
 
 /**
  * @method static string backup()
+ * @method static \Illuminate\Support\Collection getBackups()
  *
  * @see \Itiden\Backup\BackuperManager
  */
