@@ -11,7 +11,7 @@ Route::name('itiden.backup.')->prefix('backups')->group(function () {
     Route::get('/', [BackupController::class, '__invoke'])
         ->name('index');
 
-    Route::post('/', [CreateBackupController::class, '__invoke'])
+    Route::post('/create', [CreateBackupController::class, '__invoke'])
         ->middleware(CanCreateBackups::class)
         ->name('create');
 
