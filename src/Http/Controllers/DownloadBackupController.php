@@ -7,7 +7,6 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Facades\Backuper;
-use Itiden\Backup\Http\Requests\DownloadBackupRequest;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DownloadBackupController extends Controller
@@ -18,7 +17,7 @@ class DownloadBackupController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(DownloadBackupRequest $request, string $timestamp): StreamedResponse
+    public function __invoke(string $timestamp): StreamedResponse
     {
         $backup =  Backuper::getBackups()->first(function ($backup) use ($timestamp) {
             return $backup['timestamp'] === $timestamp;

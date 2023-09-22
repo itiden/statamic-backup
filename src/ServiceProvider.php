@@ -2,12 +2,8 @@
 
 namespace Itiden\Backup;
 
-use Illuminate\Support\Facades\Route;
 use Itiden\Backup\Console\Commands\BackupCommand;
 use Itiden\Backup\Console\Commands\RestoreCommand;
-use Itiden\Backup\Http\Controllers\BackupController;
-use Itiden\Backup\Http\Controllers\CreateBackupController;
-use Itiden\Backup\Http\Controllers\DownloadBackupController;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
@@ -31,6 +27,7 @@ class ServiceProvider extends AddonServiceProvider
                 ->children([
                     Permission::make('create backups')->label('Create Backups'),
                     Permission::make('restore from backups')->label('Restore From Backups'),
+                    Permission::make('delete backups')->label('Delete Backups'),
                 ]);
         });
 

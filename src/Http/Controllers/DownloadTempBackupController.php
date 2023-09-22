@@ -7,7 +7,6 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
 use Itiden\Backup\Facades\Backuper;
-use Itiden\Backup\Http\Requests\DownloadBackupRequest;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class DownloadBackupController extends Controller
@@ -18,7 +17,7 @@ class DownloadBackupController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(DownloadBackupRequest $request): BinaryFileResponse
+    public function __invoke(): BinaryFileResponse
     {
         return Response::download(Backuper::backup())->deleteFileAfterSend(true);
     }
