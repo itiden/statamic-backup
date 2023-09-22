@@ -14,17 +14,15 @@ dataset('managers', [
 
 describe('managers', function () {
     it('can get client keys', function (string $manager) {
-
-        expect(new $manager)->getClients()
+        expect(new $manager())->getClients()
             ->toEqual([
                 ContentRestorer::getKey(),
                 AssetsRestorer::getKey(),
             ]);
-    })
-        ->with('managers');
+    })->with('managers');
 
     it('can get client', function (string $manager, string $client) {
-        expect(new $manager)->client($client)->toBeInstanceOf(RestorerContract::class);
+        expect(new $manager())->client($client)->toBeInstanceOf(RestorerContract::class);
     })
         ->with('managers')
         ->with([
@@ -33,7 +31,7 @@ describe('managers', function () {
         ]);
 
     it('throws an error when accessing client doesn\'t exist', function (string $manager) {
-        expect(fn () => (new $manager)->client('idontexist'))->toThrow(ManagerException::class);
-    })
-        ->with('managers');
+        expect(fn () => (new $manager())->client('idontexist'))
+            ->toThrow(ManagerException::class);
+    })->with('managers');
 });
