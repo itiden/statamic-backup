@@ -9,6 +9,6 @@ class DownloadBackupRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return User::current()->can('download backups');
+        return User::current()->can('create backups');
     }
 }
