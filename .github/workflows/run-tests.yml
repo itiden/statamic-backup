@@ -1,9 +1,9 @@
-name: Pest
+name: Test
 
 on: ["push", "pull_request"]
 
 jobs:
-  ci:
+  pest:
     runs-on: ubuntu-latest
 
     steps:
