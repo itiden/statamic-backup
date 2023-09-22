@@ -4,7 +4,6 @@ namespace Itiden\Backup\Console\Commands;
 
 use Illuminate\Console\Command;
 use Itiden\Backup\Facades\Backuper;
-use Itiden\Backup\Facades\Restorer;
 
 class BackupCommand extends Command
 {
