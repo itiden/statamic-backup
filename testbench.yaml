@@ -1,0 +1,14 @@
+providers: []
+
+migrations:
+  - workbench/database/migrations
+
+seeders: []
+
+workbench:
+  start: '/'
+  install: true
+  welcome: true
+  build: []
+  assets: []
+  sync: []

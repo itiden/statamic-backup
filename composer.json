@@ -1,0 +1,62 @@
+{
+  "name": "itiden/statamic-backup",
+  "autoload": {
+    "psr-4": {
+      "Itiden\\Backup\\": "src",
+      "Itiden\\Backup\\Tests\\": "tests"
+    }
+  },
+  "extra": {
+    "statamic": {
+      "name": "Backup",
+      "description": "Adds cp button to download your content"
+    },
+    "laravel": {
+      "providers": [
+        "Itiden\\Backup\\ServiceProvider"
+      ]
+    }
+  },
+  "require-dev": {
+    "laravel/pint": "^1.13",
+    "orchestra/testbench": "^8.11",
+    "pestphp/pest": "^2.19",
+    "pestphp/pest-plugin-laravel": "^2.2"
+  },
+  "require": {
+    "statamic/cms": "^4.20",
+    "laravel/framework": "^10.0"
+  },
+  "config": {
+    "allow-plugins": {
+      "pixelfear/composer-dist-plugin": true,
+      "pestphp/pest-plugin": true
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Workbench\\App\\": "workbench/app/",
+      "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+      "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+    }
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "@clear",
+      "@prepare"
+    ],
+    "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+    "prepare": "@php vendor/bin/testbench package:discover --ansi",
+    "build": "@php vendor/bin/testbench workbench:build --ansi",
+    "serve": [
+      "@build",
+      "@php vendor/bin/testbench serve"
+    ],
+    "lint": [
+      "@php vendor/bin/pint"
+    ],
+    "test": [
+      "@php vendor/bin/pest"
+    ]
+  }
+}
