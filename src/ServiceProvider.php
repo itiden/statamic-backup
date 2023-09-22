@@ -19,18 +19,18 @@ class ServiceProvider extends AddonServiceProvider
         ]);
 
         $this->registerCpRoutes(function () {
-            Route::get('/download-content', DownloadBackupController::class)
-                ->name('itiden.download.content');
+            Route::get('/backup/download', DownloadBackupController::class)
+                ->name('itiden.backup.download');
         });
 
         Permission::extend(function () {
-            Permission::register('download content')->label('Download Content');
+            Permission::register('download backup')->label('Download Backup');
         });
 
         Nav::extend(function ($nav) {
             $nav->content('Download Content')
                 ->section('Tools')
-                ->url(cp_route('itiden.download.content', ['include_assets' => true]))
+                ->url(cp_route('itiden.backup.download', ['include_assets' => true]))
                 ->icon('download');
         });
 
