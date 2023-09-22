@@ -14,21 +14,23 @@ class BackuperManager extends Manager
 {
     public function backup(): string
     {
+        $disk = config('backup.backup.disk');
+        $backup_path = config('backup.backup.path');
+
         $temp_path = Zipper::zip(function (ZipArchive $zip) {
-            collect($this->getClients())
-                ->each(
-                    fn ($key) => $this->client($key)->backup($zip)
-                );
+            collect($this->getClients())->each(
+                fn ($key) => $this->client($key)->backup($zip)
+            );
         });
 
         $fileName = Str::slug(config('app.name')) . '-' . Carbon::now()->unix() . '.zip';
 
-        Storage::disk(config('backup.backup.disk'))->makeDirectory(config('backup.backup.path'));
+        Storage::disk($disk)->makeDirectory($backup_path);
 
-        $path = Storage::disk(config('backup.backup.disk'))->putFileAs(config('backup.backup.path'), new File($temp_path), $fileName);
+        $path = Storage::disk($disk)->putFileAs($backup_path, new File($temp_path), $fileName);
 
         unlink($temp_path);
 
-        return Storage::disk(config('backup.backup.disk'))->path($path);
+        return Storage::disk($disk)->path($path);
     }
 }
