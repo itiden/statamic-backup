@@ -1,3 +1,3 @@
-# Statamic restorer
+# Backup
 
-Restore your content, made easy.
+backup statamic content
