@@ -28,10 +28,10 @@ class AssetsRestorer implements Restorer
 
     public function backup(ZipArchive $zip): bool
     {
-        $zip->addEmptyDir('assets');
+        $zip->addEmptyDir(static::getKey());
 
         AssetContainer::all()->each(function ($container) use ($zip) {
-            Zipper::zipDir($container->diskPath(), $zip, 'assets/' . $container->handle() . '/');
+            Zipper::zipDir($container->diskPath(), $zip, static::getKey() . '/' . $container->handle() . '/');
         });
 
         return true;

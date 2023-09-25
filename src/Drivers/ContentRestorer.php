@@ -27,6 +27,6 @@ class ContentRestorer implements Restorer
     {
         $contentPath = config('statamic.stache.directories.content');
 
-        return Zipper::zipDir($contentPath, $zip, 'content');
+        return Zipper::zipDir($contentPath, $zip, static::getKey());
     }
 }
