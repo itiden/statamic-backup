@@ -10,8 +10,8 @@ class RestorerManager extends Manager
 {
     public function restoreFromPath(string $path): void
     {
-        collect($this->getClients())->each(function ($key) use ($path) {
-            $this->client($key)->restore("{$path}/{$key}");
+        collect($this->getDrivers())->each(function ($key) use ($path) {
+            $this->driver($key)->restore("{$path}/{$key}");
         });
     }
 }

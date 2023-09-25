@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Itiden\Backup\Clients;
+namespace Itiden\Backup\Drivers;
 
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Contracts\Restorer;

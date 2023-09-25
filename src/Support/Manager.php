@@ -9,26 +9,34 @@ use Itiden\Backup\Exceptions\ManagerException;
 
 abstract class Manager
 {
-    protected $clients = [];
+    protected array $container = [];
+    protected array $drivers = [];
 
     public function __construct()
     {
-        $this->clients = collect(config('backup.backup_clients'))->flatMap(function ($client) {
+        $this->container = collect(config('backup.backup_drivers'))->flatMap(function ($client) {
             return [$client::getKey() => $client];
         })->toArray();
     }
 
-    public function client(string $type): Restorer
+    public function driver(string $type): Restorer
     {
-        if (!isset($this->clients[$type])) {
+        return $this->drivers[$type] ?? $this->createDriver($type);
+    }
+
+    protected function createDriver(string $type): Restorer
+    {
+        if (!array_key_exists($type, $this->container)) {
             throw ManagerException::clientNotFound($type);
         }
 
-        return new $this->clients[$type]();
+        $this->drivers[$type] = new $this->container[$type]();
+
+        return $this->drivers[$type];
     }
 
-    public function getClients(): array
+    public function getDrivers(): array
     {
-        return array_keys($this->clients);
+        return array_keys($this->container);
     }
 }

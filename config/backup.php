@@ -7,8 +7,8 @@ return [
         'path' => 'statamic-backups',
         'max_backups' => 10,
     ],
-    'backup_clients' => [
-        Itiden\Backup\Clients\ContentRestorer::class,
-        Itiden\Backup\Clients\AssetsRestorer::class,
+    'backup_drivers' => [
+        Itiden\Backup\Drivers\ContentRestorer::class,
+        Itiden\Backup\Drivers\AssetsRestorer::class,
     ],
 ];

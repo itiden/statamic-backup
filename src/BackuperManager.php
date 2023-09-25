@@ -22,8 +22,8 @@ class BackuperManager extends Manager
         $backup_path = config('backup.backup.path');
 
         $temp_zip_path = Zipper::zip(function (ZipArchive $zip) {
-            collect($this->getClients())->each(
-                fn ($key) => $this->client($key)->backup($zip)
+            collect($this->getDrivers())->each(
+                fn ($key) => $this->driver($key)->backup($zip)
             );
         });
 
