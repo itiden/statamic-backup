@@ -16,17 +16,26 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 
 class BackuperManager extends Manager
 {
+    /**
+     * Create a new backup.
+     * 
+     * @return BackupDto
+     */
     public function backup(): BackupDto
     {
         $disk = config('backup.destination.disk');
         $backup_path = config('backup.destination.path');
         $temp_zip_path = config('backup.temp_path') . '/temp.zip';
 
-        Zipper::zip(config('backup.temp_path'), function (ZipArchive $zip) {
-            collect($this->getDrivers())->each(
-                fn ($key) => $this->driver($key)->backup($zip)
-            );
-        });
+        Zipper::zip(
+            config('backup.temp_path'),
+            function (ZipArchive $zip) {
+                collect($this->getDrivers())->each(
+                    fn ($key) => $this->driver($key)->backup($zip)
+                );
+            },
+            config('backup.password')
+        );
 
         $filename = Str::slug(config('app.name')) . '-' . Carbon::now()->unix() . '.zip';
 
@@ -41,6 +50,11 @@ class BackuperManager extends Manager
         return BackupDto::fromFile($path);
     }
 
+    /**
+     * Get all backups.
+     * 
+     * @return Collection
+     */
     public function getBackups(): Collection
     {
         $disk = config('backup.destination.disk');
@@ -51,6 +65,11 @@ class BackuperManager extends Manager
             ->sort(fn ($a, $b) => $b->timestamp <=> $a->timestamp);
     }
 
+    /**
+     * Remove oldest backups when max backups limit is surpassed.
+     * 
+     * @return void
+     */
     private function enforceMaxBackups(): void
     {
         if (!$max_backups = config('backup.max_backups', false)) {
