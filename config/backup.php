@@ -8,7 +8,7 @@ return [
         'max_backups' => 10,
     ],
     'backup_drivers' => [
-        Itiden\Backup\Drivers\ContentRestorer::class,
-        Itiden\Backup\Drivers\AssetsRestorer::class,
+        Itiden\Backup\Drivers\Content::class,
+        Itiden\Backup\Drivers\Assets::class,
     ],
 ];

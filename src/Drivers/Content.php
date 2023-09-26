@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Itiden\Backup\Drivers;
 
 use Illuminate\Support\Facades\File;
-use Itiden\Backup\Contracts\Restorer;
+use Itiden\Backup\Contracts\BackupDriver;
 use Itiden\Backup\Support\Zipper;
 use ZipArchive;
 
-class ContentRestorer implements Restorer
+class Content implements BackupDriver
 {
     public static function getKey(): string
     {

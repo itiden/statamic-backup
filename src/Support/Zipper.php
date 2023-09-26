@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Support;
 
+use Closure;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Finder\SplFileInfo;
 use ZipArchive;
@@ -19,7 +20,7 @@ class Zipper
         return true;
     }
 
-    public static function zip(callable $cb): string
+    public static function zip(Closure $cb): string
     {
         $zip = new ZipArchive();
 

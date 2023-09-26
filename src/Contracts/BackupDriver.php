@@ -6,7 +6,7 @@ namespace Itiden\Backup\Contracts;
 
 use ZipArchive;
 
-interface Restorer
+interface BackupDriver
 {
     public static function getKey(): string;
 

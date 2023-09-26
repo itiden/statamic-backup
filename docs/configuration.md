@@ -15,8 +15,8 @@ return [
         'max_backups' => 10,
     ],
     'backup_drivers' => [
-        Itiden\Backup\Drivers\ContentRestorer::class,
-        Itiden\Backup\Drivers\AssetsRestorer::class,
+        Itiden\Backup\Drivers\Content::class,
+        Itiden\Backup\Drivers\Assets::class,
     ],
 ];
 ```
@@ -29,9 +29,9 @@ The `backup` key contains the configuration options for your backups, where they
 - `path`: the directory the backup will be saved to.
 - `max_backups`: the max number of backups, when superseded it will delete the oldest one.
 
-The `backup_drivers` key tells the `Backuper` and `Restorer` what to tasks it should do, the `Manager` class (which backuper and restorer extends) will collect the `backup_drivers` and run them when the backup or restore method is called.
+The `backup_drivers` key tells the `Backuper` and `Restorer` what steps should be done on every backup and restore. the `Manager` class (which backuper and restorer extends) will collect the `backup_drivers` and run them when the backup or restore method is called.
 
-Every `backup_driver` should implement the `Restorer` contract.
+Every `backup_driver` should implement the `BackupDriver` contract.
 
 - `getKey()`: gets the key, it's used for deciding what driver gets to restore a folder.
 - `backup()`: will get the backups `ZipArchive` and from there you can add whatever you want to that and it will be included in the backup.
