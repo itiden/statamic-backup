@@ -24,7 +24,7 @@ readonly class BackupDto
 
         return new self(
             name: Carbon::createFromTimestamp($timestamp)->format('Y-m-d H:i:s'),
-            size: Storage::disk(config('backup.backup.disk'))->size($path),
+            size: Storage::disk(config('backup.destination.disk'))->size($path),
             path: $path,
             timestamp: $timestamp,
         );
