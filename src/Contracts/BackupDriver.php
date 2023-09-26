@@ -10,7 +10,7 @@ interface BackupDriver
 {
     public static function getKey(): string;
 
-    public function restore(string $path): bool;
+    public function restore(string $path): void;
 
-    public function backup(ZipArchive $zip): bool;
+    public function backup(ZipArchive $zip): void;
 }

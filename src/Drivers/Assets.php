@@ -17,23 +17,19 @@ class Assets implements BackupDriver
         return 'assets';
     }
 
-    public function restore(string $content): bool
+    public function restore(string $content): void
     {
         AssetContainer::all()->each(function ($container) use ($content) {
             File::copyDirectory("{$content}/{$container->handle()}", $container->diskPath());
         });
-
-        return true;
     }
 
-    public function backup(ZipArchive $zip): bool
+    public function backup(ZipArchive $zip): void
     {
         $zip->addEmptyDir(static::getKey());
 
         AssetContainer::all()->each(function ($container) use ($zip) {
             Zipper::zipDir($container->diskPath(), $zip, static::getKey() . '/' . $container->handle() . '/');
         });
-
-        return true;
     }
 }

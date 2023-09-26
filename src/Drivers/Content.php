@@ -16,17 +16,17 @@ class Content implements BackupDriver
         return 'content';
     }
 
-    public function restore(string $content): bool
+    public function restore(string $content): void
     {
         $destination = config('backup.content_path');
 
-        return File::copyDirectory($content, $destination);
+        File::copyDirectory($content, $destination);
     }
 
-    public function backup(ZipArchive $zip): bool
+    public function backup(ZipArchive $zip): void
     {
         $contentPath = config('statamic.stache.directories.content');
 
-        return Zipper::zipDir($contentPath, $zip, static::getKey());
+        Zipper::zipDir($contentPath, $zip, static::getKey());
     }
 }
