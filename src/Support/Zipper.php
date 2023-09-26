@@ -18,26 +18,24 @@ class Zipper
         });
     }
 
-    public static function zip(Closure $cb): string
+    public static function zip(string $path, Closure $cb): ZipArchive
     {
         $zip = new ZipArchive();
 
-        $zip->open(storage_path('temp.zip'), ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        $zip->open($path, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
         $cb($zip);
 
         $zip->close();
 
-        return storage_path('temp.zip');
+        return $zip;
     }
 
-    public static function unzip(string $path, ?string $to = null): string
+    public static function unzip(string $path, string $to): string
     {
         $zip = new ZipArchive();
 
         $zip->open($path);
-
-        $to = $to ?? storage_path('temp');
 
         $zip->extractTo($to);
 
