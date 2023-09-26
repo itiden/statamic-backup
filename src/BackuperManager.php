@@ -18,7 +18,7 @@ class BackuperManager extends Manager
 {
     /**
      * Create a new backup.
-     * 
+     *
      * @return BackupDto
      */
     public function backup(): BackupDto
@@ -52,7 +52,7 @@ class BackuperManager extends Manager
 
     /**
      * Get all backups.
-     * 
+     *
      * @return Collection
      */
     public function getBackups(): Collection
@@ -67,7 +67,7 @@ class BackuperManager extends Manager
 
     /**
      * Remove oldest backups when max backups limit is surpassed.
-     * 
+     *
      * @return void
      */
     private function enforceMaxBackups(): void

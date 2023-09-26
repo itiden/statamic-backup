@@ -49,5 +49,6 @@ return [
     'backup_drivers' => [
         Itiden\Backup\Drivers\Content::class,
         Itiden\Backup\Drivers\Assets::class,
+        Itiden\Backup\Drivers\Users::class,
     ],
 ];

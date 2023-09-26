@@ -14,11 +14,11 @@ class Zipper
     /**
      * Create a zip archive and add files to it.
      * The zip archive will be closed after the callback is executed.
-     * 
+     *
      * @param string $path
      * @param Closure $cb
      * @param string|null $password
-     * 
+     *
      * @return ZipArchive
      */
     public static function zip(string $path, Closure $cb, ?string $password = null): ZipArchive
@@ -42,7 +42,7 @@ class Zipper
 
     /**
      * Add a directory and all its contents to a zip archive with a prefix.
-     * 
+     *
      * @param string $path
      * @param ZipArchive $zip
      * @param string $prefix
@@ -57,10 +57,10 @@ class Zipper
 
     /**
      * Extract a zip archive to a directory.
-     * 
+     *
      * @param string $path
      * @param string $to
-     * 
+     *
      * @return string
      */
     public static function unzip(string $path, string $to): string

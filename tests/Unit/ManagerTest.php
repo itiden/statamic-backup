@@ -4,6 +4,7 @@ use Itiden\Backup\BackuperManager;
 use Itiden\Backup\Contracts\BackupDriver;
 use Itiden\Backup\Drivers\Assets;
 use Itiden\Backup\Drivers\Content;
+use Itiden\Backup\Drivers\Users;
 use Itiden\Backup\Exceptions\ManagerException;
 use Itiden\Backup\RestorerManager;
 
@@ -19,6 +20,7 @@ it('can get drivers keys', function (string $manager) {
         ->toEqual([
             Content::getKey(),
             Assets::getKey(),
+            Users::getKey(),
         ]);
 })->with('managers');
 
@@ -28,7 +30,8 @@ it('can get driver', function (string $manager, string $client) {
     ->with('managers')
     ->with([
         'content',
-        'assets'
+        'assets',
+        'users',
     ]);
 
 it('throws an error when accessing driver that doesn\'t exist', function (string $manager) {
