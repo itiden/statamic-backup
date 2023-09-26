@@ -3,43 +3,58 @@
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Support\Zipper;
 
-it('can zip file', function () {
-    $zip = Zipper::zip(function ($zip) {
+it('can return ziparchive', function () {
+    $zip = Zipper::zip(storage_path('test.zip'), function ($zip) {
         $zip->addFromString('test.txt', 'test');
     });
 
-    expect($zip)->toBeString();
-    expect(file_exists($zip))->toBeTrue();
+    expect($zip)->toBeInstanceOf(ZipArchive::class);
+});
 
-    expect(File::mimeType($zip))->toBe('application/zip');
+it('can zip file', function () {
+    $target = storage_path('test.zip');
+
+    $zip = Zipper::zip($target, function ($zip) {
+        $zip->addFromString('test.txt', 'test');
+    });
+
+    expect(file_exists($target))->toBeTrue();
+
+    expect(File::mimeType($target))->toBe('application/zip');
 });
 
 it('can zip directory', function () {
-    $zip = Zipper::zip(function ($zip) {
+    $path = storage_path('test.zip');
+
+    Zipper::zip($path, function ($zip) {
         Zipper::zipDir(__DIR__ . '/../example', $zip, 'example');
     });
 
-    expect($zip)->toBeString();
-    expect(file_exists($zip))->toBeTrue();
+    expect($path)->toBeString();
+    expect(file_exists($path))->toBeTrue();
 });
 
 it('can unzip file', function () {
-    $zip = Zipper::zip(function ($zip) {
+    $target = storage_path('test.zip');
+
+    Zipper::zip($target, function ($zip) {
         $zip->addFromString('test.txt', 'test');
     });
 
-    $unzip = Zipper::unzip($zip);
+    $unzip = Zipper::unzip($target, storage_path('unzipped'));
 
     expect($unzip)->toBeString();
     expect(file_exists($unzip))->toBeTrue();
 });
 
 it('can unzip file to directory', function () {
-    $zip = Zipper::zip(function ($zip) {
+    $target = storage_path('test.zip');
+
+    Zipper::zip($target, function ($zip) {
         $zip->addFromString('test.txt', 'test');
     });
 
-    $unzip = Zipper::unzip($zip, storage_path('test'));
+    $unzip = Zipper::unzip($target, storage_path('test'));
 
     expect($unzip)->toBeString();
     expect(file_exists($unzip))->toBeTrue();
@@ -51,11 +66,13 @@ it('can unzip directory', function () {
         return $file->getPathname();
     });
 
-    $zip = Zipper::zip(function ($zip) {
+    $target = storage_path('test.zip');
+
+    Zipper::zip($target, function ($zip) {
         Zipper::zipDir(__DIR__ . '/../example', $zip, 'example');
     });
 
-    $unzip = Zipper::unzip($zip, storage_path('unzipdir'));
+    $unzip = Zipper::unzip($target, storage_path('unzipdir'));
 
     expect($unzip)->toBeString();
     expect(file_exists($unzip))->toBeTrue();
