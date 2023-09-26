@@ -23,6 +23,8 @@ class Zipper
      */
     public static function zip(string $path, Closure $cb, ?string $password = null): ZipArchive
     {
+        File::ensureDirectoryExists(dirname($path));
+
         $zip = new ZipArchive();
 
         $zip->open($path, ZipArchive::CREATE | ZipArchive::OVERWRITE);
