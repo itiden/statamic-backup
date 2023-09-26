@@ -18,10 +18,11 @@ class BackuperManager extends Manager
 {
     public function backup(): BackupDto
     {
-        $disk = config('backup.backup.disk');
-        $backup_path = config('backup.backup.path');
+        $disk = config('backup.destination.disk');
+        $backup_path = config('backup.destination.path');
+        $temp_zip_path = config('backup.temp_path') . '/temp.zip';
 
-        $temp_zip_path = Zipper::zip(function (ZipArchive $zip) {
+        Zipper::zip(config('backup.temp_path'), function (ZipArchive $zip) {
             collect($this->getDrivers())->each(
                 fn ($key) => $this->driver($key)->backup($zip)
             );
@@ -42,8 +43,8 @@ class BackuperManager extends Manager
 
     public function getBackups(): Collection
     {
-        $disk = config('backup.backup.disk');
-        $backup_path = config('backup.backup.path');
+        $disk = config('backup.destination.disk');
+        $backup_path = config('backup.destination.path');
 
         return collect(Storage::disk($disk)->files($backup_path))
             ->map([BackupDto::class, 'fromFile'])
@@ -52,7 +53,7 @@ class BackuperManager extends Manager
 
     private function enforceMaxBackups(): void
     {
-        if (!$max_backups = config('backup.backup.max_backups', false)) {
+        if (!$max_backups = config('backup.max_backups', false)) {
             return;
         }
 
@@ -60,7 +61,7 @@ class BackuperManager extends Manager
 
         if ($backups->count() > $max_backups) {
             $backups->slice($max_backups)->each(function ($backup) {
-                Storage::disk(config('backup.backup.disk'))->delete($backup->path);
+                Storage::disk(config('backup.destination.disk'))->delete($backup->path);
             });
         }
     }
