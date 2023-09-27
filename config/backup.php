@@ -18,7 +18,7 @@ return [
     /*
     / The path to the temp directory
     */
-    'temp_path' => storage_path('temp/statamic-backups'),
+    'temp_path' => storage_path('framework/statamic-backup'),
 
     /*
     / The maximum number of backups to keep
@@ -34,11 +34,14 @@ return [
 
     /*
     / The backup schedule options
-    / set to false to disable automatic backups
+    / 
+    / set to null to disable automatic backups
+    / frequency can be any of the laravel schedule frequencies
+    / time should be what the frequency expects
     */
     'schedule' => [
         'frequency' => 'daily',
-        'time' => '00:00',
+        // 'time' => '03:00',
     ],
 
     /*

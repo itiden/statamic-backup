@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Itiden\Backup;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Itiden\Backup\Console\Commands\BackupCommand;
 use Itiden\Backup\Console\Commands\RestoreCommand;
 use Statamic\Facades\CP\Nav;
@@ -45,6 +46,17 @@ class ServiceProvider extends AddonServiceProvider
             RestoreCommand::class,
             BackupCommand::class,
         ]);
+    }
+
+    protected function schedule(Schedule $schedule)
+    {
+        if (!config('backup.schedule')) {
+            return;
+        }
+
+        $frequency = config('backup.schedule.frequency');
+
+        $schedule->command('statamic:backup')->$frequency(config('backup.schedule.time'));
     }
 
     public function register()
