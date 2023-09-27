@@ -66,7 +66,7 @@ class BackuperManager extends Manager
     }
 
     /**
-     * Remove oldest backups when max backups limit is surpassed.
+     * Remove oldest backups when max backups limit is exceeded.
      *
      * @return void
      */

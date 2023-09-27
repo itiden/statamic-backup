@@ -3,6 +3,7 @@
 return [
     /*
     / The path to the content directory
+    /
     / This is used by the default content backup driver
     */
     'content_path' => storage_path('content'),
@@ -22,12 +23,14 @@ return [
 
     /*
     / The maximum number of backups to keep
-    / when superceded the oldest backup will be deleted
+    /
+    / when exceeded the oldest backup will be deleted
     */
     'max_backups' => 10,
 
     /*
     / The backup password
+    /
     / set to null to disable password protection
     */
     'password' => env('BACKUP_PASSWORD', null),
@@ -46,6 +49,7 @@ return [
 
     /*
     / The backup drivers to use
+    /
     / These are the drivers that will be used to backup your site
     / You can add your own drivers here
     */
