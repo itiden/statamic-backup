@@ -37,7 +37,7 @@ return [
 
     /*
     / The backup schedule options
-    / 
+    /
     / set to null to disable automatic backups
     / frequency can be any of the laravel schedule frequencies
     / time should be what the frequency expects
