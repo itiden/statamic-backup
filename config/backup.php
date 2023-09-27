@@ -41,6 +41,8 @@ return [
     / set to null to disable automatic backups
     / frequency can be any of the laravel schedule frequencies
     / time should be what the frequency expects
+    /
+    / see https://laravel.com/docs/10.x/scheduling#schedule-frequency-options
     */
     'schedule' => [
         'frequency' => 'daily',
