@@ -32,6 +32,9 @@ class Zipper
         $cb($zip);
 
         if ($password) {
+
+            collect(range(0, $zip->numFiles - 1))->each(fn ($file) => $zip->setEncryptionIndex($file, ZipArchive::EM_AES_256));
+
             $zip->setPassword($password);
         }
 
