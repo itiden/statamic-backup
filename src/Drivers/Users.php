@@ -18,7 +18,7 @@ class Users implements BackupDriver
 
     public function restore(string $users): void
     {
-        $destination = config('statamic.stache.directories.users');
+        $destination = config('statamic.stache.stores.users.directory');
 
         File::copyDirectory($users, $destination);
     }
