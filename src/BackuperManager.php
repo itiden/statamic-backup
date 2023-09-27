@@ -61,6 +61,7 @@ class BackuperManager extends Manager
         $backup_path = config('backup.destination.path');
 
         return collect(Storage::disk($disk)->files($backup_path))
+            ->filter(fn ($path) => Str::endsWith($path, '.zip'))
             ->map([BackupDto::class, 'fromFile'])
             ->sort(fn ($a, $b) => $b->timestamp <=> $a->timestamp);
     }
