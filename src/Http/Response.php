@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Itiden\Backup\Http;
 
 use Illuminate\Http\JsonResponse;
