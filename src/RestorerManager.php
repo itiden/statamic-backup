@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Itiden\Backup;
 
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Support\Manager;
 use Itiden\Backup\Support\Zipper;
@@ -19,7 +20,7 @@ class RestorerManager extends Manager
             throw new \Exception("Backup with timestamp {$timestamp} not found.");
         }
 
-        $this->restoreFromPath($backup->path);
+        $this->restoreFromPath(Storage::disk(config('backup.destination.disk'))->path($backup->path));
     }
 
     public function restoreFromPath(string $path): void
