@@ -66,11 +66,15 @@ class Zipper
      *
      * @return string
      */
-    public static function unzip(string $path, string $to): string
+    public static function unzip(string $path, string $to, ?string $password = null): string
     {
         $zip = new ZipArchive();
 
-        $zip->open($path);
+        $zip->open($path, ZipArchive::RDONLY);
+
+        if ($password) {
+            $zip->setPassword($password);
+        }
 
         $zip->extractTo($to);
 
