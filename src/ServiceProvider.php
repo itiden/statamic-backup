@@ -19,6 +19,13 @@ class ServiceProvider extends AddonServiceProvider
         'cp' => __DIR__ . '/../routes/cp.php',
     ];
 
+    protected $vite = [
+        'input' => [
+            'resources/js/backup.js',
+        ],
+        'publicDirectory' => 'resources/dist',
+    ];
+
     public function bootAddon()
     {
         $this->publishes([
