@@ -8,13 +8,18 @@ use Itiden\Backup\Http\Middleware\CanCreateBackups;
 use Itiden\Backup\Http\Middleware\CanManageBackups;
 
 Route::name('itiden.backup.')->prefix('backups')->group(function () {
-    Route::get('/', [BackupController::class, '__invoke'])
+    Route::view('/', 'itiden-backup::backups')
         ->name('index');
 
-    Route::post('/create', [CreateBackupController::class, '__invoke'])
+    Route::post('/create', CreateBackupController::class)
         ->middleware(CanCreateBackups::class)
         ->name('create');
 
-    Route::get('/download/{timestamp}', [DownloadBackupController::class, '__invoke'])
+    Route::get('/download/{timestamp}', DownloadBackupController::class)
         ->name('download');
 })->middleware([CanManageBackups::class]);
+
+Route::name('api.itiden.backup')->prefix('api/backups')->group(function () {
+    Route::get('/', BackupController::class)
+        ->name('index');
+});
