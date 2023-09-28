@@ -7,12 +7,13 @@ namespace Itiden\Backup\DataTransferObjects;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Statamic\Support\Str as StatamicStr;
 
 readonly class BackupDto
 {
     public function __construct(
         public string $name,
-        public int $size,
+        public string $size,
         public string $path,
         public string $timestamp,
     ) {
@@ -24,7 +25,7 @@ readonly class BackupDto
 
         return new self(
             name: Carbon::createFromTimestamp($timestamp)->format('Y-m-d H:i:s'),
-            size: Storage::disk(config('backup.destination.disk'))->size($path),
+            size: StatamicStr::fileSizeForHumans(Storage::disk(config('backup.destination.disk'))->size($path), 2),
             path: $path,
             timestamp: $timestamp,
         );
