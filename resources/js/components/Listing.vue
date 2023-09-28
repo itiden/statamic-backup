@@ -27,23 +27,39 @@
                 :text="__('Download')"
                 :redirect="download_url(backup.timestamp)"
               />
+              <hr class="divider" />
               <dropdown-item
                 :text="__('Restore')"
                 @click="initiateRestore(backup.timestamp, backup.name)"
               />
-              <dropdown-item :text="__('Remove')" dangerous="true" />
+              <hr class="divider" />
+              <dropdown-item
+                :text="__('Remove')"
+                dangerous="true"
+                @click="initiateDestroy(backup.timestamp, backup.name)"
+              />
             </dropdown-list>
           </template>
         </data-list-table>
       </div>
     </data-list>
+
     <confirmation-modal
-      v-if="confirming"
+      v-if="confirmingRestore"
       title="Restore Site"
       :bodyText="`Are you sure you want to restore your site to the state it was ${activeName} ?`"
       buttonText="Restore"
       @confirm="restore()"
-      @cancel="confirming = false"
+      @cancel="confirmingRestore = false"
+    />
+
+    <confirmation-modal
+      v-if="confirmingDestroy"
+      title="Remove backup"
+      :bodyText="`Are you sure you want to remove the backup from ${activeName} ?`"
+      buttonText="Remove"
+      @confirm="destroy()"
+      @cancel="confirmingDestroy = false"
     />
   </div>
 </template>
@@ -55,15 +71,15 @@ export default {
   mixins: [Listing],
 
   mounted() {
-    this.$root.$on("onBackedup", () => {
-      this.request();
-    });
+    this.$root.$on("onBackedup", this.request);
+    this.$on("onDestroyed", this.request);
   },
   data() {
     return {
       requestUrl: cp_url("api/backups"),
       columns: this.initialColumns,
-      confirming: false,
+      confirmingRestore: false,
+      confirmingDestroy: false,
       activeTimestamp: null,
       activeName: null,
     };
@@ -75,18 +91,47 @@ export default {
     restore_url(timestamp) {
       return cp_url("api/backups/restore/" + timestamp);
     },
+    destroy_url(timestamp) {
+      return cp_url("api/backups/" + timestamp);
+    },
+    initiateDestroy(timestamp, name) {
+      this.activeTimestamp = timestamp;
+      this.activeName = name;
+      this.confirmingDestroy = true;
+    },
     initiateRestore(timestamp, name) {
       this.activeTimestamp = timestamp;
       this.activeName = name;
-      this.confirming = true;
+      this.confirmingRestore = true;
     },
     restore() {
-      this.confirming = false;
+      this.confirmingRestore = false;
       this.$axios
         .post(this.restore_url(this.activeTimestamp))
-        .then(() => {
-          this.$toast.success(__("Site is now restored."));
+        .then(({ data }) => {
+          this.$toast.success(__(data.message));
           this.$emit("onRestored");
+        })
+        .catch((error) => {
+          let message = "Something went wrong.";
+
+          if (error.response.data.message) {
+            message = error.response.data.message;
+          }
+          this.$toast.error(__(message));
+        })
+        .finally(() => {
+          this.activeName = null;
+          this.activeTimestamp = null;
+        });
+    },
+    destroy() {
+      this.confirmingDestroy = false;
+      this.$axios
+        .delete(this.destroy_url(this.activeTimestamp))
+        .then(({ data }) => {
+          this.$toast.success(__(data.message));
+          this.$emit("onDestroyed");
         })
         .catch((error) => {
           let message = "Something went wrong.";

@@ -9,12 +9,12 @@ use Illuminate\Routing\Controller;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Http\Response;
 
-class CreateBackupController extends Controller
+class DestroyBackupController extends Controller
 {
-    public function __invoke(): JsonResponse
+    public function __invoke(string $timestamp): JsonResponse
     {
-        $backup = Backuper::backup();
+        $backup = Backuper::deleteBackup($timestamp);
 
-        return Response::success('Backup created ' . $backup->name);
+        return Response::success('Deleted ' . $backup->name);
     }
 }

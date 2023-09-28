@@ -18,8 +18,6 @@ class BackuperManager extends Manager
 {
     /**
      * Create a new backup.
-     *
-     * @return BackupDto
      */
     public function backup(): BackupDto
     {
@@ -53,7 +51,7 @@ class BackuperManager extends Manager
     /**
      * Get all backups.
      *
-     * @return Collection
+     * @return Collection<BackupDto>
      */
     public function getBackups(): Collection
     {
@@ -66,15 +64,28 @@ class BackuperManager extends Manager
             ->sort(fn ($a, $b) => $b->timestamp <=> $a->timestamp);
     }
 
+    /**
+     * Get a specific backup.
+     */
     public function getBackup(string $timestamp): BackupDto
     {
         return $this->getBackups()->first(fn ($backup) => $backup->timestamp === $timestamp);
     }
 
     /**
-     * Remove oldest backups when max backups limit is exceeded.
-     *
-     * @return void
+     * Delete a specific backup.
+     */
+    public function deleteBackup(string $timestamp): BackupDto
+    {
+        $backup = $this->getBackup($timestamp);
+
+        Storage::disk(config('backup.destination.disk'))->delete($backup->path);
+
+        return $backup;
+    }
+
+    /**
+     * Remove oldest backups when max backups is exceeded if it's present.
      */
     private function enforceMaxBackups(): void
     {

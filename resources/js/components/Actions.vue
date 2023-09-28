@@ -27,7 +27,7 @@ export default {
 
       this.$toast.success(__("Site is now being backed up."));
       this.$axios
-        .post(cp_url("api/backups/create"), { comment: this.value })
+        .post(cp_url("api/backups"), { comment: this.value })
         .then((response) => {
           this.loading = false;
           this.show = false;
