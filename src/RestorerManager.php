@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Itiden\Backup;
 
+use Exception;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Facades\Backuper;
@@ -12,6 +13,11 @@ use Itiden\Backup\Support\Zipper;
 
 class RestorerManager extends Manager
 {
+    /**
+     * Restore from a backup with a given timestamp.
+     * 
+     * @throws Exception
+     */
     public function restoreFromTimestamp(string $timestamp): void
     {
         $backup = Backuper::getBackup($timestamp);
@@ -23,6 +29,11 @@ class RestorerManager extends Manager
         $this->restoreFromPath(Storage::disk(config('backup.destination.disk'))->path($backup->path));
     }
 
+    /**
+     * Restore from a backup at the given path.
+     * 
+     * @throws Exception
+     */
     public function restoreFromPath(string $path): void
     {
         $actualPath = static::getDirectoryPath($path);
@@ -33,7 +44,10 @@ class RestorerManager extends Manager
             );
     }
 
-    public static function getDirectoryPath(string $path)
+    /**
+     * Get the actual path of the backup which for now means in case of a zip file, unzip it.
+     */
+    private static function getDirectoryPath(string $path): string
     {
         $mime = File::mimeType($path);
 
