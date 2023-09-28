@@ -1,5 +1,4 @@
-import Listing from "./components/Listing.vue";
-
+import Backup from "./components/Backup.vue";
 Statamic.booting(() => {
-  Statamic.$components.register("backup-listing", Listing);
+  Statamic.$components.register("itiden-backup", Backup);
 });
