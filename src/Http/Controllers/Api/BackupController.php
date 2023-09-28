@@ -19,8 +19,13 @@ class BackupController extends Controller
         $meta = [
             'columns' => [
                 [
-                    'label' => 'Created',
+                    'label' => 'Name',
                     'field' => 'name',
+                    'visible' => true,
+                ],
+                [
+                    'label' => 'Created at',
+                    'field' => 'created_at',
                     'visible' => true,
                     'sortable' => true,
                 ],
