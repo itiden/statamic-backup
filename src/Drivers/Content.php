@@ -25,7 +25,7 @@ class Content implements BackupDriver
 
     public function backup(ZipArchive $zip): void
     {
-        $contentPath = config('statamic.stache.directories.content');
+        $contentPath = config('backup.content_path');
 
         Zipper::zipDir($contentPath, $zip, static::getKey());
     }
