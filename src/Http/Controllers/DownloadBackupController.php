@@ -21,9 +21,7 @@ class DownloadBackupController extends Controller
      */
     public function __invoke(string $timestamp): StreamedResponse
     {
-        $backup =  Backuper::getBackups()->first(function ($backup) use ($timestamp) {
-            return $backup->timestamp === $timestamp;
-        });
+        $backup =  Backuper::getBackup($timestamp);
 
         return Storage::disk(config('backup.backup.disk'))->download($backup->path);
     }
