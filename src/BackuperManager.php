@@ -66,6 +66,11 @@ class BackuperManager extends Manager
             ->sort(fn ($a, $b) => $b->timestamp <=> $a->timestamp);
     }
 
+    public function getBackup(string $timestamp): BackupDto
+    {
+        return $this->getBackups()->first(fn ($backup) => $backup->timestamp === $timestamp);
+    }
+
     /**
      * Remove oldest backups when max backups limit is exceeded.
      *
