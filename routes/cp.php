@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Itiden\Backup\Http\Controllers\Api\BackupController;
 use Itiden\Backup\Http\Controllers\Api\RestoreController;
-use Itiden\Backup\Http\Controllers\CreateBackupController;
+use Itiden\Backup\Http\Controllers\Api\CreateBackupController;
 use Itiden\Backup\Http\Controllers\DownloadBackupController;
 use Itiden\Backup\Http\Middleware\CanCreateBackups;
 use Itiden\Backup\Http\Middleware\CanManageBackups;

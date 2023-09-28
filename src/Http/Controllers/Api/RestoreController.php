@@ -7,6 +7,7 @@ namespace Itiden\Backup\Http\Controllers\Api;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Itiden\Backup\Facades\Restorer;
+use Itiden\Backup\Http\Response;
 
 class RestoreController extends Controller
 {
@@ -14,8 +15,6 @@ class RestoreController extends Controller
     {
         Restorer::restoreFromTimestamp($timestamp);
 
-        return response()->json([
-            'message' => 'Backup restored successfully.',
-        ]);
+        return Response::success('Backup restored.');
     }
 }

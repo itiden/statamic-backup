@@ -19,4 +19,15 @@ class Response
 
         return redirect()->back()->with('error', $message);
     }
+
+    public static function success(string $message): JsonResponse|RedirectResponse
+    {
+        if (request()->expectsJson()) {
+            return response()->json([
+                'message' => $message,
+            ]);
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
 }
