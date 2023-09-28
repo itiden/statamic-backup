@@ -6,6 +6,7 @@ namespace Itiden\Backup\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Itiden\Backup\Http\Response;
 use Statamic\Facades\User;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
@@ -20,6 +21,6 @@ class CanCreateBackups
             return $next($request);
         }
 
-        return redirect()->back()->with('error', "You don't have permission to create backups.");
+        return Response::error('You are not authorized to create backups.', 403);
     }
 }
