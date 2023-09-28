@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Itiden\Backup\Http\Controllers\BackupController;
+use Itiden\Backup\Http\Controllers\Api\BackupController;
 use Itiden\Backup\Http\Controllers\CreateBackupController;
 use Itiden\Backup\Http\Controllers\DownloadBackupController;
 use Itiden\Backup\Http\Middleware\CanCreateBackups;
@@ -22,4 +22,4 @@ Route::name('itiden.backup.')->prefix('backups')->group(function () {
 Route::name('api.itiden.backup')->prefix('api/backups')->group(function () {
     Route::get('/', BackupController::class)
         ->name('index');
-});
+})->middleware([CanManageBackups::class]);

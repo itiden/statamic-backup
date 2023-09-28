@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Itiden\Backup\Http\Controllers;
+namespace Itiden\Backup\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
