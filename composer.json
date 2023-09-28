@@ -1,5 +1,11 @@
 {
   "name": "itiden/statamic-backup",
+  "description": "Backup your Statamic site",
+  "authors": [
+    {
+      "name": "Neo Lejondahl"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "Itiden\\Backup\\": "src",
@@ -9,7 +15,7 @@
   "extra": {
     "statamic": {
       "name": "Backup",
-      "description": "Adds cp button to download your content"
+      "description": "Backup your Statamic site"
     },
     "laravel": {
       "providers": [
