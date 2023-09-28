@@ -22,10 +22,11 @@ readonly class BackupDto
     public static function fromFile(string $path): self
     {
         $timestamp = Str::before(Str::after(basename($path), '-'), '.zip');
+        $bytes = Storage::disk(config('backup.destination.disk'))->size($path);
 
         return new self(
             name: Carbon::createFromTimestamp($timestamp)->format('Y-m-d H:i:s'),
-            size: StatamicStr::fileSizeForHumans(Storage::disk(config('backup.destination.disk'))->size($path), 2),
+            size: StatamicStr::fileSizeForHumans($bytes, 2),
             path: $path,
             timestamp: $timestamp,
         );

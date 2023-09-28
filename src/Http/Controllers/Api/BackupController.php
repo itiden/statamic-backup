@@ -34,7 +34,7 @@ class BackupController extends Controller
         ];
 
         $data = [
-            'data' => $backups->values(),
+            'data' => $backups,
             'meta' => $meta,
         ];
 
