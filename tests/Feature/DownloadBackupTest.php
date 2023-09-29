@@ -6,7 +6,11 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Laravel\getJson;
 
-uses()->group('download');
+uses()->group('download backup');
+
+beforeEach(function () {
+    Backuper::clearBackups();
+});
 
 it('cant be downloaded by a guest', function () {
     $backup = Backuper::backup();

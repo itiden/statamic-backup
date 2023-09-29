@@ -18,6 +18,7 @@ function user()
         ->title('Admin')
         ->addPermission('access cp')
         ->addPermission('manage backups')
+        ->addPermission('create backups')
         ->addPermission('download backups')
         ->save();
 
