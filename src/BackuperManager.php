@@ -85,6 +85,14 @@ class BackuperManager extends Manager
     }
 
     /**
+     * Clear the backup directory.
+     */
+    public function clearBackups(): bool
+    {
+        return Storage::disk(config('backup.destination.disk'))->deleteDirectory(config('backup.destination.path'));
+    }
+
+    /**
      * Remove oldest backups when max backups is exceeded if it's present.
      */
     private function enforceMaxBackups(): void
