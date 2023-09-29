@@ -37,6 +37,7 @@ class ServiceProvider extends AddonServiceProvider
                 ->children([
                     Permission::make('create backups')->label('Create Backups'),
                     Permission::make('restore backups')->label('Restore From Backups'),
+                    Permission::make('download backups')->label('Download Backups'),
                     Permission::make('delete backups')->label('Delete Backups'),
                 ]);
         });
