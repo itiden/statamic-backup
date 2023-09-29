@@ -27,7 +27,7 @@ it('can zip directory', function () {
     $path = storage_path('test.zip');
 
     Zipper::zip($path, function ($zip) {
-        Zipper::zipDir(__DIR__ . '/../example', $zip, 'example');
+        Zipper::zipDir(config('backup.content_path'), $zip, 'example');
     });
 
     expect($path)->toBeString();
@@ -62,14 +62,14 @@ it('can unzip file to directory', function () {
 });
 
 it('can unzip directory', function () {
-    $files = collect(File::allFiles(__DIR__ . '/../example'))->map(function (SplFileInfo $file) {
+    $files = collect(File::allFiles(config('backup.content_path')))->map(function (SplFileInfo $file) {
         return $file->getPathname();
     });
 
     $target = storage_path('test.zip');
 
     Zipper::zip($target, function ($zip) {
-        Zipper::zipDir(__DIR__ . '/../example', $zip, 'example');
+        Zipper::zipDir(config('backup.content_path'), $zip, 'example');
     });
 
     $unzip = Zipper::unzip($target, storage_path('unzipdir'));

@@ -1,3 +1,4 @@
 node_modules
 vendor
 resources/dist
+tests/__fixtures__/**
