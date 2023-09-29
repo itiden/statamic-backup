@@ -17,7 +17,7 @@ class CanRestoreBackups
      */
     public function handle(Request $request, Closure $next): JsonResponse
     {
-        if (User::current()->can('restore backups')) {
+        if (User::current()->hasPermission('restore backups')) {
             return $next($request);
         }
 

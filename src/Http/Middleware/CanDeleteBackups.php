@@ -17,7 +17,7 @@ class CanDeleteBackups
      */
     public function handle(Request $request, Closure $next): JsonResponse
     {
-        if (User::current()->can('delete backups')) {
+        if (User::current()->hasPermission('delete backups')) {
             return $next($request);
         }
 

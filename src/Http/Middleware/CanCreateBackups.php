@@ -17,7 +17,7 @@ class CanCreateBackups
      */
     public function handle(Request $request, Closure $next): JsonResponse
     {
-        if (User::current()->can('create backups')) {
+        if (User::current()->hasPermission('create backups')) {
             return $next($request);
         }
 
