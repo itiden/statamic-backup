@@ -4,7 +4,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\DataTransferObjects\BackupDto;
-use Itiden\Backup\Drivers\Content;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Support\Zipper;
 
@@ -20,10 +19,6 @@ it('can backup', function () {
 });
 
 it('backups correct files', function () {
-    config()->set('backup.backup_drivers', [
-        Content::class,
-    ]);
-
     $backup = Backuper::backup();
 
     $unzipped = Zipper::unzip(
