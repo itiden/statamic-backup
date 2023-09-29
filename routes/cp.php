@@ -16,7 +16,7 @@ Route::name('itiden.backup.')->prefix('backups')->group(function () {
         ->name('index');
 })->middleware([CanManageBackups::class]);
 
-Route::name('api.itiden.backup')->prefix('api/backups')->group(function () {
+Route::name('api.itiden.backup.')->prefix('api/backups')->group(function () {
     Route::get('/', BackupController::class)
         ->name('index');
 
