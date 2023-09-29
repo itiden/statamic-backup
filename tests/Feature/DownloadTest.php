@@ -1,7 +1,6 @@
 <?php
 
 use Itiden\Backup\Facades\Backuper;
-use Statamic\Facades\Role;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;

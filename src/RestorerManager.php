@@ -15,7 +15,7 @@ class RestorerManager extends Manager
 {
     /**
      * Restore from a backup with a given timestamp.
-     * 
+     *
      * @throws Exception
      */
     public function restoreFromTimestamp(string $timestamp): void
@@ -31,7 +31,7 @@ class RestorerManager extends Manager
 
     /**
      * Restore from a backup at the given path.
-     * 
+     *
      * @throws Exception
      */
     public function restoreFromPath(string $path): void
