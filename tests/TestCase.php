@@ -3,6 +3,7 @@
 namespace Itiden\Backup\Tests;
 
 use Facades\Statamic\Version;
+use Illuminate\Support\Facades\File;
 use Itiden\Backup\ServiceProvider;
 use Orchestra\Testbench\TestCase as TestbenchTestCase;
 use Statamic\Console\Processes\Composer;
@@ -71,5 +72,8 @@ class TestCase extends TestbenchTestCase
 
             // $this->addToAssertionCount(-1);
         }
+
+        File::ensureDirectoryExists(__DIR__ . '/__fixtures__/content');
+        File::ensureDirectoryExists(__DIR__ . '/__fixtures__/users');
     }
 }

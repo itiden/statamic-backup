@@ -32,7 +32,8 @@ function user()
         ->save();
 
     return User::make()
-        ->email('joe.bloggs@example.com')
-        ->set('password', 'secret')
+        ->email('test@example.com')
+        ->set('password', 'password')
+        ->set('roles', ['user'])
         ->save();
 }

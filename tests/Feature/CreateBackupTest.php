@@ -31,8 +31,6 @@ it('cant create a backup by a user without permissons a backup', function () {
 });
 
 it('can create a backup by a user with create backups permission', function () {
-    $this->withOutExceptionHandling();
-
     $user = user();
 
     $user->assignRole('admin')->save();
