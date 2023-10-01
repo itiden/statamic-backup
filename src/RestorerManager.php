@@ -42,6 +42,8 @@ class RestorerManager extends Manager
             ->each(
                 fn ($key) => $this->driver($key)->restore("{$actualPath}/{$key}")
             );
+
+        File::cleanDirectory(config('backup.temp_path'));
     }
 
     /**

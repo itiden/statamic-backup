@@ -20,6 +20,7 @@ class Content implements BackupDriver
     {
         $destination = config('backup.content_path');
 
+        File::cleanDirectory($destination);
         File::copyDirectory($content, $destination);
     }
 

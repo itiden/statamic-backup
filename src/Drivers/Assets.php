@@ -20,6 +20,7 @@ class Assets implements BackupDriver
     public function restore(string $content): void
     {
         AssetContainer::all()->each(function ($container) use ($content) {
+            File::cleanDirectory($container->diskPath());
             File::copyDirectory("{$content}/{$container->handle()}", $container->diskPath());
         });
     }
