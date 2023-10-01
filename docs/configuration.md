@@ -6,33 +6,20 @@ To configure this package you need to publish the config file
 php artisan vendor:publish --tag="backup"
 ```
 
-```php
-return [
-    'content_path' => storage_path('content'),
-    'backup' => [
-        'disk' => 'local',
-        'path' => 'statamic-backups',
-        'max_backups' => 10,
-    ],
-    'backup_drivers' => [
-        Itiden\Backup\Drivers\Content::class,
-        Itiden\Backup\Drivers\Assets::class,
-    ],
-];
-```
+You can configure where backups are stored, how many are kept, whether they require a password for access, and when they are automatically scheduled to be created.
 
-The `content_path` should point to your content folder and is primarily used by the default content `backup driver`, to make it a bit more flexible.
+Below, you'll find an explanation of each configuration item:
 
-The `backup` key contains the configuration options for your backups, where they should be stored and how many backups there should be at a maximum.
+- `content_path`: This setting specifies the path to the content directory used by the default content backup driver. It is set to `storage_path('content')`.
 
-- `disk`: option can be any of your applications disks, read more about disks [here](https://laravel.com/docs/10.x/filesystem#configuration). Using laravels disk is really powerfull because it allows you to backup to another server for example.
-- `path`: the directory the backup will be saved to.
-- `max_backups`: the max number of backups, when superseded it will delete the oldest one.
+- `destination`: Defines the backup destination options, including the disk and path where backups will be stored. By default backups are stored locally in a 'statamic-backups' directory.
 
-The `backup_drivers` key tells the `Backuper` and `Restorer` what steps should be done on every backup and restore. the `Manager` class (which backuper and restorer extends) will collect the `backup_drivers` and run them when the backup or restore method is called.
+- `temp_path`: Specifies the path to the temporary directory used for backup operations. It's set to `storage_path('framework/statamic-backup')`.
 
-Every `backup_driver` should implement the `BackupDriver` contract.
+- `max_backups`: Determines the maximum number of backups to keep. When this limit is exceeded, the oldest backup will be automatically deleted. The default is to keep 10 backups.
 
-- `getKey()`: gets the key, it's used for deciding what driver gets to restore a folder.
-- `backup()`: will get the backups `ZipArchive` and from there you can add whatever you want to that and it will be included in the backup.
-- `restore()`: will get a path to a directory named the same as the `getKey` method returns, in the backup it's restoring from.
+- `password`: Sets a backup password. If set to null, password protection is disabled. This value can be overridden by an environment variable named 'BACKUP_PASSWORD'.
+
+- `schedule`: Configures the backup schedule options. You can specify the frequency and time for automatic backups. By default backups are scheduled to run daily. You can use any of the laravel schedule options. Frequency equals the method and time the parameters.
+
+- `backup_drivers`: Specifies the backup drivers to use. These drivers define what aspects of your site will be backed up. By default three drivers are included: 'Content', 'Assets', and 'Users'. You can add more custom drivers here if needed, more about that [here](drivers.md).
