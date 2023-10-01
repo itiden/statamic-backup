@@ -53,9 +53,12 @@ class RestorerManager extends Manager
     {
         $mime = File::mimeType($path);
 
-        return match ($mime) {
-            'application/zip' => Zipper::unzip($path, config('backup.temp_path') . '/temp', config('backup.password')),
-            default => $path,
-        };
+        if ($mime === 'application/zip') {
+            Zipper::open($path)->unzipTo(config('backup.temp_path') . '/temp', config('backup.password'))->close();
+
+            return config('backup.temp_path') . '/temp';
+        }
+
+        return $path;
     }
 }

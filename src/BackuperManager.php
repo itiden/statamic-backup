@@ -7,7 +7,6 @@ namespace Itiden\Backup;
 use Carbon\Carbon;
 use Illuminate\Http\File;
 use Illuminate\Support\Collection;
-use ZipArchive;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Support\Manager;
 use Itiden\Backup\Support\Zipper;
@@ -25,15 +24,18 @@ class BackuperManager extends Manager
         $backup_path = config('backup.destination.path');
         $temp_zip_path = config('backup.temp_path') . '/temp.zip';
 
-        Zipper::zip(
-            $temp_zip_path,
-            function (ZipArchive $zip) {
-                collect($this->getDrivers())->each(
-                    fn ($key) => $this->driver($key)->backup($zip)
-                );
-            },
-            config('backup.password')
+        $zipper = Zipper::make($temp_zip_path);
+
+        collect($this->getDrivers())->each(
+            fn ($key) => $this->driver($key)->backup($zipper)
         );
+
+        if ($password = config('backup.password')) {
+            $zipper->encrypt($password);
+        }
+
+        $zipper->close();
+
 
         $filename = Str::slug(config('app.name')) . '-' . Carbon::now()->unix() . '.zip';
 

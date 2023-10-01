@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\File;
 use Itiden\Backup\Contracts\BackupDriver;
 use Itiden\Backup\Support\Zipper;
 use Statamic\Facades\AssetContainer;
-use ZipArchive;
 
 class Assets implements BackupDriver
 {
@@ -25,12 +24,10 @@ class Assets implements BackupDriver
         });
     }
 
-    public function backup(ZipArchive $zip): void
+    public function backup(Zipper $zip): void
     {
-        $zip->addEmptyDir(static::getKey());
-
         AssetContainer::all()->each(function ($container) use ($zip) {
-            Zipper::zipDir($container->diskPath(), $zip, static::getKey() . '/' . $container->handle() . '/');
+            $zip->addDirectory($container->diskPath(), static::getKey() . '/' . $container->handle());
         });
     }
 }
