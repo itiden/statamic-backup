@@ -4,67 +4,98 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Support;
 
-use Closure;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Finder\SplFileInfo;
 use ZipArchive;
 
 class Zipper
 {
-    /**
-     * Create a zip archive and add files to it.
-     * The zip archive will be closed after the callback is executed.
-     */
-    public static function zip(string $path, Closure $cb, ?string $password = null): ZipArchive
+    private ZipArchive $zip;
+
+    public function __construct(string $path, int $flags = ZipArchive::CREATE | ZipArchive::OVERWRITE)
     {
         File::ensureDirectoryExists(dirname($path));
 
-        $zip = new ZipArchive();
+        $this->zip = new ZipArchive();
 
-        $zip->open($path, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-
-        $cb($zip);
-
-        if ($password) {
-
-            collect(range(0, $zip->numFiles - 1))->each(fn ($file) => $zip->setEncryptionIndex($file, ZipArchive::EM_AES_256));
-
-            $zip->setPassword($password);
-        }
-
-        $zip->close();
-
-        return $zip;
+        $this->zip->open($path, $flags);
     }
 
     /**
-     * Add a directory and all its contents to a zip archive with a prefix.
+     * Create a new instance of the Zipper.
      */
-    public static function zipDir(string $path, ZipArchive $zip, string $prefix)
+    public static function make(string $path): self
     {
-        collect(File::allFiles($path))->each(function (SplFileInfo $file) use ($zip, $prefix) {
-            $zip->addFile($file->getPathname(), $prefix . '/' . $file->getRelativePathname());
+        return new static($path);
+    }
+
+    /**
+     * Open an existing instance of in readonly mode.
+     */
+    public static function open(string $path): self
+    {
+        return new static($path, ZipArchive::RDONLY);
+    }
+
+    /**
+     * Close the Zipper and write the archive to the filesystem.
+     */
+    public function close(): void
+    {
+        $this->zip->close();
+    }
+
+    /**
+     * Encrypt the archive with the given password.
+     */
+    public function encrypt(string $password): self
+    {
+        $this->zip->setPassword($password);
+
+        collect(range(0, $this->zip->numFiles - 1))->each(fn ($file) => $this->zip->setEncryptionIndex($file, ZipArchive::EM_AES_256));
+
+        return $this;
+    }
+
+    /**
+     * Add a file to the archive.
+     */
+    public function addFile(string $path, string $name = null): self
+    {
+        $this->zip->addFile($path, $name ?? basename($path));
+
+        return $this;
+    }
+
+    /**
+     * Add a file to the archive from a string.
+     */
+    public function addFromString(string $name, string $content): self
+    {
+        $this->zip->addFromString($name, $content);
+
+        return $this;
+    }
+
+    /**
+     * Add a directory to the archive.
+     */
+    public function addDirectory(string $path, string $prefix = null): self
+    {
+        collect(File::allFiles($path))->each(function (SplFileInfo $file) use ($prefix) {
+            $this->addFile($file->getPathname(), $prefix . '/' . $file->getRelativePathname());
         });
+
+        return $this;
     }
 
-
     /**
-     * Extract a zip archive to a directory.
+     * Extract the Zipper to the given path.
      */
-    public static function unzip(string $path, string $to, ?string $password = null): string
+    public function unzipTo(string $path, ?string $password = null): self
     {
-        $zip = new ZipArchive();
+        $this->zip->extractTo($path, $password);
 
-        $zip->open($path, ZipArchive::RDONLY);
-
-        if ($password) {
-            $zip->setPassword($password);
-        }
-
-        $zip->extractTo($to);
-
-        $zip->close();
-
-        return $to;
+        return $this;
     }
 }
