@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="canCreateBackups">
     <button
       :disabled="loading"
       class="btn-primary"
@@ -17,6 +17,11 @@ export default {
     return {
       confirming: false,
       loading: false,
+      canCreateBackups:
+        this.$store.state.statamic.config.user.super ??
+        this.$store.state.statamic.config.user.permissions.includes(
+          "create backups"
+        ),
     };
   },
   methods: {
@@ -24,17 +29,23 @@ export default {
       this.loading = true;
       this.confirming = false;
 
-      this.$toast.success(__("Site is now being backed up."));
+      this.$toast.info(__("Starting backup..."));
       this.$axios
         .post(cp_url("api/backups"), { comment: this.value })
         .then(({ data }) => {
-          this.loading = false;
-
           this.$toast.success(__(data.message));
           this.$root.$emit("onBackedup");
         })
-        .catch(function (error) {
-          console.log(error);
+        .catch((error) => {
+          let message = "Something went wrong.";
+
+          if (error.response.data.message) {
+            message = error.response.data.message;
+          }
+          this.$toast.error(__(message));
+        })
+        .finally(() => {
+          this.loading = false;
         });
     },
   },

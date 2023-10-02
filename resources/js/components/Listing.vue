@@ -21,23 +21,32 @@
         />
 
         <data-list-table>
-          <template slot="actions" slot-scope="{ row: backup }">
+          <template
+            slot="actions"
+            slot-scope="{ row: backup }"
+            v-if="showActions"
+          >
             <dropdown-list>
               <dropdown-item
+                v-if="canDownload"
                 :text="__('Download')"
                 :redirect="download_url(backup.timestamp)"
               />
-              <hr class="divider" />
-              <dropdown-item
-                :text="__('Restore')"
-                @click="initiateRestore(backup.timestamp, backup.name)"
-              />
-              <hr class="divider" />
-              <dropdown-item
-                :text="__('Remove')"
-                dangerous="true"
-                @click="initiateDestroy(backup.timestamp, backup.name)"
-              />
+              <span v-if="canRestore">
+                <hr class="divider" />
+                <dropdown-item
+                  :text="__('Restore')"
+                  @click="initiateRestore(backup.timestamp, backup.name)"
+                />
+              </span>
+              <span v-if="canDestroy">
+                <hr class="divider" />
+                <dropdown-item
+                  :text="__('Remove')"
+                  dangerous="true"
+                  @click="initiateDestroy(backup.timestamp, backup.name)"
+                />
+              </span>
             </dropdown-list>
           </template>
         </data-list-table>
@@ -82,7 +91,27 @@ export default {
       confirmingDestroy: false,
       activeTimestamp: null,
       activeName: null,
+      canDownload:
+        this.$store.state.statamic.config.user.super ??
+        this.$store.state.statamic.config.user.permissions.includes(
+          "download backups"
+        ),
+      canRestore:
+        this.$store.state.statamic.config.user.super ??
+        this.$store.state.statamic.config.user.permissions.includes(
+          "restore backups"
+        ),
+      canDestroy:
+        this.$store.state.statamic.config.user.super ??
+        this.$store.state.statamic.config.user.permissions.includes(
+          "delete backups"
+        ),
     };
+  },
+  computed: {
+    showActions() {
+      return this.canDownload || this.canRestore || this.canDestroy;
+    },
   },
   methods: {
     download_url(timestamp) {
