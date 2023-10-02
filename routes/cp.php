@@ -8,7 +8,6 @@ use Itiden\Backup\Http\Controllers\Api\StoreBackupController;
 use Itiden\Backup\Http\Controllers\DownloadBackupController;
 use Itiden\Backup\Http\Middleware\HasPermission;
 
-
 Route::name('itiden.backup.')
     ->middleware(HasPermission::class . ':manage backups')
     ->prefix('backups')
