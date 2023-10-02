@@ -7,7 +7,6 @@ namespace Itiden\Backup\Drivers;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Contracts\BackupDriver;
 use Itiden\Backup\Support\Zipper;
-use ZipArchive;
 
 class Users implements BackupDriver
 {
@@ -23,8 +22,8 @@ class Users implements BackupDriver
         File::copyDirectory($users, $destination);
     }
 
-    public function backup(ZipArchive $zip): void
+    public function backup(Zipper $zip): void
     {
-        Zipper::zipDir(config('statamic.stache.stores.users.directory'), $zip, static::getKey());
+        $zip->addDirectory(config('statamic.stache.stores.users.directory'), static::getKey());
     }
 }

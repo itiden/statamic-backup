@@ -26,7 +26,32 @@ class RestorerManager extends Manager
             throw new \Exception("Backup with timestamp {$timestamp} not found.");
         }
 
-        $this->restoreFromPath(Storage::disk(config('backup.destination.disk'))->path($backup->path));
+        $disk = config('backup.destination.disk');
+
+        $target = config('backup.temp_path') . '/open';
+
+        // If the disk is not local, we need to download it first
+        // to a temporary location so we can extract it.
+        if (config("filesystems.disks.{$disk}.driver") === 'local') {
+            $backupZipPath = Storage::disk($disk)->path($backup->path);
+        } else {
+            $tempDisk = Storage::build([
+                'driver' => 'local',
+                'root' => config('backup.temp_path') . '/backup',
+            ]);
+
+            $tempDisk->writeStream('backup.zip', Storage::disk($disk)->readStream($backup->path));
+
+            $backupZipPath = $tempDisk->path('backup.zip');
+        }
+
+        Zipper::make($backupZipPath, true)->extractTo($target, config('backup.password'))->close();
+
+        if (!collect(File::allFiles($target))->count()) {
+            throw new \Exception("This backup is empty, perhaps you used the wrong password?");
+        }
+
+        $this->restoreFromPath($target);
     }
 
     /**
@@ -36,26 +61,16 @@ class RestorerManager extends Manager
      */
     public function restoreFromPath(string $path): void
     {
-        $actualPath = static::getDirectoryPath($path);
+
+        if (!File::exists($path)) {
+            throw new \Exception("Path {$path} does not exist.");
+        }
 
         collect($this->getDrivers())
             ->each(
-                fn ($key) => $this->driver($key)->restore("{$actualPath}/{$key}")
+                fn ($key) => $this->driver($key)->restore("{$path}/{$key}")
             );
 
         File::cleanDirectory(config('backup.temp_path'));
-    }
-
-    /**
-     * Get the actual path of the backup which for now means in case of a zip file, unzip it.
-     */
-    private static function getDirectoryPath(string $path): string
-    {
-        $mime = File::mimeType($path);
-
-        return match ($mime) {
-            'application/zip' => Zipper::unzip($path, config('backup.temp_path') . '/temp', config('backup.password')),
-            default => $path,
-        };
     }
 }

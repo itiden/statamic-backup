@@ -7,7 +7,6 @@ namespace Itiden\Backup\Drivers;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Contracts\BackupDriver;
 use Itiden\Backup\Support\Zipper;
-use ZipArchive;
 
 class Content implements BackupDriver
 {
@@ -24,10 +23,10 @@ class Content implements BackupDriver
         File::copyDirectory($content, $destination);
     }
 
-    public function backup(ZipArchive $zip): void
+    public function backup(Zipper $zip): void
     {
         $contentPath = config('backup.content_path');
 
-        Zipper::zipDir($contentPath, $zip, static::getKey());
+        $zip->addDirectory($contentPath, static::getKey());
     }
 }

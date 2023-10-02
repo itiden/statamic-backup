@@ -21,12 +21,16 @@ it('can backup', function () {
 it('backups correct files', function () {
     $backup = Backuper::backup();
 
-    $unzipped = Zipper::unzip(
+    $unzipped = config('backup.temp_path') . '/unzipped';
+    Zipper::make(
         Storage::disk(config('backup.destination.disk'))
             ->path($backup->path),
-        config('backup.temp_path') . '/unzipped',
-        null,
-    );
+        true
+    )
+        ->extractTo(
+            $unzipped,
+            config('backup.password'),
+        );
 
     expect(File::allFiles($unzipped)[0]->getRelativePathname())
         ->toEqual('content/collections/pages/homepage.yaml');
