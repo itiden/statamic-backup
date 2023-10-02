@@ -33,19 +33,19 @@ class RestorerManager extends Manager
         // If the disk is not local, we need to download it first
         // to a temporary location so we can extract it.
         if (config("filesystems.disks.{$disk}.driver") === 'local') {
-            $destination = Storage::disk($disk)->path($backup->path);
+            $backupZipPath = Storage::disk($disk)->path($backup->path);
         } else {
             $tempDisk = Storage::build([
                 'driver' => 'local',
-                'root' => $target = config('backup.temp_path') . '/backup',
+                'root' => config('backup.temp_path') . '/backup',
             ]);
 
             $tempDisk->writeStream('backup.zip', Storage::disk($disk)->readStream($backup->path));
 
-            $destination = $tempDisk->path('backup.zip');
+            $backupZipPath = $tempDisk->path('backup.zip');
         }
 
-        Zipper::make($destination, true)->extractTo($target, config('backup.password'))->close();
+        Zipper::make($backupZipPath, true)->extractTo($target, config('backup.password'))->close();
 
         if (!collect(File::allFiles($target))->count()) {
             throw new \Exception("This backup is empty, perhaps you used the wrong password?");
