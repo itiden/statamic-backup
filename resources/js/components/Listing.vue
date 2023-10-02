@@ -135,6 +135,7 @@ export default {
     },
     restore() {
       this.confirmingRestore = false;
+      this.$toast.info(__(`Starting restore to ${this.activeName}...`));
       this.$axios
         .post(this.restore_url(this.activeTimestamp))
         .then(({ data }) => {
