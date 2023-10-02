@@ -32,15 +32,7 @@ class ServiceProvider extends AddonServiceProvider
             __DIR__ . '/../config/backup.php' => config_path('backup.php'),
         ]);
 
-        Permission::extend(function () {
-            Permission::register('manage backups')->label('Manage Backups')
-                ->children([
-                    Permission::make('create backups')->label('Create Backups'),
-                    Permission::make('restore backups')->label('Restore From Backups'),
-                    Permission::make('download backups')->label('Download Backups'),
-                    Permission::make('delete backups')->label('Delete Backups'),
-                ]);
-        });
+        $this->setUpPermissions();
 
         Nav::extend(function ($nav) {
             $nav->content('Backups')
@@ -73,5 +65,21 @@ class ServiceProvider extends AddonServiceProvider
             __DIR__ . '/../config/backup.php',
             'backup'
         );
+    }
+
+    private function setUpPermissions()
+    {
+        Permission::extend(function () {
+            Permission::group('itiden-backup', 'Backup', function () {
+                Permission::register('manage backups')
+                    ->label('Manage Backups')
+                    ->children([
+                        Permission::make('create backups')->label('Create Backups'),
+                        Permission::make('restore backups')->label('Restore From Backups'),
+                        Permission::make('download backups')->label('Download Backups'),
+                        Permission::make('delete backups')->label('Delete Backups'),
+                    ]);
+            });
+        });
     }
 }

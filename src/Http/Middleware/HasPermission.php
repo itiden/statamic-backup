@@ -16,7 +16,7 @@ class HasPermission
      */
     public function handle(Request $request, Closure $next, string $permission)
     {
-        if (User::current()->hasPermission($permission)) {
+        if (User::current()->can($permission)) {
             return $next($request);
         }
 
