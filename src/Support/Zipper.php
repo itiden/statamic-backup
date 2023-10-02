@@ -96,4 +96,12 @@ class Zipper
 
         return $this;
     }
+
+    /**
+     * Get the ZipArchive instance.
+     */
+    public function getArchive(): ZipArchive
+    {
+        return $this->zip;
+    }
 }
