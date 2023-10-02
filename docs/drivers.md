@@ -10,7 +10,6 @@ Start by creating a new PHP class that will serve as your backup driver. This cl
 use Itiden\Backup\Contracts\BackupDriver;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Support\Zipper;
-use ZipArchive;
 
 class Logs implements BackupDriver
 {
@@ -29,16 +28,15 @@ class Logs implements BackupDriver
     {
         // Implement the logic to restore data from the provided backup file at $path.
         File::copyDirectory($path, storage_path('logs'));
-
     }
 
     /**
      * Run the backup process.
      */
-    public function backup(ZipArchive $zip): void
+    public function backup(Zipper $zip): void
     {
         // Implement the logic to create a backup of your data and add it to the ZipArchive instance $zip.
-        Zipper::zipDir(storage_path('logs'), $zip, static::getKey());
+        $zip->addDirectory(storage_path('logs'), static::getKey());
     }
 }
 ```
@@ -49,7 +47,7 @@ In the example above, we've created a class `Logs` that implements the `BackupDr
 
 - `restore()`: In this method, you should implement the logic to restore your data, the `$path` path/to/backup/key, where key is what getKey returns.
 
-- `backup()`: Here, you should implement the logic to create a backup of your data and add it to the `ZipArchive` instance `$zip`. This method is responsible for adding data to the backup archive. You should also prefix all paths with the key.
+- `backup()`: Here, you should implement the logic to create a backup of your data and add it to the `Zipper` instance `$zip`. This method is responsible for adding data to the backup archive. You should also prefix all paths with the key. `Zipper` is a wrapper around `ZipArchive` with some convenience methods, you can access the `ZipArchive` with the `getArchive` method.
 
 ## Step 2: Configure Your Backup
 
