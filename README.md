@@ -32,7 +32,7 @@ To install this addon, follow these simple steps:
 
 2. **Configuration**:
 
-   Next, configure the addon by editing the `config/backup.php` file. Customize settings such as content path, backup destination, and more.
+   Next, configure the addon by editing the `config/backup.php` file. Customize settings such as content path, backup destination, and more. Read the full configuration documentation [here](docs/configuration.md)!
 
 3. **Usage**:
 
