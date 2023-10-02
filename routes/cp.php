@@ -8,28 +8,35 @@ use Itiden\Backup\Http\Controllers\Api\StoreBackupController;
 use Itiden\Backup\Http\Controllers\DownloadBackupController;
 use Itiden\Backup\Http\Middleware\HasPermission;
 
-Route::name('itiden.backup.')->prefix('backups')->group(function () {
-    Route::view('/', 'itiden-backup::backups')
-        ->name('index');
-})->middleware([HasPermission::class . ':manage backups']);
 
-Route::name('api.itiden.backup.')->prefix('api/backups')->group(function () {
-    Route::get('/', BackupController::class)
-        ->name('index');
+Route::name('itiden.backup.')
+    ->middleware(HasPermission::class . ':manage backups')
+    ->prefix('backups')
+    ->group(function () {
+        Route::view('/', 'itiden-backup::backups')
+            ->name('index');
+    });
 
-    Route::post('/', StoreBackupController::class)
-        ->middleware(HasPermission::class . ':create backups')
-        ->name('store');
+Route::name('api.itiden.backup.')
+    ->middleware(HasPermission::class . ':manage backups')
+    ->prefix('api/backups')
+    ->group(function () {
+        Route::get('/', BackupController::class)
+            ->name('index');
 
-    Route::delete('/{timestamp}', DestroyBackupController::class)
-        ->middleware(HasPermission::class . ':delete backups')
-        ->name('destroy');
+        Route::post('/', StoreBackupController::class)
+            ->middleware(HasPermission::class . ':create backups')
+            ->name('store');
 
-    Route::get('/download/{timestamp}', DownloadBackupController::class)
-        ->middleware(HasPermission::class . ':download backups')
-        ->name('download');
+        Route::delete('/{timestamp}', DestroyBackupController::class)
+            ->middleware(HasPermission::class . ':delete backups')
+            ->name('destroy');
 
-    Route::post('/restore/{timestamp}', RestoreController::class)
-        ->middleware(HasPermission::class . ':restore backups')
-        ->name('restore');
-})->middleware(HasPermission::class . ':manage backups');
+        Route::get('/download/{timestamp}', DownloadBackupController::class)
+            ->middleware(HasPermission::class . ':download backups')
+            ->name('download');
+
+        Route::post('/restore/{timestamp}', RestoreController::class)
+            ->middleware(HasPermission::class . ':restore backups')
+            ->name('restore');
+    });
