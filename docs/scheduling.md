@@ -1,6 +1,6 @@
 # Scheduling
 
-To use the scheduling you need to run the laravel scheduler see the laravel documentation about running the scheduler [here](https://laravel.com/docs/10.x/scheduling#running-the-scheduler).
+To use the scheduling you need to run the laravel scheduler, see the laravel documentation about running the scheduler [here](https://laravel.com/docs/10.x/scheduling#running-the-scheduler).
 
 You can configure the frequency in the config file under the `schedule` key. The default is once a day at midnight.
 
