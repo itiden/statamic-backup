@@ -20,6 +20,10 @@
       "providers": [
         "Itiden\\Backup\\ServiceProvider"
       ]
+    },
+    "download-dist": {
+      "url": "https://github.com/itiden/statamic-backup/releases/download/{$version}/dist.tar.gz",
+      "path": "resources/dist"
     }
   },
   "require-dev": {
@@ -30,7 +34,8 @@
   },
   "require": {
     "statamic/cms": "^4.20",
-    "laravel/framework": "^10.0"
+    "laravel/framework": "^10.0",
+    "pixelfear/composer-dist-plugin": "^0.1.6"
   },
   "config": {
     "allow-plugins": {
