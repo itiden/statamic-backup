@@ -26,16 +26,32 @@ class RestorerManager extends Manager
             throw new \Exception("Backup with timestamp {$timestamp} not found.");
         }
 
-        $destination = Storage::disk(config('backup.destination.disk'))->path($backup->path);
-        $target = config('backup.temp_path') . '/restore';
+        $disk = config('backup.destination.disk');
 
-        Zipper::make($destination, true)->extractTo($target . '/restore', config('backup.password'))->close();
+        $target = config('backup.temp_path') . '/open';
+
+        // If the disk is not local, we need to download it first
+        // to a temporary location so we can extract it.
+        if (config("filesystems.disks.{$disk}.driver") === 'local') {
+            $destination = Storage::disk($disk)->path($backup->path);
+        } else {
+            $tempDisk = Storage::build([
+                'driver' => 'local',
+                'root' => $target = config('backup.temp_path') . '/backup',
+            ]);
+
+            $tempDisk->writeStream('backup.zip', Storage::disk($disk)->readStream($backup->path));
+
+            $destination = $tempDisk->path('backup.zip');
+        }
+
+        Zipper::make($destination, true)->extractTo($target, config('backup.password'))->close();
 
         if (!collect(File::allFiles($target))->count()) {
             throw new \Exception("This backup is empty, perhaps you used the wrong password?");
         }
 
-        $this->restoreFromPath($target . '/restore');
+        $this->restoreFromPath($target);
     }
 
     /**
