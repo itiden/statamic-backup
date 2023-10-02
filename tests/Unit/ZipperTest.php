@@ -93,3 +93,25 @@ it('can unzip directory', function () {
         expect(file_exists($file))->toBeTrue();
     });
 });
+
+it('can encrypt when zipping', function () {
+    $target = storage_path('test.zip');
+    $password = 'password';
+
+    Zipper::make($target)
+        ->addFromString('test.txt', 'test')
+        ->encrypt($password)
+        ->close();
+
+    expect(file_exists($target))->toBeTrue();
+    expect(File::mimeType($target))->toBe('application/zip');
+
+    $unzip = storage_path('unzip');
+
+    Zipper::make($target, true)
+        ->extractTo($unzip, $password)
+        ->close();
+
+    expect(File::allFiles($unzip)[0]->getRelativePathname())->toBe("test.txt");
+    expect(File::get($unzip . '/test.txt'))->toBe('test');
+});
