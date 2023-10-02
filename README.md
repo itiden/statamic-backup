@@ -32,6 +32,12 @@ To install this addon, follow these simple steps:
 
 2. **Configuration**:
 
+   Publish the configuration file:
+
+   ```sh
+   php artisan vendor:publish --tag="backup-config"
+   ```
+
    Next, configure the addon by editing the `config/backup.php` file. Customize settings such as content path, backup destination, and more. Read the full configuration documentation [here](docs/configuration.md)!
 
 3. **Usage**:

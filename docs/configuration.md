@@ -3,7 +3,7 @@
 To configure this package you need to publish the config file
 
 ```sh
-php artisan vendor:publish --tag="backup"
+php artisan vendor:publish --tag="backup-config"
 ```
 
 You can configure where backups are stored, how many are kept, whether they require a password for access, and when they are automatically scheduled to be created.
