@@ -30,7 +30,7 @@ class ServiceProvider extends AddonServiceProvider
     {
         $this->publishes([
             __DIR__ . '/../config/backup.php' => config_path('backup.php'),
-        ]);
+        ], 'backup-config');
 
         $this->setUpPermissions();
 
