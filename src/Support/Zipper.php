@@ -24,17 +24,11 @@ class Zipper
     /**
      * Create a new instance of the Zipper.
      */
-    public static function make(string $path): self
+    public static function make(string $path, bool $readOnly = false): self
     {
-        return new static($path);
-    }
+        $flags = $readOnly ? ZipArchive::RDONLY : ZipArchive::CREATE | ZipArchive::OVERWRITE;
 
-    /**
-     * Open an existing instance of in readonly mode.
-     */
-    public static function open(string $path): self
-    {
-        return new static($path, ZipArchive::RDONLY);
+        return new static($path, $flags);
     }
 
     /**
@@ -92,9 +86,13 @@ class Zipper
     /**
      * Extract the Zipper to the given path.
      */
-    public function unzipTo(string $path, ?string $password = null): self
+    public function extractTo(string $path, ?string $password = null): self
     {
-        $this->zip->extractTo($path, $password);
+        if ($password) {
+            $this->zip->setPassword($password);
+        }
+
+        $this->zip->extractTo($path);
 
         return $this;
     }

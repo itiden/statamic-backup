@@ -22,13 +22,14 @@ it('backups correct files', function () {
     $backup = Backuper::backup();
 
     $unzipped = config('backup.temp_path') . '/unzipped';
-    Zipper::open(
+    Zipper::make(
         Storage::disk(config('backup.destination.disk'))
-            ->path($backup->path)
+            ->path($backup->path),
+        true
     )
-        ->unzipTo(
+        ->extractTo(
             $unzipped,
-            null,
+            config('backup.password'),
         );
 
     expect(File::allFiles($unzipped)[0]->getRelativePathname())

@@ -36,7 +36,6 @@ class BackuperManager extends Manager
 
         $zipper->close();
 
-
         $filename = Str::slug(config('app.name')) . '-' . Carbon::now()->unix() . '.zip';
 
         Storage::disk($disk)->makeDirectory($backup_path);

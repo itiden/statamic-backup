@@ -42,8 +42,8 @@ it('can unzip file', function () {
 
     $unzip = storage_path('unzip');
 
-    Zipper::open($target)
-        ->unzipTo($unzip)
+    Zipper::make($target, true)
+        ->extractTo($unzip)
         ->close();
 
     expect(file_exists($unzip))->toBeTrue();
@@ -55,7 +55,7 @@ it('can unzip file to directory', function () {
     Zipper::make($target)->addFromString('test.txt', 'test');
 
     $unzip = storage_path('test');
-    Zipper::open($target)->unzipTo($unzip)->close();
+    Zipper::make($target, true)->extractTo($unzip)->close();
 
     expect(file_exists($unzip))->toBeTrue();
     expect(file_exists(storage_path('test') . '/test.txt'))->toBeTrue();
@@ -72,7 +72,7 @@ it('can unzip directory', function () {
         ->addDirectory(config('backup.content_path'), 'example');
 
     $unzip = storage_path('unzipdir');
-    Zipper::open($target)->unzipTo($unzip)->close();
+    Zipper::make($target, true)->extractTo($unzip)->close();
 
     expect(file_exists($unzip))->toBeTrue();
     expect(file_exists(storage_path('unzipdir') . '/example'))->toBeTrue();
