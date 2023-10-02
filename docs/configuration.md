@@ -20,6 +20,6 @@ Below, you'll find an explanation of each configuration item:
 
 - `password`: Sets a backup password. If set to null, password protection is disabled. This value can be overridden by an environment variable named 'BACKUP_PASSWORD'.
 
-- `schedule`: Configures the backup schedule options. You can specify the frequency and time for automatic backups. By default backups are scheduled to run daily. You can use any of the laravel schedule options. Frequency equals the method and time the parameters.
+- `schedule`: Configures the backup schedule options. You can specify the frequency and time for automatic backups. By default backups are scheduled to run daily. See more [here](sheduling.md)
 
 - `backup_drivers`: Specifies the backup drivers to use. These drivers define what aspects of your site will be backed up. By default three drivers are included: 'Content', 'Assets', and 'Users'. You can add more custom drivers here if needed, more about that [here](drivers.md).
