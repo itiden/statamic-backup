@@ -11,7 +11,6 @@ function user()
     Role::make('user')
         ->title('User')
         ->addPermission('access cp')
-        ->addPermission('manage backups')
         ->save();
 
     Role::make('admin')
