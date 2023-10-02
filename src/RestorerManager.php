@@ -26,11 +26,16 @@ class RestorerManager extends Manager
             throw new \Exception("Backup with timestamp {$timestamp} not found.");
         }
 
-        $path = Storage::disk(config('backup.destination.disk'))->path($backup->path);
+        $destination = Storage::disk(config('backup.destination.disk'))->path($backup->path);
+        $target = config('backup.temp_path') . '/restore';
 
-        Zipper::make($path, true)->extractTo(config('backup.temp_path') . '/restore', config('backup.password'))->close();
+        Zipper::make($destination, true)->extractTo($target . '/restore', config('backup.password'))->close();
 
-        $this->restoreFromPath(config('backup.temp_path') . '/restore');
+        if (!collect(File::allFiles($target))->count()) {
+            throw new \Exception("This backup is empty, perhaps you used the wrong password?");
+        }
+
+        $this->restoreFromPath($target . '/restore');
     }
 
     /**
@@ -40,6 +45,11 @@ class RestorerManager extends Manager
      */
     public function restoreFromPath(string $path): void
     {
+
+        if (!File::exists($path)) {
+            throw new \Exception("Path {$path} does not exist.");
+        }
+
         collect($this->getDrivers())
             ->each(
                 fn ($key) => $this->driver($key)->restore("{$path}/{$key}")
