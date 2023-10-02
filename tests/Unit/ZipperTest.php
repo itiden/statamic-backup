@@ -11,11 +11,23 @@ it('can create instance', function () {
     expect($zip)->toBeInstanceOf(Zipper::class);
 });
 
-it('can zip file', function () {
+it('can zip file from string', function () {
     $target = storage_path('test.zip');
 
     Zipper::make($target)
         ->addFromString('test.txt', 'test')
+        ->close();
+
+    expect(file_exists($target))->toBeTrue();
+
+    expect(File::mimeType($target))->toBe('application/zip');
+});
+
+it('can zip file from path', function () {
+    $target = storage_path('test.zip');
+
+    Zipper::make($target)
+        ->addFile(__FILE__)
         ->close();
 
     expect(file_exists($target))->toBeTrue();
