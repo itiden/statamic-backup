@@ -18,7 +18,7 @@ Route::name('itiden.backup.')
 
         Route::post('/', RestoreFromUploadController::class)
             ->middleware(EnsureUserCan::class . ':restore backups')
-            ->name('store');
+            ->name('restore.upload');
     });
 
 Route::name('api.itiden.backup.')
