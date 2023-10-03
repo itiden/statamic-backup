@@ -1,5 +1,6 @@
 <template>
   <uploader
+    ref="uploader"
     :enabled="true"
     @updated="uploadsUpdated"
     :url="url"
@@ -14,7 +15,9 @@
 
       <div class="flex justify-between">
         <h1 class="mb-6">Backups</h1>
-        <backup-actions />
+        <div>
+          <backup-actions @openBrowser="openBrowser" />
+        </div>
       </div>
 
       <uploads v-if="uploads.length" :uploads="uploads" class="-mt-px" />
@@ -52,6 +55,9 @@ export default {
     uploadError(error) {
       console.log(error);
       this.$toast.error(error);
+    },
+    openBrowser() {
+      this.$refs.uploader.browse();
     },
   },
 };
