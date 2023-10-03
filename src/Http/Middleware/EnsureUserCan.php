@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Itiden\Backup\Http\Response;
 use Statamic\Facades\User;
 
-class HasPermission
+class EnsureUserCan
 {
     /**
      * Handle an incoming request.

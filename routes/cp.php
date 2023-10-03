@@ -6,10 +6,10 @@ use Itiden\Backup\Http\Controllers\Api\DestroyBackupController;
 use Itiden\Backup\Http\Controllers\Api\RestoreController;
 use Itiden\Backup\Http\Controllers\Api\StoreBackupController;
 use Itiden\Backup\Http\Controllers\DownloadBackupController;
-use Itiden\Backup\Http\Middleware\HasPermission;
+use Itiden\Backup\Http\Middleware\EnsureUserCan;
 
 Route::name('itiden.backup.')
-    ->middleware(HasPermission::class . ':manage backups')
+    ->middleware(EnsureUserCan::class . ':manage backups')
     ->prefix('backups')
     ->group(function () {
         Route::view('/', 'itiden-backup::backups')
@@ -17,25 +17,25 @@ Route::name('itiden.backup.')
     });
 
 Route::name('api.itiden.backup.')
-    ->middleware(HasPermission::class . ':manage backups')
+    ->middleware(EnsureUserCan::class . ':manage backups')
     ->prefix('api/backups')
     ->group(function () {
         Route::get('/', BackupController::class)
             ->name('index');
 
         Route::post('/', StoreBackupController::class)
-            ->middleware(HasPermission::class . ':create backups')
+            ->middleware(EnsureUserCan::class . ':create backups')
             ->name('store');
 
         Route::delete('/{timestamp}', DestroyBackupController::class)
-            ->middleware(HasPermission::class . ':delete backups')
+            ->middleware(EnsureUserCan::class . ':delete backups')
             ->name('destroy');
 
         Route::get('/download/{timestamp}', DownloadBackupController::class)
-            ->middleware(HasPermission::class . ':download backups')
+            ->middleware(EnsureUserCan::class . ':download backups')
             ->name('download');
 
         Route::post('/restore/{timestamp}', RestoreController::class)
-            ->middleware(HasPermission::class . ':restore backups')
+            ->middleware(EnsureUserCan::class . ':restore backups')
             ->name('restore');
     });
