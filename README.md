@@ -62,7 +62,7 @@ The configuration file (`config/backup.php`) is where the magic happens. Here's 
 
 - **Backup Drivers**: Define the backup drivers to use, allowing you to back up various aspects of your site.
 
-see more about configuration [here](docs/configuration.md).
+Want to know more? Read the configuration [docs](docs/configuration.md)!
 
 ## Usage
 
