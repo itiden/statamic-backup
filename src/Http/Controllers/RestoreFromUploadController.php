@@ -23,9 +23,15 @@ class RestoreFromUploadController extends Controller
             'root' => config('backup.temp_path')
         ]);
 
-        $file =  $disk->putFileAs('uploads', $request->file('file'), $request->file('file')->getClientOriginalName());
+        $disk->makeDirectory('uploads');
 
-        Restorer::restoreFromArchive($disk->path($file));
+        $path = $disk->putFile('uploads', $request->file('file'));
+
+        if (!$path) {
+            return Response::error('Could not upload file');
+        }
+
+        Restorer::restoreFromArchive($disk->path($path));
 
         $disk->deleteDirectory('uploads');
 

@@ -50,11 +50,11 @@ export default {
       this.uploads = uploads;
     },
     uploadCompleted(backup) {
-      this.$toast.success(backup.filename + " uploaded successfully.");
+      this.$toast.success(backup.message);
     },
     uploadError(error) {
       console.log(error);
-      this.$toast.error(error);
+      this.$toast.error(error.message);
     },
     openBrowser() {
       this.$refs.uploader.browse();
