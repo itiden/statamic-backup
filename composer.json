@@ -1,6 +1,7 @@
 {
   "name": "itiden/statamic-backup",
   "description": "Backup your Statamic site",
+  "license": "MIT",
   "authors": [
     {
       "name": "Neo Lejondahl"
