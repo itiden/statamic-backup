@@ -1,12 +1,19 @@
 <template>
-  <div v-if="canCreateBackups">
+  <div>
+    <button v-if="canUpload" class="btn mr-3" @click="openBrowser">
+      <svg-icon name="upload" class="h-4 w-4 mr-2 text-current" />
+      <span>{{ __("Restore") }}</span>
+    </button>
+
     <button
+      v-if="canCreateBackups"
       :disabled="loading"
       class="btn-primary"
       :class="{ 'btn-disabled': loading }"
-      @click="submit()"
+      @click="backup()"
     >
-      Backup
+      <svg-icon name="upload-cloud" class="h-4 w-4 mr-2 text-current" />
+      <span>{{ __("Backup") }}</span>
     </button>
   </div>
 </template>
@@ -22,10 +29,15 @@ export default {
         this.$store.state.statamic.config.user.permissions.includes(
           "create backups"
         ),
+      canUpload:
+        this.$store.state.statamic.config.user.super ??
+        this.$store.state.statamic.config.user.permissions.includes(
+          "restore backups"
+        ),
     };
   },
   methods: {
-    submit() {
+    backup() {
       this.loading = true;
       this.confirming = false;
 
@@ -47,6 +59,9 @@ export default {
         .finally(() => {
           this.loading = false;
         });
+    },
+    openBrowser() {
+      this.$emit("openBrowser");
     },
   },
 };

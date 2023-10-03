@@ -28,8 +28,6 @@ class RestorerManager extends Manager
 
         $disk = config('backup.destination.disk');
 
-        $target = config('backup.temp_path') . '/open';
-
         // If the disk is not local, we need to download it first
         // to a temporary location so we can extract it.
         if (config("filesystems.disks.{$disk}.driver") === 'local') {
@@ -45,13 +43,7 @@ class RestorerManager extends Manager
             $backupZipPath = $tempDisk->path('backup.zip');
         }
 
-        Zipper::make($backupZipPath, true)->extractTo($target, config('backup.password'))->close();
-
-        if (!collect(File::allFiles($target))->count()) {
-            throw new \Exception("This backup is empty, perhaps you used the wrong password?");
-        }
-
-        $this->restoreFromPath($target);
+        $this->restoreFromArchive($backupZipPath);
     }
 
     /**
@@ -59,7 +51,7 @@ class RestorerManager extends Manager
      *
      * @throws Exception
      */
-    public function restoreFromPath(string $path): void
+    public function restore(string $path): void
     {
 
         if (!File::exists($path)) {
@@ -72,5 +64,23 @@ class RestorerManager extends Manager
             );
 
         File::cleanDirectory(config('backup.temp_path'));
+    }
+
+    /**
+     * Restore from a archived backup at the given path.
+     *
+     * @throws Exception
+     */
+    public function restoreFromArchive(string $path): void
+    {
+        $target = config('backup.temp_path') . '/unzipping';
+
+        Zipper::make($path, true)->extractTo($target, config('backup.password'))->close();
+
+        if (!collect(File::allFiles($target))->count()) {
+            throw new \Exception("This backup is empty, perhaps you used the wrong password?");
+        }
+
+        $this->restore($target);
     }
 }
