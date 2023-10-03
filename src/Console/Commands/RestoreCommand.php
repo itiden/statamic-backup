@@ -23,6 +23,6 @@ class RestoreCommand extends Command implements PromptsForMissingInput
 
     public function handle()
     {
-        Restorer::restoreFromPath($this->argument('path'));
+        Restorer::restore($this->argument('path'));
     }
 }
