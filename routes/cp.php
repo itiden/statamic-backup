@@ -6,7 +6,7 @@ use Itiden\Backup\Http\Controllers\Api\DestroyBackupController;
 use Itiden\Backup\Http\Controllers\Api\RestoreController;
 use Itiden\Backup\Http\Controllers\Api\StoreBackupController;
 use Itiden\Backup\Http\Controllers\DownloadBackupController;
-use Itiden\Backup\Http\Controllers\UploadBackupController;
+use Itiden\Backup\Http\Controllers\RestoreFromUploadController;
 use Itiden\Backup\Http\Middleware\EnsureUserCan;
 
 Route::name('itiden.backup.')
@@ -16,7 +16,7 @@ Route::name('itiden.backup.')
         Route::view('/', 'itiden-backup::backups')
             ->name('index');
 
-        Route::post('/', UploadBackupController::class)
+        Route::post('/', RestoreFromUploadController::class)
             ->middleware(EnsureUserCan::class . ':restore backups')
             ->name('store');
     });
