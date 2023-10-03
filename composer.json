@@ -4,28 +4,14 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Neo Lejondahl"
+      "name": "Neo Lejondahl",
+      "role": "Developer"
     }
   ],
-  "autoload": {
-    "psr-4": {
-      "Itiden\\Backup\\": "src"
-    }
-  },
-  "extra": {
-    "statamic": {
-      "name": "Backup",
-      "description": "Backup your Statamic site"
-    },
-    "laravel": {
-      "providers": [
-        "Itiden\\Backup\\ServiceProvider"
-      ]
-    },
-    "download-dist": {
-      "url": "https://github.com/itiden/statamic-backup/releases/download/{$version}/dist.tar.gz",
-      "path": "resources/dist"
-    }
+  "require": {
+    "statamic/cms": "^4.20",
+    "laravel/framework": "^10.0",
+    "pixelfear/composer-dist-plugin": "^0.1.6"
   },
   "require-dev": {
     "laravel/pint": "^1.13",
@@ -33,15 +19,9 @@
     "pestphp/pest": "^2.19",
     "pestphp/pest-plugin-laravel": "^2.2"
   },
-  "require": {
-    "statamic/cms": "^4.20",
-    "laravel/framework": "^10.0",
-    "pixelfear/composer-dist-plugin": "^0.1.6"
-  },
-  "config": {
-    "allow-plugins": {
-      "pixelfear/composer-dist-plugin": true,
-      "pestphp/pest-plugin": true
+  "autoload": {
+    "psr-4": {
+      "Itiden\\Backup\\": "src"
     }
   },
   "autoload-dev": {
@@ -70,5 +50,26 @@
     "test": [
       "@php vendor/bin/pest"
     ]
+  },
+  "extra": {
+    "statamic": {
+      "name": "Backup",
+      "description": "Backup your Statamic site"
+    },
+    "laravel": {
+      "providers": [
+        "Itiden\\Backup\\ServiceProvider"
+      ]
+    },
+    "download-dist": {
+      "url": "https://github.com/itiden/statamic-backup/releases/download/{$version}/dist.tar.gz",
+      "path": "resources/dist"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "pixelfear/composer-dist-plugin": true,
+      "pestphp/pest-plugin": true
+    }
   }
 }
