@@ -25,7 +25,7 @@ class RestoreFromUploadController extends Controller
 
         $file =  $disk->putFileAs('uploads', $request->file('file'), $request->file('file')->getClientOriginalName());
 
-        Restorer::restoreFromPath($disk->path($file));
+        Restorer::restoreFromArchive($disk->path($file));
 
         $disk->deleteDirectory('uploads');
 
