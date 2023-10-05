@@ -8,8 +8,9 @@ use Illuminate\Support\Facades\Facade;
 use Itiden\Backup\RestorerManager;
 
 /**
- * @method static void restoreFromPath(string $path)
+ * @method static void restore(string $path)
  * @method static void restoreFromTimestamp(string $timestamp)
+ * @method static void restoreFromArchive(string $path)
  *
  * @see \Itiden\Backup\RestorerManager
  */
