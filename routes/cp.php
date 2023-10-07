@@ -16,9 +16,18 @@ Route::name('itiden.backup.')
         Route::view('/', 'itiden-backup::backups')
             ->name('index');
 
-        Route::post('/', RestoreFromUploadController::class)
+        Route::get('/upload', RestoreFromUploadController::class);
+
+        Route::name('chunky.')
+            ->prefix('chunky')
             ->middleware(EnsureUserCan::class . ':restore backups')
-            ->name('restore.upload');
+            ->group(function () {
+                Route::post('/', RestoreFromUploadController::class)
+                    ->name('upload');
+
+                Route::get('/test', [RestoreFromUploadController::class, 'test'])
+                    ->name('test');
+            });
     });
 
 Route::name('api.itiden.backup.')

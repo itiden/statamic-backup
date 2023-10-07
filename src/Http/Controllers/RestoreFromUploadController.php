@@ -4,37 +4,33 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Storage;
-use Itiden\Backup\Facades\Restorer;
-use Itiden\Backup\Http\Response;
+use Itiden\Backup\Http\Requests\ChunkyUploadRequest;
+use Itiden\Backup\Support\Facades\Chunky;
 
 class RestoreFromUploadController extends Controller
 {
-    public function __invoke(Request $request)
+    public function __invoke(ChunkyUploadRequest $request): JsonResponse
     {
-        $request->validate([
-            'file' => 'required|file',
-        ]);
+        $file = $request->file('file');
 
-        $disk = Storage::build([
-            'driver' => 'local',
-            'root' => config('backup.temp_path')
-        ]);
+        $path = 'temp/' . $request->validated('resumableIdentifier');
+        $filename = $request->validated('resumableFilename');
+        $totalChunks = (int) $request->validated('resumableTotalChunks');
+        $currentChunk = (int)  $request->validated('resumableChunkNumber');
+        $totalSize = (int) $request->validated('resumableTotalSize');
 
-        $disk->makeDirectory('uploads');
+        return Chunky::put($path, $filename, $totalChunks, $currentChunk, $totalSize, $file);
+    }
 
-        $path = $disk->putFile('uploads', $request->file('file'));
-
-        if (!$path) {
-            return Response::error('Could not upload file');
-        }
-
-        Restorer::restoreFromArchive($disk->path($path));
-
-        $disk->deleteDirectory('uploads');
-
-        return Response::success("Successfully restored from {$request->file('file')->getClientOriginalName()}");
+    public function test(Request $request): JsonResponse
+    {
+        return Chunky::exists(
+            'temp/' . $request->input('resumableIdentifier'),
+            $request->input('resumableFilename'),
+            (int) $request->input('resumableChunkNumber')
+        );
     }
 }
