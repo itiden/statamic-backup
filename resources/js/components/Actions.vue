@@ -1,9 +1,6 @@
 <template>
-  <div>
-    <button v-if="canUpload" class="btn mr-3" @click="openBrowser">
-      <svg-icon name="upload" class="h-4 w-4 mr-2 text-current" />
-      <span>{{ __("Restore") }}</span>
-    </button>
+  <div class="flex">
+    <upload />
 
     <button
       v-if="canCreateBackups"
@@ -19,7 +16,12 @@
 </template>
 
 <script>
+import Upload from "./Upload.vue";
 export default {
+  components: {
+    upload: Upload,
+  },
+
   data() {
     return {
       confirming: false,
@@ -59,9 +61,6 @@ export default {
         .finally(() => {
           this.loading = false;
         });
-    },
-    openBrowser() {
-      this.$emit("openBrowser");
     },
   },
 };
