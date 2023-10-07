@@ -1,5 +1,5 @@
 <template>
-  <div class="uploading-video">
+  <div>
     <span
       :class="{
         'status-canceled': status == 'canceled',
@@ -7,7 +7,8 @@
     >
       {{ file.fileName }}
     </span>
-    <small v-if="status == 'success'">done!</small>
+    <button v-if="path" class="btn">restore</button>
+    <small v-else-if="status == 'success'">done!</small>
     <small v-else-if="status == 'retrying'">fault, retrying...</small>
     <small v-else-if="status == 'error'">error! cannot upload file</small>
     <small v-else-if="status == 'canceled'">cancelled</small>
@@ -24,7 +25,7 @@
 
 <script>
 export default {
-  props: ["file", "status", "progress"],
+  props: ["file", "status", "progress", "path"],
   data() {
     return {
       isPaused: false, // we upload straight away by default

@@ -1,29 +1,21 @@
 <template>
-  <div>
-    <div v-if="canCreateBackups && canUpload" ref="dropzone" class="btn mr-3">
-      <svg-icon name="upload" class="h-4 w-4 mr-2 text-current" />
-      <span>{{ __("Restore") }}</span>
-    </div>
-
-    <upload-status
-      v-for="(file, index) in files"
-      v-bind:key="file.file.uniqueIdentifier + index"
-      :file="file.file"
-      :status="file.status"
-      :progress="file.progress"
-    />
+  <div v-if="canCreateBackups && canUpload" ref="dropzone" class="btn mr-3">
+    <svg-icon name="upload" class="h-4 w-4 mr-2 text-current" />
+    <span>{{ __("Restore") }}</span>
   </div>
 </template>
 <script>
 import Resumable from "resumablejs";
-import UploadStatus from "./UploadStatus.vue";
+
 export default {
-  components: {
-    "upload-status": UploadStatus,
+  props: {
+    files: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
-      files: [],
       resumable: null,
       confirming: false,
       loading: false,
@@ -87,14 +79,17 @@ export default {
         file,
         status: "uploading",
         progress: 0,
+        path: null,
       });
       this.resumable.upload();
     });
 
     this.resumable.on("fileSuccess", (file, event) => {
+      const data = JSON.parse(event);
       this.findFile(file).status = "success";
-      this.$toast.success(JSON.parse(event).message);
-      this.$emit("uploaded", JSON.parse(event).file);
+      this.findFile(file).path = data.file;
+      this.$toast.success(data.message);
+      this.$emit("uploaded", data.file);
     });
 
     this.resumable.on("fileError", (file, event) => {
