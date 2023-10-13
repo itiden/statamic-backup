@@ -10,6 +10,7 @@ class RestoreFromPathRequest extends FormRequest
     {
         return [
             'path' => 'required|string',
+            'destroyAfterRestore' => 'nullable|boolean',
         ];
     }
 }
