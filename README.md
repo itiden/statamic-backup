@@ -44,6 +44,26 @@ To install this addon, follow these simple steps:
 
    You're all set! Start using the addon to handle your backups effortlessly.
 
+## Commands
+
+Backup your site:
+
+```sh
+php artisan statamic:backup
+```
+
+Restore your site from an absolute path
+
+```sh
+php artisan statamic:backup:restore {path}
+```
+
+Clear the temp file directory
+
+```sh
+php artisan statamic:backup:clear
+```
+
 ## Configuration
 
 The configuration file (`config/backup.php`) is where the magic happens. Here's a breakdown of the essential configuration options:
@@ -76,7 +96,7 @@ Using the Statamic Backup Addon is a breeze:
 
 ## Contributing
 
-We welcome contributions from the Statamic community! Whether it's bug fixes, new features, or improvements, please feel free to contribute. Please check out our [Contribution Guidelines](CONTRIBUTING.md) for more information.
+We welcome contributions from the Statamic community! Whether it's bug fixes, new features, or improvements, please feel free to contribute.
 
 ## License
 
