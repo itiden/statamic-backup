@@ -13,7 +13,6 @@ test('guest cant view backups', function () {
 
 test('user without permission cant view backups', function () {
     $this->withoutVite();
-    $this->withoutExceptionHandling();
 
     actingAs(user());
 
@@ -25,7 +24,6 @@ test('user without permission cant view backups', function () {
 
 test('user with permission can view backups', function () {
     $this->withoutVite();
-    $this->withoutExceptionHandling();
 
     $user = user();
 
@@ -40,7 +38,6 @@ test('user with permission can view backups', function () {
 
 test('user without permission cant get backups from api', function () {
     $this->withoutVite();
-    $this->withoutExceptionHandling();
 
     $user = user();
 
@@ -52,7 +49,6 @@ test('user without permission cant get backups from api', function () {
 
 test('user with permission can get backups from api', function () {
     $this->withoutVite();
-    $this->withoutExceptionHandling();
 
     $user = user();
 
