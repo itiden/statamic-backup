@@ -3,6 +3,8 @@
 
 @section('content')
 
+@csrf
+
 <itiden-backup />
 
 @endsection
