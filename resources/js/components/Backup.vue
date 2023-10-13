@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex justify-between">
+    <div class="flex">
       <h1 class="mb-6">Backups</h1>
       <backup-actions @openBrowser="openBrowser" />
     </div>
@@ -17,6 +17,7 @@ export default {
     "backup-listing": Listing,
     "backup-actions": Actions,
   },
+
   data() {
     return {
       uploads: [],

@@ -1,7 +1,7 @@
 <template>
   <div v-if="canCreateBackups && canUpload" ref="dropzone" class="btn mr-3">
     <svg-icon name="upload" class="h-4 w-4 mr-2 text-current" />
-    <span>{{ __("Restore") }}</span>
+    <span>{{ __("Upload") }}</span>
   </div>
 </template>
 <script>
@@ -41,11 +41,6 @@ export default {
             item.status !== "canceled"
         ) ?? {}
       );
-    },
-    // cancel an individual file
-    cancelFile(file) {
-      this.findFile(file).status = "canceled";
-      file.cancel();
     },
   },
   mounted() {

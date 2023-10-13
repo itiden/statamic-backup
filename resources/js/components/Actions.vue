@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col">
+  <div class="flex flex-col items-end w-full">
     <div class="flex justify-end">
       <upload :files="files" />
 
@@ -14,26 +14,27 @@
         <span>{{ __("Backup") }}</span>
       </button>
     </div>
-    <ul class="flex flex-col items-end gap-3 mt-3 mb-3">
+
+    <ul class="mt-3 mb-3 w-full">
       <upload-status
         v-for="(file, index) in files"
         v-bind:key="file.file.uniqueIdentifier + index"
-        :path="file.path"
-        :file="file.file"
+        :basename="file.file.fileName"
         :status="file.status"
-        :progress="file.progress"
+        :percent="file.progress * 100"
+        :file="file"
       />
     </ul>
   </div>
 </template>
 
 <script>
-import Upload from "./Upload.vue";
+import UploadButton from "./Upload.vue";
 import UploadStatus from "./UploadStatus.vue";
 
 export default {
   components: {
-    upload: Upload,
+    upload: UploadButton,
     "upload-status": UploadStatus,
   },
 
