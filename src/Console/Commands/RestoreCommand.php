@@ -8,6 +8,9 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Itiden\Backup\Facades\Restorer;
 
+/**
+ * Restore content from a directory / backup
+ */
 class RestoreCommand extends Command implements PromptsForMissingInput
 {
     protected $signature = 'statamic:backup:restore {path} {--force}';

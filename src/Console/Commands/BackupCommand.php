@@ -7,6 +7,9 @@ namespace Itiden\Backup\Console\Commands;
 use Illuminate\Console\Command;
 use Itiden\Backup\Facades\Backuper;
 
+/**
+ * Backup site
+ */
 class BackupCommand extends Command
 {
     protected $signature = 'statamic:backup';

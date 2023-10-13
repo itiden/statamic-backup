@@ -20,6 +20,9 @@ readonly class ChunkyUploadDto
     ) {
     }
 
+    /**
+     * Create a new ChunkyUploadDto from a request
+     */
     public static function fromRequest(Request $request)
     {
         return new self(

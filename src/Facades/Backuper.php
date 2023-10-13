@@ -14,6 +14,7 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
  * @method static Collection<BackupDto> getBackups()
  * @method static BackupDto getBackup(string $backupName)
  * @method static BackupDto deleteBackup(string $backupName)
+ * @method static bool clearBackups()
  *
  * @see \Itiden\Backup\BackuperManager
  */

@@ -19,11 +19,17 @@ abstract class Manager
         })->toArray();
     }
 
+    /**
+     * Get the driver instance.
+     */
     public function driver(string $type): BackupDriver
     {
         return $this->drivers[$type] ?? $this->createDriver($type);
     }
 
+    /**
+     * Create the driver instance.
+     */
     protected function createDriver(string $type): BackupDriver
     {
         if (!array_key_exists($type, $this->container)) {
@@ -35,6 +41,9 @@ abstract class Manager
         return $this->drivers[$type];
     }
 
+    /**
+     * Get all of the created "drivers".
+     */
     public function getDrivers(): array
     {
         return array_keys($this->container);

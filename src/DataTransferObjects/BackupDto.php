@@ -21,6 +21,9 @@ readonly class BackupDto
     ) {
     }
 
+    /**
+     * Create a new BackupDto from a file path
+     */
     public static function fromFile(string $path): self
     {
         $timestamp = Str::before(Str::after(basename($path), '-'), '.zip');
