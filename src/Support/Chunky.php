@@ -19,7 +19,7 @@ class Chunky
     {
         $this->disk = Storage::build([
             'driver' => 'local',
-            'root' => config('backup.temp_path'), '/chunky',
+            'root' => config('backup.temp_path') . '/chunky',
         ]);
     }
 
