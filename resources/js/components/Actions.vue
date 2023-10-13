@@ -83,11 +83,13 @@ export default {
     restore(file) {
       this.loading = true;
       this.confirming = false;
+      file.status = "restoring";
 
       this.$toast.info(__("Starting restore..."));
       this.$axios
         .post(cp_url("api/backups/restore-from-path"), {
           path: file.path,
+          destroyAfterRestore: true,
         })
         .then(({ data }) => {
           this.$toast.success(__(data.message));
@@ -102,6 +104,7 @@ export default {
         })
         .finally(() => {
           this.loading = false;
+          file.status = "restored";
         });
     },
   },
