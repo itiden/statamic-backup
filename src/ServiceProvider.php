@@ -6,6 +6,7 @@ namespace Itiden\Backup;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Itiden\Backup\Console\Commands\BackupCommand;
+use Itiden\Backup\Console\Commands\ClearFilesCommand;
 use Itiden\Backup\Console\Commands\RestoreCommand;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
@@ -45,6 +46,7 @@ class ServiceProvider extends AddonServiceProvider
         $this->commands([
             RestoreCommand::class,
             BackupCommand::class,
+            ClearFilesCommand::class,
         ]);
     }
 
