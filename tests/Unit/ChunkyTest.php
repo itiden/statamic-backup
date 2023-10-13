@@ -24,7 +24,7 @@ it('can upload chunk', function () {
 
     expect($res->getStatusCode())->toBe(201);
     expect($res->getData(true))->toHaveAttribute('message');
-    expect(storage_path('chunks') . '/dir/test/' . $dto->filename . '.part1')->toBeFile();
+    expect(Chunky::path() . '/dir/test/' . $dto->filename . '.part1')->toBeFile();
 });
 
 it('can assemble file', function () {
@@ -49,12 +49,12 @@ it('can assemble file', function () {
 
     expect($responses->every(fn ($res) => $res->getStatusCode() === 201))->toBeTrue();
     expect($responses->last()->getData(true))->toHaveKey('file');
-    expect(storage_path('chunks') . '/backups/homepage.yaml')->toBeFile();
+    expect(Chunky::path() . '/backups/homepage.yaml')->toBeFile();
 
-    expect(File::get(storage_path('chunks') . '/backups/homepage.yaml'))->toBe(
+    expect(File::get(Chunky::path() . '/backups/homepage.yaml'))->toBe(
         File::get(__DIR__ . '/../__fixtures__/content/collections/pages/homepage.yaml')
     );
 
-    File::deleteDirectory(storage_path('chunks'));
+    File::deleteDirectory(Chunky::path());
     File::deleteDirectory(config('backup.temp_path') . '/chunks');
 });

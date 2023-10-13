@@ -12,6 +12,7 @@ use Itiden\Backup\Support\Chunky as ChunkySupport;
 /**
  * @method static \Illuminate\Http\JsonResponse put(ChunkyUploadDto $dto)
  * @method static \Illuminate\Http\JsonResponse exists(ChunkyTestDto $dto)
+ * @method static string path()
  *
  * @see \Itiden\Backup\Support\Chunky
  */
