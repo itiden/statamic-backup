@@ -26,9 +26,9 @@ class Chunky
     /**
      * Get the path to the chunky directory.
      */
-    public function path(): string
+    public function path(?string $path = ''): string
     {
-        return $this->disk->path('');
+        return $this->disk->path($path);
     }
 
     /**
@@ -58,7 +58,7 @@ class Chunky
      */
     public function mergeChunksIntoFile(string $path, string $filename, int $totalChunks): string
     {
-        $fullPath = $this->disk->path($path . '/' . $filename);
+        $fullPath = $this->path($path . '/' . $filename);
 
         // create the complete file
         if (($file = fopen($fullPath, 'w')) !== false) {
@@ -77,7 +77,7 @@ class Chunky
         // delete the chunks
         $this->disk->deleteDirectory($path);
 
-        return $this->disk->path('backups/' . $filename);
+        return $this->path('backups/' . $filename);
     }
 
     /**
