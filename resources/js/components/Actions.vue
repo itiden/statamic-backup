@@ -23,6 +23,7 @@
         :status="file.status"
         :percent="file.progress * 100"
         :file="file"
+        @restore="restore(file)"
       />
     </ul>
   </div>
@@ -66,6 +67,30 @@ export default {
         .then(({ data }) => {
           this.$toast.success(__(data.message));
           this.$root.$emit("onBackedup");
+        })
+        .catch((error) => {
+          let message = "Something went wrong.";
+
+          if (error.response.data.message) {
+            message = error.response.data.message;
+          }
+          this.$toast.error(__(message));
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
+    restore(file) {
+      this.loading = true;
+      this.confirming = false;
+
+      this.$toast.info(__("Starting restore..."));
+      this.$axios
+        .post(cp_url("api/backups/restore-from-path"), {
+          path: file.path,
+        })
+        .then(({ data }) => {
+          this.$toast.success(__(data.message));
         })
         .catch((error) => {
           let message = "Something went wrong.";
