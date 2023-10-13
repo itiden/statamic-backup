@@ -19,7 +19,8 @@ class Chunky
         $this->disk = Storage::build([
             'driver' => 'local',
             'root' => storage_path('chunks'),
-        ]);;
+        ]);
+        ;
     }
 
     /**
