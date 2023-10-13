@@ -10,7 +10,7 @@ use Illuminate\Routing\Controller;
 use Itiden\Backup\Http\Requests\ChunkyUploadRequest;
 use Itiden\Backup\Support\Facades\Chunky;
 
-class RestoreFromUploadController extends Controller
+class UploadController extends Controller
 {
     public function __invoke(ChunkyUploadRequest $request): JsonResponse
     {
