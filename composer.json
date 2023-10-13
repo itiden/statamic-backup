@@ -30,7 +30,10 @@
       "Workbench\\App\\": "workbench/app/",
       "Workbench\\Database\\Factories\\": "workbench/database/factories/",
       "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
-    }
+    },
+    "files": [
+      "tests/Helpers.php"
+    ]
   },
   "scripts": {
     "post-autoload-dump": [

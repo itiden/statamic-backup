@@ -24,7 +24,6 @@ it('can upload chunk', function () {
 
     expect($res->getStatusCode())->toBe(201);
     expect($res->getData(true))->toHaveAttribute('message');
-
     expect(storage_path('chunks') . '/dir/test/' . $dto->filename . '.part1')->toBeFile();
 });
 
@@ -59,29 +58,3 @@ it('can assemble file', function () {
     File::deleteDirectory(storage_path('chunks'));
     File::deleteDirectory(config('backup.temp_path') . '/chunks');
 });
-
-function chunkFile(string $file, string $path, int $buffer = 1024)
-{
-    File::ensureDirectoryExists($path);
-
-    $fileHandle = fopen($file, 'r');
-    $fileSize = filesize($file);
-    $totalChunks = ceil($fileSize / $buffer);
-
-    $chunks = collect();
-
-    $fileName = basename($file);
-
-    for ($i = 1; $i <= $totalChunks; $i++) {
-        $chunk = fread($fileHandle, $buffer);
-
-        $chunkPath = $path . $fileName . ".part$i";
-
-        File::put($chunkPath, $chunk);
-
-        $chunks->push($chunkPath);
-    }
-    fclose($fileHandle);
-
-    return $chunks;
-}

@@ -8,7 +8,6 @@ use Itiden\Backup\Http\Controllers\Api\RestoreFromPathController;
 use Itiden\Backup\Http\Controllers\Api\StoreBackupController;
 use Itiden\Backup\Http\Controllers\DownloadBackupController;
 use Itiden\Backup\Http\Controllers\UploadController;
-use Itiden\Backup\Http\Middleware\EnsureUserCan;
 
 Route::name('itiden.backup.')
     ->middleware('can:manage backups')
