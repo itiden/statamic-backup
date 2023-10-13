@@ -1,8 +1,56 @@
-# Creating a New Backup Driver
+# Drivers
+
+## Configuration
+
+Publish the config file
+
+```sh
+php artisan vendor:publish --tag="backup-config"
+```
+
+Then you can swap out the drivers used however you want.
+
+for example, maybe you don't want to backup your users, then just comment that one out:
+
+```php
+'backup_drivers' => [
+    Itiden\Backup\Drivers\Content::class,
+    Itiden\Backup\Drivers\Assets::class,
+    // Itiden\Backup\Drivers\Users::class,
+],
+```
+
+Now the users wont be backed up nor restored until you add it back.
+
+## What is a driver?
+
+In this package a driver is a step the `Backuper` can take (if it's in the config file).
+
+For this package to use your driver it must implement the `BackupDriver` contract which defines three methods:
+
+- `getKey` this is used for identifying when a specific driver should be should run.
+- `restore` which runs on restore, gets a path like this `path/to/backup/driver_key`.
+- `backup` runs on backup and it gets a zipper object you can use (zipper a zipArchive wrapper).
+
+## How it works
+
+### Backing up
+
+- Create a zip archive
+- Run the `backup` method from all of the drivers specified in `config('backup.backup_drivers')`.
+- Encrypt and move the archive to backup destination
+
+### Restoring
+
+- Get the backup as a directory.
+- Get the "root" directories of the backup, loop over them.
+- Run the driver that has a key that equals to folder name.
+
+## Creating a New Backup Driver
 
 A backup driver in the context of this documentation refers to a component responsible for handling the backup and restore operations for a specific aspect of your application or data. To create a new backup driver, you'll need to implement the `BackupDriver` interface provided by the `Itiden\Backup\Contracts` namespace. This interface defines the methods that your driver must implement.
 
-## Step 1: Create a New Driver Class
+### Step 1: Create a New Driver Class
 
 Start by creating a new PHP class that will serve as your backup driver. This class should implement the `BackupDriver` interface and provide implementations for its methods. Here's a basic structure for your driver class:
 
@@ -49,7 +97,7 @@ In the example above, we've created a class `Logs` that implements the `BackupDr
 
 - `backup()`: Here, you should implement the logic to create a backup of your data and add it to the `Zipper` instance `$zip`. This method is responsible for adding data to the backup archive. You should also prefix all paths with the key. `Zipper` is a wrapper around `ZipArchive` with some convenience methods, you can access the `ZipArchive` with the `getArchive` method.
 
-## Step 2: Configure Your Backup
+### Step 2: Configure Your Backup
 
 Finally, you can configure your backup to use the custom driver you've created. Update your `config/backup.php` file to include your new driver. For example:
 
