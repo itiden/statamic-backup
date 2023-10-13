@@ -7,8 +7,9 @@ namespace Itiden\Backup\Support;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Itiden\Backup\DataTransferObjects\ChunkyTestDto;
+use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
 
 class Chunky
 {
@@ -20,26 +21,25 @@ class Chunky
             'driver' => 'local',
             'root' => storage_path('chunks'),
         ]);
-        ;
     }
 
     /**
      * put a from≤ chunks.
      */
-    public function put(string $path, string $filename, int $totalChunks, int $currentChunk, int $totalSize, UploadedFile $file): JsonResponse
+    public function put(ChunkyUploadDto $dto): JsonResponse
     {
-        if (!$this->disk->putFileAs($path, $file, $filename . '.part' . $currentChunk)) {
+        if (!$this->disk->putFileAs($dto->path, $dto->file, $dto->filename . '.part' . $dto->currentChunk)) {
             return response()->json(['message' => 'Error saving chunk'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $chunksOnDiskSize = collect($this->disk->allFiles($path))->reduce(fn ($carry, $item) => $carry + $this->disk->size($item), 0);
+        $chunksOnDiskSize = collect($this->disk->allFiles($dto->path))->reduce(fn ($carry, $item) => $carry + $this->disk->size($item), 0);
 
-        if ($chunksOnDiskSize < $totalSize) {
-            return response()->json(['message' => 'uploaded ' . $currentChunk . ' of ' . $totalChunks], Response::HTTP_CREATED);
+        if ($chunksOnDiskSize < $dto->totalSize) {
+            return response()->json(['message' => 'uploaded ' . $dto->currentChunk . ' of ' . $dto->totalChunks], Response::HTTP_CREATED);
         }
 
-        if ($complete_file = $this->mergeChunksIntoFile($path, $filename, $totalChunks)) {
-            return response()->json(['message' => 'File successfully uploaded', 'file' => $complete_file], Response::HTTP_CREATED);
+        if ($completeFile = $this->mergeChunksIntoFile($dto->path, $dto->filename, $dto->totalChunks)) {
+            return response()->json(['message' => 'File successfully uploaded', 'file' => $completeFile], Response::HTTP_CREATED);
         }
 
         return response()->json(['message' => 'Error restoring file'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -75,12 +75,12 @@ class Chunky
     /**
      * Get the path to the chunk file.
      */
-    public function exists(string $path, string $filename, int $currentChunk): JsonResponse
+    public function exists(ChunkyTestDto $dto): JsonResponse
     {
         // Logic from RestoreUploadController::getChunkFilePath method goes here
-        $chunk_file = $filename . '.part' . $currentChunk;
+        $chunk = $dto->filename . '.part' . $dto->currentChunk;
 
-        if ($this->disk->exists($path . '/' . $chunk_file)) {
+        if ($this->disk->exists($dto->path . '/' . $chunk)) {
             return response()->json(['message' => 'Chunk already exists'], 200);
         }
 
