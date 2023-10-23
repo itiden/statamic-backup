@@ -41,7 +41,7 @@ Now, let's dive into the exciting world of configuration. Here's an overview of 
 
   - _Description_: Configure the backup schedule options. Specify the frequency and time for automatic backups.
   - _Configuration_: Check out our scheduling docs [here](scheduling.md).
-  - _Defualt_: Daily at midnight
+  - _Default_: Daily at midnight
 
 - **`backup_drivers`**:
   - _Description_: Specifies the backup drivers to use. These drivers determine what aspects of your site will be backed up.
