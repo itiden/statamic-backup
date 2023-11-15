@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Itiden\Backup;
 
 use Exception;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Facades\Backuper;
@@ -64,6 +65,10 @@ class RestorerManager extends Manager
             );
 
         File::cleanDirectory(config('backup.temp_path'));
+
+        Artisan::call('cache:clear', [
+            '--quiet' => true,
+        ]);
     }
 
     /**
