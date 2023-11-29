@@ -2,6 +2,7 @@
 
 use Itiden\Backup\BackuperManager;
 use Itiden\Backup\Contracts\BackupDriver;
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Drivers\Assets;
 use Itiden\Backup\Drivers\Content;
 use Itiden\Backup\Drivers\Users;
@@ -16,7 +17,7 @@ dataset('managers', [
 uses()->group('managers');
 
 it('can get drivers keys', function (string $manager) {
-    expect(new $manager())->getDrivers()
+    expect(new $manager(app(BackupRepository::class)))->getDrivers()
         ->toEqual([
             Content::getKey(),
             Assets::getKey(),
@@ -25,7 +26,7 @@ it('can get drivers keys', function (string $manager) {
 })->with('managers');
 
 it('can get driver', function (string $manager, string $client) {
-    expect(new $manager())->driver($client)->toBeInstanceOf(BackupDriver::class);
+    expect(new $manager(app(BackupRepository::class)))->driver($client)->toBeInstanceOf(BackupDriver::class);
 })
     ->with('managers')
     ->with([
@@ -35,6 +36,6 @@ it('can get driver', function (string $manager, string $client) {
     ]);
 
 it('throws an error when accessing driver that doesn\'t exist', function (string $manager) {
-    expect(fn () => (new $manager())->driver('idontexist'))
+    expect(fn () => (new $manager(app(BackupRepository::class)))->driver('idontexist'))
         ->toThrow(ManagerException::class);
 })->with('managers');
