@@ -1,5 +1,6 @@
 <?php
 
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Facades\Backuper;
 
 use function Pest\Laravel\actingAs;
@@ -9,7 +10,7 @@ use function Pest\Laravel\getJson;
 uses()->group('download backup');
 
 beforeEach(function () {
-    Backuper::clearBackups();
+    app(BackupRepository::class)->empty();
 });
 
 it('cant be downloaded by a guest', function () {

@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
-use Itiden\Backup\Facades\Backuper;
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DownloadBackupController extends Controller
@@ -19,9 +19,9 @@ class DownloadBackupController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(string $timestamp): StreamedResponse
+    public function __invoke(string $timestamp, BackupRepository $repo): StreamedResponse
     {
-        $backup =  Backuper::getBackup($timestamp);
+        $backup = $repo->find($timestamp);
 
         return Storage::disk(config('backup.backup.disk'))->download($backup->path);
     }

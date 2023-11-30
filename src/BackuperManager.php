@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Itiden\Backup;
 
-use Illuminate\Support\Collection;
 use Itiden\Backup\Support\Manager;
 use Itiden\Backup\Support\Zipper;
 use Itiden\Backup\DataTransferObjects\BackupDto;
@@ -37,40 +36,6 @@ final class BackuperManager extends Manager
         $this->enforceMaxBackups();
 
         return $backup;
-    }
-
-    /**
-     * Get all backups.
-     *
-     * @return Collection<BackupDto>
-     */
-    public function getBackups(): Collection
-    {
-        return $this->repository->all();
-    }
-
-    /**
-     * Get a specific backup.
-     */
-    public function getBackup(string $timestamp): BackupDto
-    {
-        return $this->repository->find($timestamp);
-    }
-
-    /**
-     * Delete a specific backup.
-     */
-    public function deleteBackup(string $timestamp): BackupDto
-    {
-        return $this->repository->remove($timestamp);
-    }
-
-    /**
-     * Clear the backup directory.
-     */
-    public function clearBackups(): bool
-    {
-        return $this->repository->empty();
     }
 
     /**
