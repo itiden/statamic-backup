@@ -1,7 +1,6 @@
 <?php
 
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
-use Itiden\Backup\Facades\Backuper;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\post;
