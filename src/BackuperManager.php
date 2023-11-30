@@ -9,7 +9,7 @@ use Itiden\Backup\Support\Manager;
 use Itiden\Backup\Support\Zipper;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 
-class BackuperManager extends Manager
+final class BackuperManager extends Manager
 {
     /**
      * Create a new backup.

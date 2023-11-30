@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\DataTransferObjects\ChunkyTestDto;
 use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
 
-class Chunky
+final class Chunky
 {
     private Filesystem $disk;
 

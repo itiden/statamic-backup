@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 
-class FileBackupRepository implements BackupRepository
+final class FileBackupRepository implements BackupRepository
 {
     private string $disk;
     private string $path;

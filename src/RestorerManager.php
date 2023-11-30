@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Support\Manager;
 use Itiden\Backup\Support\Zipper;
 
-class RestorerManager extends Manager
+final class RestorerManager extends Manager
 {
     /**
      * Restore from a backup with a given timestamp.
@@ -31,7 +31,7 @@ class RestorerManager extends Manager
         /**
          * If the disk is local, we can just use the path directly.
          * Otherwise we need to download it to a temporary location.
-         * 
+         *
          * This is because we can't extract a zip file from a remote disk.
          */
         if (config("filesystems.disks.{$disk}.driver") === 'local') {
