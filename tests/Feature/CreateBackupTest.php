@@ -45,3 +45,12 @@ it('can create a backup by a user with create backups permission', function () {
     expect($responseJson->json('message'))->toBe('Backup created ' . $backup->name);
     expect(app(BackupRepository::class)->all()->count())->toBe(1);
 });
+
+it('can create backup from command', function () {
+    expect(app(BackupRepository::class)->all()->count())->toBe(0);
+
+    $this->artisan('statamic:backup')
+        ->assertExitCode(0);
+
+    expect(app(BackupRepository::class)->all()->count())->toBe(1);
+});

@@ -3,14 +3,18 @@
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Support\Zipper;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\postJson;
 
-uses()->group('restore-from-path')->afterEach(function () {
+uses()->group('restore-from-path');
+
+afterEach(function () {
     File::cleanDirectory(config('backup.temp_path'));
+    app(BackupRepository::class)->empty();
 });
 
 it('can restore from path', function () {
