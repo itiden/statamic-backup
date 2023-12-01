@@ -1,6 +1,6 @@
 <?php
 
-use Itiden\Backup\Facades\Backuper;
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\post;
@@ -9,7 +9,7 @@ use function Pest\Laravel\postJson;
 uses()->group('create backup');
 
 beforeEach(function () {
-    Backuper::clearBackups();
+    app(BackupRepository::class)->empty();
 });
 
 it('cant create a backup by a guest', function () {
@@ -39,9 +39,9 @@ it('can create a backup by a user with create backups permission', function () {
 
     $responseJson = postJson(cp_route('api.itiden.backup.store'));
 
-    $backup = Backuper::getBackups()->first();
+    $backup = app(BackupRepository::class)->all()->first();
 
     expect($responseJson->status())->toBe(200);
     expect($responseJson->json('message'))->toBe('Backup created ' . $backup->name);
-    expect(Backuper::getBackups()->count())->toBe(1);
+    expect(app(BackupRepository::class)->all()->count())->toBe(1);
 });

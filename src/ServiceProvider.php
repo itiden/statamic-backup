@@ -63,6 +63,11 @@ class ServiceProvider extends AddonServiceProvider
 
     public function register()
     {
+        $this->app->bind(
+            \Itiden\Backup\Contracts\Repositories\BackupRepository::class,
+            \Itiden\Backup\Repositories\FileBackupRepository::class
+        );
+
         $this->mergeConfigFrom(
             __DIR__ . '/../config/backup.php',
             'backup'

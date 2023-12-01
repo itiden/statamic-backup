@@ -6,14 +6,16 @@ namespace Itiden\Backup\Support;
 
 use Itiden\Backup\Contracts\BackupDriver;
 use Itiden\Backup\Exceptions\ManagerException;
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 
 abstract class Manager
 {
     protected array $container = [];
     protected array $drivers = [];
 
-    public function __construct()
-    {
+    public function __construct(
+        protected BackupRepository $repository
+    ) {
         $this->container = collect(config('backup.backup_drivers'))->flatMap(function ($client) {
             return [$client::getKey() => $client];
         })->toArray();

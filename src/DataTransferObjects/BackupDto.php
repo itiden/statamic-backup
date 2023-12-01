@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Statamic\Support\Str as StatamicStr;
 
-readonly class BackupDto
+final readonly class BackupDto
 {
     public function __construct(
         public string $name,

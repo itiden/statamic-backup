@@ -7,13 +7,13 @@ namespace Itiden\Backup\Http\Controllers\Api;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
-use Itiden\Backup\Facades\Backuper;
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 
 class BackupController extends Controller
 {
-    public function __invoke(): JsonResponse|RedirectResponse
+    public function __invoke(BackupRepository $repo): JsonResponse|RedirectResponse
     {
-        $backups = Backuper::getBackups();
+        $backups = $repo->all();
 
         // Required by statamic to render the table
         // i think i want it to be in the view instead

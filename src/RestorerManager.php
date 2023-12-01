@@ -8,11 +8,10 @@ use Exception;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Support\Manager;
 use Itiden\Backup\Support\Zipper;
 
-class RestorerManager extends Manager
+final class RestorerManager extends Manager
 {
     /**
      * Restore from a backup with a given timestamp.
@@ -21,7 +20,7 @@ class RestorerManager extends Manager
      */
     public function restoreFromTimestamp(string $timestamp): void
     {
-        $backup = Backuper::getBackup($timestamp);
+        $backup = $this->repository->find($timestamp);
 
         if (!$backup) {
             throw new \Exception("Backup with timestamp {$timestamp} not found.");
@@ -29,8 +28,12 @@ class RestorerManager extends Manager
 
         $disk = config('backup.destination.disk');
 
-        // If the disk is not local, we need to download it first
-        // to a temporary location so we can extract it.
+        /**
+         * If the disk is local, we can just use the path directly.
+         * Otherwise we need to download it to a temporary location.
+         *
+         * This is because we can't extract a zip file from a remote disk.
+         */
         if (config("filesystems.disks.{$disk}.driver") === 'local') {
             $backupZipPath = Storage::disk($disk)->path($backup->path);
         } else {

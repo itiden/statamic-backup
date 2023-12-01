@@ -20,7 +20,7 @@ class Assets implements BackupDriver
     public function restore(string $content): void
     {
         AssetContainer::all()
-            ->filter([static::class, 'isLocal'])
+            ->filter(static::isLocal(...))
             ->each(function ($container) use ($content) {
                 File::cleanDirectory($container->diskPath());
                 File::copyDirectory("{$content}/{$container->handle()}", $container->diskPath());
@@ -30,7 +30,7 @@ class Assets implements BackupDriver
     public function backup(Zipper $zip): void
     {
         AssetContainer::all()
-            ->filter([static::class, 'isLocal'])
+            ->filter(static::isLocal(...))
             ->each(function ($container) use ($zip) {
                 $zip->addDirectory($container->diskPath(), static::getKey() . '/' . $container->handle());
             });
