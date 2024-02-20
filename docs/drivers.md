@@ -13,7 +13,7 @@ Then you can swap out the drivers used however you want.
 for example, maybe you don't want to backup your users, then just comment that one out:
 
 ```php
-'backup_drivers' => [
+'pipeline' => [
     Itiden\Backup\Drivers\Content::class,
     Itiden\Backup\Drivers\Assets::class,
     // Itiden\Backup\Drivers\Users::class,
@@ -26,7 +26,7 @@ Now the users wont be backed up nor restored until you add it back.
 
 In this package a driver is a step the `Backuper` can take (if it's in the config file).
 
-For this package to use your driver it must implement the `BackupDriver` contract which defines three methods:
+For this package to use your driver it must implement the `BackupPipe` contract which defines three methods:
 
 - `getKey` this is used for identifying when a specific driver should be should run.
 - `restore` which runs on restore, gets a path like this `path/to/backup/driver_key`.
@@ -37,7 +37,7 @@ For this package to use your driver it must implement the `BackupDriver` contrac
 ### Backing up
 
 - Create a zip archive
-- Run the `backup` method from all of the drivers specified in `config('backup.backup_drivers')`.
+- Run the `backup` method from all of the drivers specified in `config('backup.pipeline')`.
 - Encrypt and move the archive to backup destination
 
 ### Restoring
@@ -48,18 +48,18 @@ For this package to use your driver it must implement the `BackupDriver` contrac
 
 ## Creating a New Backup Driver
 
-A backup driver in the context of this documentation refers to a component responsible for handling the backup and restore operations for a specific aspect of your application or data. To create a new backup driver, you'll need to implement the `BackupDriver` interface provided by the `Itiden\Backup\Contracts` namespace. This interface defines the methods that your driver must implement.
+A backup driver in the context of this documentation refers to a component responsible for handling the backup and restore operations for a specific aspect of your application or data. To create a new backup driver, you'll need to implement the `BackupPipe` interface provided by the `Itiden\Backup\Contracts` namespace. This interface defines the methods that your driver must implement.
 
 ### Step 1: Create a New Driver Class
 
-Start by creating a new PHP class that will serve as your backup driver. This class should implement the `BackupDriver` interface and provide implementations for its methods. Here's a basic structure for your driver class:
+Start by creating a new PHP class that will serve as your backup driver. This class should implement the `BackupPipe` interface and provide implementations for its methods. Here's a basic structure for your driver class:
 
 ```php
-use Itiden\Backup\Contracts\BackupDriver;
+use Itiden\Backup\Abstracts\BackupPipe;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Support\Zipper;
 
-class Logs implements BackupDriver
+class Logs extends BackupPipe
 {
     /**
      * Get the key of the driver.
@@ -72,8 +72,9 @@ class Logs implements BackupDriver
     /**
      * Run the restore process.
      */
-    public function restore(string $path): void
+    public function restore(string $restoringFromPath): void
     {
+        $path = $this->getDirectoryPath($restoringFromPath);
         // Implement the logic to restore data from the provided backup file at $path.
         File::copyDirectory($path, storage_path('logs'));
     }
@@ -89,7 +90,7 @@ class Logs implements BackupDriver
 }
 ```
 
-In the example above, we've created a class `Logs` that implements the `BackupDriver` interface. This class defines the required methods: `getKey()`, `restore()`, and `backup()`.
+In the example above, we've created a class `Logs` that implements the `BackupPipe` interface. This class defines the required methods: `getKey()`, `restore()`, and `backup()`.
 
 - `getKey()`: This method returns a unique string key for your driver. This key will be used to identify when your driver should be ran in the restore process.
 
@@ -104,7 +105,7 @@ Finally, you can configure your backup to use the custom driver you've created. 
 ```php
 return [
     // ...
-    'backup_drivers' => [
+    'pipeline' => [
         Itiden\Backup\Drivers\Content::class,
         Itiden\Backup\Drivers\Assets::class,
         Itiden\Backup\Drivers\Users::class,

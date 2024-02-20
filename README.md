@@ -38,7 +38,9 @@ To install this addon, follow these simple steps:
    php artisan vendor:publish --tag="backup-config"
    ```
 
-   Next, configure the addon by editing the `config/backup.php` file. Customize settings such as content path, backup destination, and more. Read the full configuration documentation [here](docs/configuration.md)!
+   Next, configure the addon by editing the `config/backup.php` file. Customize settings such as content path, backup destination, and more.
+
+   Read the full configuration documentation [here](docs/configuration.md)!
 
 3. **Usage**:
 
@@ -66,29 +68,13 @@ php artisan statamic:backup:clear
 
 ## Configuration
 
-The configuration file (`config/backup.php`) is where the magic happens. Here's a breakdown of the essential configuration options:
-
-- **Content Path**: Set the path to your content directory, used by the default content backup driver.
-
-- **Backup Destination**: Define where your backups are stored, whether on a local disk or a custom path.
-
-- **Temporary Path**: Specify the temporary directory for backup operations.
-
-- **Maximum Backups**: Decide how many backups to retain. Old backups are automatically removed when this limit is reached.
-
-- **Password Protection**: Secure your backups with a password or disable protection by setting it to `null`.
-
-- **Scheduled Backups**: Automate your backups by configuring the schedule. Set the frequency and time for automatic backups.
-
-- **Backup Drivers**: Define the backup drivers to use, allowing you to back up various aspects of your site.
-
-Want to know more? Read the configuration [docs](docs/configuration.md)!
+Read the configuration [docs](docs/configuration.md)!
 
 ## Usage
 
 Using the Statamic Backup Addon is a breeze:
 
-1. Configure your backup settings in `config/backup.php` to match your needs.
+1. Configure your backup settings in `config/backup.php` to match your needs [[docs]](docs/configuration.md).
 
 2. Run the backup command manually or let scheduled backups take care of it automatically.
 
@@ -100,4 +86,4 @@ We welcome contributions from the Statamic community! Whether it's bug fixes, ne
 
 ## License
 
-This addon is open-source and available under the [MIT License](LICENSE). Feel free to use it, modify it, and make it your own. Happy backing up!
+This addon is open-source and available under the [MIT License](LICENSE).
