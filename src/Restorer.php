@@ -7,12 +7,18 @@ namespace Itiden\Backup;
 use Exception;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Support\Facades\Storage;
-use Itiden\Backup\Support\Manager;
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Support\Zipper;
 
-final class RestorerManager extends Manager
+final class Restorer
 {
+    public function __construct(
+        protected BackupRepository $repository
+    ) {
+    }
+
     /**
      * Restore from a backup with a given timestamp.
      *
@@ -62,10 +68,10 @@ final class RestorerManager extends Manager
             throw new \Exception("Path {$path} does not exist.");
         }
 
-        collect($this->getDrivers())
-            ->each(
-                fn ($key) => $this->driver($key)->restore("{$path}/{$key}")
-            );
+        Pipeline::via('restore')
+            ->send($path)
+            ->through(config('backup.pipeline'))
+            ->thenReturn();
 
         File::cleanDirectory(config('backup.temp_path'));
 

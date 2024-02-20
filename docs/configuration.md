@@ -43,7 +43,7 @@ Now, let's dive into the exciting world of configuration. Here's an overview of 
   - _Configuration_: Check out our scheduling docs [here](scheduling.md).
   - _Default_: Daily at midnight
 
-- **`backup_drivers`**:
+- **`pipeline`**:
   - _Description_: Specifies the backup drivers to use. These drivers determine what aspects of your site will be backed up.
   - _Configuration_: Check out our backup driver docs [here](drivers.md).
   - _Default_: Content, Assets, and Users.

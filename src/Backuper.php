@@ -4,12 +4,18 @@ declare(strict_types=1);
 
 namespace Itiden\Backup;
 
-use Itiden\Backup\Support\Manager;
+use Illuminate\Support\Facades\Pipeline;
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Support\Zipper;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 
-final class BackuperManager extends Manager
+final class Backuper
 {
+    public function __construct(
+        protected BackupRepository $repository
+    ) {
+    }
+
     /**
      * Create a new backup.
      */
@@ -19,9 +25,10 @@ final class BackuperManager extends Manager
 
         $zipper = Zipper::make($temp_zip_path);
 
-        collect($this->getDrivers())->each(
-            fn ($key) => $this->driver($key)->backup($zipper)
-        );
+        Pipeline::via('backup')
+            ->send($zipper)
+            ->through(config('backup.pipeline'))
+            ->thenReturn();
 
         if ($password = config('backup.password')) {
             $zipper->encrypt($password);
