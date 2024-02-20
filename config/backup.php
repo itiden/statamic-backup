@@ -50,12 +50,12 @@ return [
     ],
 
     /**
-     * The backup drivers to use
+     * The backup steps to use
      *
      * These are the drivers that will be used to backup your site
      * You can add your own drivers here
      */
-    'backup_drivers' => [
+    'pipeline' => [
         Itiden\Backup\Drivers\Content::class,
         Itiden\Backup\Drivers\Assets::class,
         Itiden\Backup\Drivers\Users::class,
