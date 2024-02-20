@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Itiden\Backup\Drivers;
+namespace Itiden\Backup\Pipes;
 
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Abstracts\BackupPipe;

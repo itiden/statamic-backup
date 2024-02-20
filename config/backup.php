@@ -56,8 +56,8 @@ return [
      * You can add your own drivers here
      */
     'pipeline' => [
-        Itiden\Backup\Drivers\Content::class,
-        Itiden\Backup\Drivers\Assets::class,
-        Itiden\Backup\Drivers\Users::class,
+        Itiden\Backup\Pipes\Content::class,
+        Itiden\Backup\Pipes\Assets::class,
+        Itiden\Backup\Pipes\Users::class,
     ],
 ];
