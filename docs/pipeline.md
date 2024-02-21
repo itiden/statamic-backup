@@ -34,14 +34,14 @@ For this package to use your pipe it must extend the `BackupPipe` abstract which
 
 ## How it works
 
-Since each backup pipe has a unique (it should be) key, it is pretty handy for the pipes to use this key to identify their own backup files. For example, the `Content` pipe will backup to `path/to/backup/content` and the `Assets` pipe will backup to `path/to/backup/assets`.
+Since each backup pipe has a unique (it should be) key, it is pretty handy for the pipes to use this key to identify their backup files. For example, the `Content` pipe will backup to `path/to/backup/content` and the `Assets` pipe will backup to `path/to/backup/assets`.
 
-Then when restoring, the pipe will get the path to the backup file and it can use the key to identify its own backup file. There is a helper method (`getDirectoryPath`) for that in the `BackupPipe` abstract.
+Then when restoring, the pipe will get the path to the backup file and it can then use the key to identify its own backup file/dir. There is a helper method (`getDirectoryPath`) for that in the `BackupPipe` abstract.
 
 ### Backing up
 
 - Creates a zip archive
-- Runs the `backup` method on all of the pipes specified in `config('backup.pipeline')`.
+- Runs the `backup` method through the pipeline specified in `config('backup.pipeline')`, passing a `Zipper` instance.
 - Encrypts and moves the archive to backup destination
 
 ### Restoring
