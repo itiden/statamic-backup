@@ -75,7 +75,13 @@ final class Restorer
 
         File::cleanDirectory(config('backup.temp_path'));
 
+        /**
+         * Clear the cache and stache to make sure everything is up to date.
+         */
         Artisan::call('cache:clear', [
+            '--quiet' => true,
+        ]);
+        Artisan::call('statamic:stache:clear', [
             '--quiet' => true,
         ]);
     }
@@ -89,7 +95,7 @@ final class Restorer
     {
         $target = config('backup.temp_path') . '/unzipping';
 
-        Zipper::make($path, true)->extractTo($target, config('backup.password'))->close();
+        Zipper::open($path, true)->extractTo($target, config('backup.password'))->close();
 
         if (!collect(File::allFiles($target))->count()) {
             throw new \Exception("This backup is empty, perhaps you used the wrong password?");

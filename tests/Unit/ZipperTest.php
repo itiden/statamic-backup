@@ -14,7 +14,7 @@ it('can create instance', function () {
 it('can zip file from string', function () {
     $target = storage_path('test.zip');
 
-    Zipper::make($target)
+    Zipper::open($target)
         ->addFromString('test.txt', 'test')
         ->close();
 
@@ -26,7 +26,7 @@ it('can zip file from string', function () {
 it('can zip file from path', function () {
     $target = storage_path('test.zip');
 
-    Zipper::make($target)
+    Zipper::open($target)
         ->addFile(__FILE__)
         ->close();
 
@@ -38,7 +38,7 @@ it('can zip file from path', function () {
 it('can zip directory', function () {
     $path = storage_path('test.zip');
 
-    Zipper::make($path)
+    Zipper::open($path)
         ->addDirectory(config('backup.content_path'), 'example');
 
     expect($path)->toBeString();
@@ -48,13 +48,13 @@ it('can zip directory', function () {
 it('can unzip file', function () {
     $target = storage_path('test.zip');
 
-    Zipper::make($target)
+    Zipper::open($target)
         ->addFromString('test.txt', 'test')
         ->close();
 
     $unzip = storage_path('unzip');
 
-    Zipper::make($target, true)
+    Zipper::open($target, true)
         ->extractTo($unzip)
         ->close();
 
@@ -64,10 +64,10 @@ it('can unzip file', function () {
 it('can unzip file to directory', function () {
     $target = storage_path('test.zip');
 
-    Zipper::make($target)->addFromString('test.txt', 'test');
+    Zipper::open($target)->addFromString('test.txt', 'test');
 
     $unzip = storage_path('test');
-    Zipper::make($target, true)->extractTo($unzip)->close();
+    Zipper::open($target, true)->extractTo($unzip)->close();
 
     expect(file_exists($unzip))->toBeTrue();
     expect(file_exists(storage_path('test') . '/test.txt'))->toBeTrue();
@@ -80,11 +80,11 @@ it('can unzip directory', function () {
 
     $target = storage_path('test.zip');
 
-    Zipper::make($target)
+    Zipper::open($target)
         ->addDirectory(config('backup.content_path'), 'example');
 
     $unzip = storage_path('unzipdir');
-    Zipper::make($target, true)->extractTo($unzip)->close();
+    Zipper::open($target, true)->extractTo($unzip)->close();
 
     expect(file_exists($unzip))->toBeTrue();
     expect(file_exists(storage_path('unzipdir') . '/example'))->toBeTrue();
@@ -98,7 +98,7 @@ it('can encrypt when zipping', function () {
     $target = storage_path('test.zip');
     $password = 'password';
 
-    Zipper::make($target)
+    Zipper::open($target)
         ->addFromString('test.txt', 'test')
         ->encrypt($password)
         ->close();
@@ -108,7 +108,7 @@ it('can encrypt when zipping', function () {
 
     $unzip = storage_path('unzip');
 
-    Zipper::make($target, true)
+    Zipper::open($target, true)
         ->extractTo($unzip, $password)
         ->close();
 
