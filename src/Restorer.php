@@ -65,7 +65,7 @@ final class Restorer
     {
 
         if (!File::exists($path)) {
-            throw new \Exception("Path {$path} does not exist.");
+            throw new Exception("Path {$path} does not exist.");
         }
 
         Pipeline::via('restore')
@@ -98,7 +98,7 @@ final class Restorer
         Zipper::open($path, true)->extractTo($target, config('backup.password'))->close();
 
         if (!collect(File::allFiles($target))->count()) {
-            throw new \Exception("This backup is empty, perhaps you used the wrong password?");
+            throw new   Exception("This backup is empty, perhaps you used the wrong password?");
         }
 
         $this->restore($target);
