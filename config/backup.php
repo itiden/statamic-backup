@@ -52,8 +52,10 @@ return [
     /**
      * The backup steps to use
      *
-     * These are the drivers that will be used to backup your site
-     * You can add your own drivers here
+     * These are the steps/pipes that will be used to backup your site
+     * You can add your own here
+     * 
+     * All pipes are expected to be instances of Itiden\Backup\Abtracts\BackupPipe
      */
     'pipeline' => [
         Itiden\Backup\Pipes\Content::class,

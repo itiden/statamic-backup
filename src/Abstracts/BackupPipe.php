@@ -15,6 +15,8 @@ abstract class BackupPipe
 
     /**
      * Run the restore process.
+     * 
+     * @param string $path The path to the root of the backup file.
      */
     abstract public function restore(string $path): void;
 
@@ -24,10 +26,10 @@ abstract class BackupPipe
     abstract public function backup(Zipper $zip): void;
 
     /**
-     * Get the directory path for the pipe.
+     * Get the directory path for the current pipe.
      */
     protected function getDirectoryPath(string $path): string
     {
-        return $path . '/' . static::getKey();
+        return $path . DIRECTORY_SEPARATOR . static::getKey();
     }
 }
