@@ -54,7 +54,7 @@ return [
      *
      * These are the steps/pipes that will be used to backup your site
      * You can add your own here
-     * 
+     *
      * All pipes are expected to be instances of Itiden\Backup\Abtracts\BackupPipe
      */
     'pipeline' => [

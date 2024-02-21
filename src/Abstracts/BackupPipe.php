@@ -15,7 +15,7 @@ abstract class BackupPipe
 
     /**
      * Run the restore process.
-     * 
+     *
      * @param string $path The path to the root of the backup file.
      */
     abstract public function restore(string $path): void;
