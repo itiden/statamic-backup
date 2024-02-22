@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
+use Itiden\Backup\DataTransferObjects\BackupDto;
+use Itiden\Backup\Events\BackupRestored;
+use Itiden\Backup\Events\RestoreFailed;
+use Itiden\Backup\Exceptions\RestoreFailedException;
 use Itiden\Backup\Support\Zipper;
 
 final class Restorer
@@ -29,61 +33,81 @@ final class Restorer
         $backup = $this->repository->find($timestamp);
 
         if (!$backup) {
-            throw new \Exception("Backup with timestamp {$timestamp} not found.");
+            throw new Exception("Backup with timestamp {$timestamp} not found.");
         }
 
-        $disk = config('backup.destination.disk');
-
-        /**
-         * If the disk is local, we can just use the path directly.
-         * Otherwise we need to download it to a temporary location.
-         *
-         * This is because we can't extract a zip file from a remote disk.
-         */
-        if (config("filesystems.disks.{$disk}.driver") === 'local') {
-            $backupZipPath = Storage::disk($disk)->path($backup->path);
-        } else {
-            $tempDisk = Storage::build([
-                'driver' => 'local',
-                'root' => config('backup.temp_path') . '/backup',
-            ]);
-
-            $tempDisk->writeStream('backup.zip', Storage::disk($disk)->readStream($backup->path));
-
-            $backupZipPath = $tempDisk->path('backup.zip');
-        }
-
-        $this->restoreFromArchive($backupZipPath);
+        $this->restore($backup);
     }
 
     /**
-     * Restore from a backup at the given path.
+     * Restore to the given backup.
      *
-     * @throws Exception
+     * @throws RestoreFailedException
      */
-    public function restore(string $path): void
+    public function restore(BackupDto $backup): void
     {
+        try {
+            $path = $this->getLocalBackupPath($backup);
 
-        if (!File::exists($path)) {
-            throw new Exception("Path {$path} does not exist.");
+            if (!File::exists($path)) {
+                throw new Exception("Path {$path} does not exist.");
+            }
+
+            if (File::mimeType($path) === 'application/zip') {
+                $path = $this->unzip($path);
+            }
+
+            Pipeline::via('restore')
+                ->send($path)
+                ->through(config('backup.pipeline'))
+                ->thenReturn();
+
+            event(new BackupRestored($backup));
+
+            File::cleanDirectory(config('backup.temp_path'));
+
+            /**
+             * Clear the cache and stache to make sure everything is up to date.
+             */
+            Artisan::call('cache:clear', [
+                '--quiet' => true,
+            ]);
+            Artisan::call('statamic:stache:clear', [
+                '--quiet' => true,
+            ]);
+        } catch (Exception $e) {
+            $exception = new RestoreFailedException($backup, $e);
+
+            event(new RestoreFailed($exception));
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * Get the backup to a local disk if it is not already and return the path.
+     */
+    private function getLocalBackupPath(BackupDto $backup): string
+    {
+        $disk = config('backup.destination.disk');
+        /**
+         * If the backup does not exist on the given disk, return the path.
+         */
+        if (!Storage::disk($disk)->exists($backup->path)) {
+            return $backup->path;
         }
 
-        Pipeline::via('restore')
-            ->send($path)
-            ->through(config('backup.pipeline'))
-            ->thenReturn();
-
-        File::cleanDirectory(config('backup.temp_path'));
-
-        /**
-         * Clear the cache and stache to make sure everything is up to date.
-         */
-        Artisan::call('cache:clear', [
-            '--quiet' => true,
+        if (config("filesystems.disks.{$disk}.driver") === 'local') {
+            return Storage::disk($disk)->path($backup->path);
+        }
+        $tempDisk = Storage::build([
+            'driver' => 'local',
+            'root' => config('backup.temp_path') . DIRECTORY_SEPARATOR . 'backup',
         ]);
-        Artisan::call('statamic:stache:clear', [
-            '--quiet' => true,
-        ]);
+
+        $tempDisk->writeStream('backup.zip', Storage::disk($disk)->readStream($backup->path));
+
+        return $tempDisk->path('backup.zip');
     }
 
     /**
@@ -91,16 +115,16 @@ final class Restorer
      *
      * @throws Exception
      */
-    public function restoreFromArchive(string $path): void
+    private function unzip(string $path): string
     {
-        $target = config('backup.temp_path') . '/unzipping';
+        $target = config('backup.temp_path') . DIRECTORY_SEPARATOR . 'unzipping';
 
         Zipper::open($path, true)->extractTo($target, config('backup.password'))->close();
 
         if (!collect(File::allFiles($target))->count()) {
-            throw new   Exception("This backup is empty, perhaps you used the wrong password?");
+            throw new Exception("This backup is empty, perhaps you used the wrong password?");
         }
 
-        $this->restore($target);
+        return $target;
     }
 }

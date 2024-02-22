@@ -26,6 +26,11 @@ it('can get backup by timestamp', function () {
     expect($backupByTimestamp)->toEqual($backup);
 });
 
+it("returns null when timestamp doesnt exist", function () {
+    $backup = app(BackupRepository::class)->find('1234567890');
+    expect($backup)->toBeNull();
+});
+
 it('can remove all backups', function () {
     Backuper::backup();
 
