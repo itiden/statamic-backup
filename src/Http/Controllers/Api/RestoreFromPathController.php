@@ -16,7 +16,7 @@ class RestoreFromPathController extends Controller
 {
     public function __invoke(RestoreFromPathRequest $request): JsonResponse|RedirectResponse
     {
-        Restorer::restoreFromArchive($request->validated('path'));
+        Restorer::restore($request->validated('path'));
 
         if ($request->input('destroyAfterRestore', false)) {
             File::delete($request->validated('path'));
