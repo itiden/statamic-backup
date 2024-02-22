@@ -10,7 +10,6 @@ use Itiden\Backup\Restorer as RestorerService;
 /**
  * @method static void restore(string $path)
  * @method static void restoreFromTimestamp(string $timestamp)
- * @method static void restoreFromArchive(string $path)
  *
  * @see \Itiden\Backup\Restorer
  */

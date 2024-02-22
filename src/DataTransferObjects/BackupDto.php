@@ -26,8 +26,25 @@ final readonly class BackupDto
      */
     public static function fromFile(string $path): self
     {
-        $timestamp = Str::before(Str::after(basename($path), '-'), '.zip');
+        $timestamp = Str::between(basename($path), '-', '.zip');
         $bytes = Storage::disk(config('backup.destination.disk'))->size($path);
+
+        return new self(
+            name: File::name($path),
+            created_at: Carbon::createFromTimestamp($timestamp)->format('Y-m-d H:i:s'),
+            size: StatamicStr::fileSizeForHumans($bytes, 2),
+            path: $path,
+            timestamp: $timestamp,
+        );
+    }
+
+    /**
+     * Create a new BackupDto from a absolute path
+     */
+    public static function fromAbsolutePath(string $path): self
+    {
+        $timestamp = Str::between(basename($path), '-', '.zip');
+        $bytes = File::size($path);
 
         return new self(
             name: File::name($path),
