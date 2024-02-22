@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Events\BackupRestored;
 
@@ -54,4 +56,27 @@ it('dispatches backup restored event', function () {
         return $event->backup->timestamp === $backup->timestamp;
     });
     expect($response->status())->toBe(HttpResponse::HTTP_OK);
+});
+
+it('will not restore from command if you say no', function () {
+    $backup = Backuper::backup();
+
+    File::cleanDirectory(config('backup.content_path'));
+
+    $this->artisan('statamic:backup:restore', ['path' => Storage::path($backup->path)])
+        ->expectsConfirmation('Are you sure you want to restore your content?', 'no');
+
+    expect(File::isEmptyDirectory(config('backup.content_path')))->toBeTrue();
+
+    $this->artisan('statamic:backup:restore', ['path' => Storage::path($backup->path), '--force' => true])
+        ->assertExitCode(0);
+});
+
+it('can restore from path command', function () {
+    $backup = Backuper::backup();
+
+    $this->artisan('statamic:backup:restore', ['path' => Storage::path($backup->path), '--force' => true])
+        ->assertExitCode(0);
+
+    expect(File::isEmptyDirectory(config('backup.content_path')))->toBeFalse();
 });
