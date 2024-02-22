@@ -12,6 +12,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - uses: php-actions/composer@v6
+        with:
+          php_extensions: zip
 
       - name: Install dependencies
         run: npm install
