@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Event;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Events\BackupCreated;
+use Itiden\Backup\Events\BackupFailed;
+use Itiden\Backup\Facades\Backuper;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\post;
@@ -71,4 +73,21 @@ it('dispatches backup created event', function () {
     Event::assertDispatched(BackupCreated::class, function ($event) {
         return $event->backup->name === app(BackupRepository::class)->all()->first()->name;
     });
+});
+
+it('dispatches failed event when error occurs', function () {
+    Event::fake();
+
+    // Set invalid pipeline to force an error
+    config(['backup.pipeline' => ['backup' => 'not a valid pipeline']]);
+
+    $user = user();
+
+    $user->assignRole('admin')->save();
+
+    actingAs($user);
+
+    postJson(cp_route('api.itiden.backup.store'));
+
+    Event::assertDispatched(BackupFailed::class);
 });

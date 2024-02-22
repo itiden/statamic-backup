@@ -1,9 +1,11 @@
 <?php
 
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
+use Itiden\Backup\Events\RestoreFailed;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Support\Zipper;
 
@@ -55,7 +57,8 @@ it('can restore from path and delete after', function () {
     expect(File::exists($path))->toBeFalse();
 });
 
-it("will not restore empty archives", function () {
+it("will not restore empty archives and dispatches failed event", function () {
+    Event::fake();
     $user = user();
 
     $emptyArchive = storage_path(config('backup.temp_path') . '/empty.zip');
@@ -74,6 +77,8 @@ it("will not restore empty archives", function () {
         'path' => $emptyArchive,
         'destroyAfterRestore' => true,
     ]);
+
+    Event::assertDispatched(RestoreFailed::class);
 
     expect($response->status())->toBe(Response::HTTP_INTERNAL_SERVER_ERROR);
 });

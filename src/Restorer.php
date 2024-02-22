@@ -47,9 +47,7 @@ final class Restorer
     public function restore(BackupDto $backup): void
     {
         try {
-            $disk = config('backup.destination.disk');
-
-            $path = $this->getLocalBackupPath($backup, $disk);
+            $path = $this->getLocalBackupPath($backup);
 
             if (!File::exists($path)) {
                 throw new Exception("Path {$path} does not exist.");
@@ -89,8 +87,9 @@ final class Restorer
     /**
      * Get the backup to a local disk if it is not already and return the path.
      */
-    private function getLocalBackupPath(BackupDto $backup, string $disk): string
+    private function getLocalBackupPath(BackupDto $backup): string
     {
+        $disk = config('backup.destination.disk');
         /**
          * If the backup does not exist on the given disk, return the path.
          */
