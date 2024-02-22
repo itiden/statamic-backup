@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Events\BackupRestored;
+use Itiden\Backup\Events\RestoreFailed;
+use Itiden\Backup\Exceptions\RestoreFailedException;
 use Itiden\Backup\Support\Zipper;
 
 final class Restorer
@@ -44,36 +46,44 @@ final class Restorer
      */
     public function restore(BackupDto $backup): void
     {
-        $disk = config('backup.destination.disk');
+        try {
+            $disk = config('backup.destination.disk');
 
-        $path = $this->getLocalBackupPath($backup, $disk);
+            $path = $this->getLocalBackupPath($backup, $disk);
 
-        if (!File::exists($path)) {
-            throw new Exception("Path {$path} does not exist.");
+            if (!File::exists($path)) {
+                throw new Exception("Path {$path} does not exist.");
+            }
+
+            if (File::mimeType($path) === 'application/zip') {
+                $path = $this->unzip($path);
+            }
+
+            Pipeline::via('restore')
+                ->send($path)
+                ->through(config('backup.pipeline'))
+                ->thenReturn();
+
+            event(new BackupRestored($backup));
+
+            File::cleanDirectory(config('backup.temp_path'));
+
+            /**
+             * Clear the cache and stache to make sure everything is up to date.
+             */
+            Artisan::call('cache:clear', [
+                '--quiet' => true,
+            ]);
+            Artisan::call('statamic:stache:clear', [
+                '--quiet' => true,
+            ]);
+        } catch (Exception $e) {
+            $exception = new RestoreFailedException($backup, $e);
+
+            event(new RestoreFailed($exception));
+
+            throw $exception;
         }
-
-        if (File::mimeType($path) === 'application/zip') {
-            $path = $this->unzip($path);
-        }
-
-        Pipeline::via('restore')
-            ->send($path)
-            ->through(config('backup.pipeline'))
-            ->thenReturn();
-
-        event(new BackupRestored($backup));
-
-        File::cleanDirectory(config('backup.temp_path'));
-
-        /**
-         * Clear the cache and stache to make sure everything is up to date.
-         */
-        Artisan::call('cache:clear', [
-            '--quiet' => true,
-        ]);
-        Artisan::call('statamic:stache:clear', [
-            '--quiet' => true,
-        ]);
     }
 
     /**
