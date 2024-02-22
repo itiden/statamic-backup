@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Support\Zipper;
 use Itiden\Backup\DataTransferObjects\BackupDto;
+use Itiden\Backup\Events\BackupCreated;
 
 final class Backuper
 {
@@ -37,6 +38,8 @@ final class Backuper
         $zipper->close();
 
         $backup = $this->repository->add($temp_zip_path);
+
+        event(new BackupCreated($backup));
 
         unlink($temp_zip_path);
 
