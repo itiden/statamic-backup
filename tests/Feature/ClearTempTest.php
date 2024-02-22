@@ -4,10 +4,10 @@ use Illuminate\Support\Facades\File;
 
 uses()->group('console');
 
-it("clears the temp path", function () {
+test("backup clear command clears the temp path", function () {
     $temp_path = config('backup.temp_path');
 
-    File::put($temp_path . '/temp', 'lorem ipsum');
+    File::put($temp_path . '/testfile.txt', 'lorem ipsum');
 
     expect(File::allFiles($temp_path))->toHaveCount(1);
 
