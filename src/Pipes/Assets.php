@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Pipes;
 
+use Closure;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Abstracts\BackupPipe;
 use Itiden\Backup\Support\Zipper;
@@ -17,7 +18,7 @@ class Assets extends BackupPipe
         return 'assets';
     }
 
-    public function restore(string $backupPath): void
+    public function restore(string $backupPath, Closure $next)
     {
         AssetContainer::all()
             ->filter(static::isLocal(...))
@@ -25,15 +26,19 @@ class Assets extends BackupPipe
                 File::cleanDirectory($container->diskPath());
                 File::copyDirectory("{$this->getDirectoryPath($backupPath)}/{$container->handle()}", $container->diskPath());
             });
+
+        return $next($backupPath);
     }
 
-    public function backup(Zipper $zip): void
+    public function backup(Zipper $zip, Closure $next)
     {
         AssetContainer::all()
             ->filter(static::isLocal(...))
             ->each(function ($container) use ($zip) {
                 $zip->addDirectory($container->diskPath(), static::getKey() . '/' . $container->handle());
             });
+
+        return $next($zip);
     }
 
     public static function isLocal(Container $container): bool

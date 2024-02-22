@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Abstracts;
 
+use Closure;
 use Itiden\Backup\Support\Zipper;
 
 abstract class BackupPipe
@@ -18,12 +19,12 @@ abstract class BackupPipe
      *
      * @param string $path The path to the root of the backup file.
      */
-    abstract public function restore(string $path): void;
+    abstract public function restore(string $path, Closure $next);
 
     /**
      * Run the backup process.
      */
-    abstract public function backup(Zipper $zip): void;
+    abstract public function backup(Zipper $zip, Closure $next);
 
     /**
      * Get the directory path for the current pipe.

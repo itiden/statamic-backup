@@ -61,6 +61,7 @@ Start by creating a new PHP class that will serve as your backup driver. This cl
 ```php
 namespace App\Backup\Pipes;
 
+use Closure;
 use Itiden\Backup\Abstracts\BackupPipe;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Support\Zipper;
@@ -78,20 +79,24 @@ final class Logs extends BackupPipe
     /**
      * Run the restore process.
      */
-    public function restore(string $restoringFromPath): void
+    public function restore(string $restoringFromPath, Closure $next): void
     {
         $path = $this->getDirectoryPath($restoringFromPath);
         // Implement the logic to restore data from the provided backup file at $path.
         File::copyDirectory($path, storage_path('logs'));
+
+        return $next($restoringFromPath);
     }
 
     /**
      * Run the backup process.
      */
-    public function backup(Zipper $zip): void
+    public function backup(Zipper $zip, Closure $next): void
     {
         // Implement the logic to create a backup of your data and add it to the ZipArchive instance $zip.
         $zip->addDirectory(storage_path('logs'), static::getKey());
+
+        return $next($zip);
     }
 }
 ```
