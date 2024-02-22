@@ -33,7 +33,7 @@ final class Restorer
         $backup = $this->repository->find($timestamp);
 
         if (!$backup) {
-            throw new \Exception("Backup with timestamp {$timestamp} not found.");
+            throw new Exception("Backup with timestamp {$timestamp} not found.");
         }
 
         $this->restore($backup);
@@ -42,7 +42,7 @@ final class Restorer
     /**
      * Restore to the given backup.
      *
-     * @throws Exception
+     * @throws RestoreFailedException
      */
     public function restore(BackupDto $backup): void
     {
