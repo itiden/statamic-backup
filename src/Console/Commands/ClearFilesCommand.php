@@ -18,6 +18,12 @@ class ClearFilesCommand extends Command
 
     public function handle()
     {
+        if (! File::exists(config('backup.temp_path'))) {
+            $this->components->info('Backup temp directory does not exist, no need to clear it.');
+
+            return;
+        }
+
         File::cleanDirectory(config('backup.temp_path'));
 
         $this->components->info('Backup temp directory cleared successfully');
