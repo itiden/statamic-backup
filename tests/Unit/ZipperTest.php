@@ -11,6 +11,12 @@ it('can create instance', function () {
     expect($zip)->toBeInstanceOf(Zipper::class);
 });
 
+it('can get the zipArchive instance', function () {
+    $zip = new Zipper(storage_path('test.zip'));
+
+    expect($zip->getArchive())->toBeInstanceOf(ZipArchive::class);
+});
+
 it('can zip file from string', function () {
     $target = storage_path('test.zip');
 
