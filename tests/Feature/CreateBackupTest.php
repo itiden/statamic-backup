@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Event;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
-use Itiden\Backup\Facades\Backuper;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\post;
