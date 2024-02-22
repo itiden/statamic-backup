@@ -61,7 +61,7 @@ it("will not restore empty archives", function () {
     $emptyArchive = storage_path(config('backup.temp_path') . '/empty.zip');
 
     // The zip file cant be empty, but when extracting it can if the password is wrong.
-    Zipper::make($emptyArchive)
+    Zipper::open($emptyArchive)
         ->addFromString('empty.txt', 'empty')
         ->encrypt('notthepasswordwedecryptwith')
         ->close();

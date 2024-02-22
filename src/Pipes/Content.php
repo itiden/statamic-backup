@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Itiden\Backup\Drivers;
+namespace Itiden\Backup\Pipes;
 
 use Illuminate\Support\Facades\File;
-use Itiden\Backup\Contracts\BackupDriver;
+use Itiden\Backup\Abstracts\BackupPipe;
 use Itiden\Backup\Support\Zipper;
 
-class Content implements BackupDriver
+class Content extends BackupPipe
 {
     public static function getKey(): string
     {
         return 'content';
     }
 
-    public function restore(string $content): void
+    public function restore(string $restoringFromPath): void
     {
         $destination = config('backup.content_path');
 
         File::cleanDirectory($destination);
-        File::copyDirectory($content, $destination);
+        File::copyDirectory($this->getDirectoryPath($restoringFromPath), $destination);
     }
 
     public function backup(Zipper $zip): void

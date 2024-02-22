@@ -7,12 +7,18 @@ namespace Itiden\Backup;
 use Exception;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Support\Facades\Storage;
-use Itiden\Backup\Support\Manager;
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Support\Zipper;
 
-final class RestorerManager extends Manager
+final class Restorer
 {
+    public function __construct(
+        protected BackupRepository $repository
+    ) {
+    }
+
     /**
      * Restore from a backup with a given timestamp.
      *
@@ -59,17 +65,23 @@ final class RestorerManager extends Manager
     {
 
         if (!File::exists($path)) {
-            throw new \Exception("Path {$path} does not exist.");
+            throw new Exception("Path {$path} does not exist.");
         }
 
-        collect($this->getDrivers())
-            ->each(
-                fn ($key) => $this->driver($key)->restore("{$path}/{$key}")
-            );
+        Pipeline::via('restore')
+            ->send($path)
+            ->through(config('backup.pipeline'))
+            ->thenReturn();
 
         File::cleanDirectory(config('backup.temp_path'));
 
+        /**
+         * Clear the cache and stache to make sure everything is up to date.
+         */
         Artisan::call('cache:clear', [
+            '--quiet' => true,
+        ]);
+        Artisan::call('statamic:stache:clear', [
             '--quiet' => true,
         ]);
     }
@@ -83,10 +95,10 @@ final class RestorerManager extends Manager
     {
         $target = config('backup.temp_path') . '/unzipping';
 
-        Zipper::make($path, true)->extractTo($target, config('backup.password'))->close();
+        Zipper::open($path, true)->extractTo($target, config('backup.password'))->close();
 
         if (!collect(File::allFiles($target))->count()) {
-            throw new \Exception("This backup is empty, perhaps you used the wrong password?");
+            throw new   Exception("This backup is empty, perhaps you used the wrong password?");
         }
 
         $this->restore($target);

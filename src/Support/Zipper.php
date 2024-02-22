@@ -24,7 +24,7 @@ class Zipper
     /**
      * Create a new instance of the Zipper.
      */
-    public static function make(string $path, bool $readOnly = false): self
+    public static function open(string $path, bool $readOnly = false): self
     {
         $flags = $readOnly ? ZipArchive::RDONLY : ZipArchive::CREATE | ZipArchive::OVERWRITE;
 

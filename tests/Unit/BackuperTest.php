@@ -22,7 +22,7 @@ it('backups correct files', function () {
     $backup = Backuper::backup();
 
     $unzipped = config('backup.temp_path') . '/unzipped';
-    Zipper::make(
+    Zipper::open(
         Storage::disk(config('backup.destination.disk'))
             ->path($backup->path),
         true

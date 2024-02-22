@@ -11,6 +11,7 @@ use Statamic\Extend\Manifest;
 use Statamic\Providers\StatamicServiceProvider;
 use Statamic\Stache\Stores\UsersStore;
 use Statamic\Statamic;
+use Wilderborn\Partyline\Partyline;
 
 class TestCase extends TestbenchTestCase
 {
@@ -28,6 +29,7 @@ class TestCase extends TestbenchTestCase
     {
         return [
             'Statamic' => Statamic::class,
+            'partyline' => Partyline::class,
         ];
     }
 

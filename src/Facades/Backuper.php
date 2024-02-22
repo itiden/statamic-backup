@@ -6,7 +6,7 @@ namespace Itiden\Backup\Facades;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Facade;
-use Itiden\Backup\BackuperManager;
+use Itiden\Backup\Backuper as BackuperService;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 
 /**
@@ -16,12 +16,12 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
  * @method static BackupDto deleteBackup(string $backupName)
  * @method static bool clearBackups()
  *
- * @see \Itiden\Backup\BackuperManager
+ * @see \Itiden\Backup\Backuper
  */
 class Backuper extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return BackuperManager::class;
+        return BackuperService::class;
     }
 }
