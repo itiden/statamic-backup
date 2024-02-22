@@ -6,6 +6,7 @@ namespace Itiden\Backup\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\PromptsForMissingInput;
+use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Restorer;
 
 /**
@@ -27,7 +28,7 @@ class RestoreCommand extends Command implements PromptsForMissingInput
     public function handle()
     {
         if ($this->option('force') || $this->confirm('Are you sure you want to restore your content?')) {
-            Restorer::restore($this->argument('path'));
+            Restorer::restore(BackupDto::fromAbsolutePath($this->argument('path')));
         }
     }
 }

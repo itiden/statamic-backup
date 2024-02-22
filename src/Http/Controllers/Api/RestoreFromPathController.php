@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\File;
+use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Restorer;
 use Itiden\Backup\Http\Requests\RestoreFromPathRequest;
 use Itiden\Backup\Http\Response;
@@ -16,7 +17,7 @@ class RestoreFromPathController extends Controller
 {
     public function __invoke(RestoreFromPathRequest $request): JsonResponse|RedirectResponse
     {
-        Restorer::restore($request->validated('path'));
+        Restorer::restore(BackupDto::fromAbsolutePath($request->validated('path')));
 
         if ($request->input('destroyAfterRestore', false)) {
             File::delete($request->validated('path'));

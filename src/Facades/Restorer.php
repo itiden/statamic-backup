@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Facade;
 use Itiden\Backup\Restorer as RestorerService;
 
 /**
- * @method static void restore(string $path)
+ * @method static void restore(\Itiden\Backup\DataTransferObjects\BackupDto $backup)
  * @method static void restoreFromTimestamp(string $timestamp)
  *
  * @see \Itiden\Backup\Restorer
