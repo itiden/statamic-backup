@@ -22,7 +22,7 @@ final class Backuper
 
     /**
      * Create a new backup.
-     * 
+     *
      * @throws BackupFailedException
      */
     public function backup(): BackupDto
