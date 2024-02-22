@@ -16,20 +16,20 @@ class Users extends BackupPipe
         return 'users';
     }
 
-    public function restore(string $restoringFromPath, Closure $next): void
+    public function restore(string $restoringFromPath, Closure $next)
     {
         $destination = config('statamic.stache.stores.users.directory');
         $users = $this->getDirectoryPath($restoringFromPath);
 
         File::copyDirectory($users, $destination);
 
-        $next($restoringFromPath);
+        return $next($restoringFromPath);
     }
 
-    public function backup(Zipper $zip, Closure $next): void
+    public function backup(Zipper $zip, Closure $next)
     {
         $zip->addDirectory(config('statamic.stache.stores.users.directory'), static::getKey());
 
-        $next($zip);
+        return $next($zip);
     }
 }

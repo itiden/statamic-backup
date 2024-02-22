@@ -16,22 +16,22 @@ class Content extends BackupPipe
         return 'content';
     }
 
-    public function restore(string $restoringFromPath, Closure $next): void
+    public function restore(string $restoringFromPath, Closure $next)
     {
         $destination = config('backup.content_path');
 
         File::cleanDirectory($destination);
         File::copyDirectory($this->getDirectoryPath($restoringFromPath), $destination);
 
-        $next($restoringFromPath);
+        return $next($restoringFromPath);
     }
 
-    public function backup(Zipper $zip, Closure $next): void
+    public function backup(Zipper $zip, Closure $next)
     {
         $contentPath = config('backup.content_path');
 
         $zip->addDirectory($contentPath, static::getKey());
 
-        $next($zip);
+        return $next($zip);
     }
 }
