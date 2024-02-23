@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
@@ -37,10 +38,24 @@ it('backups correct files', function () {
 });
 
 it('can enforce max backups', function () {
-    config()->set('backup.limit', 5);
+    config()->set('backup.max_backups', 5);
 
-    Backuper::backup();
+    for ($i = 0; $i < 10; $i++) {
+        // It were to fast so they all got the same timestamp
+        Carbon::setTestNow(Carbon::now()->addDays($i));
+        Backuper::backup();
 
+        expect(app(BackupRepository::class)->all()->count())->toBeLessThanOrEqual(5);
+    }
+});
 
-    expect(app(BackupRepository::class)->all()->count())->toBeLessThanOrEqual(5);
-})->repeat(10);
+it('doesnt enforce max backups when it is disabled', function () {
+    config()->set('backup.max_backups', false);
+
+    for ($i = 0; $i < 10; $i++) {
+        Carbon::setTestNow(Carbon::now()->addDays($i));
+        Backuper::backup();
+
+        expect(app(BackupRepository::class)->all()->count())->toBe($i + 1);
+    }
+});
