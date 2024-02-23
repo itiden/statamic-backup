@@ -14,6 +14,7 @@ it('cant be deleted by a guest', function () {
     $res = deleteJson(cp_route('api.itiden.backup.destroy', $backup->timestamp));
 
     expect($res->status())->toBe(401);
+    expect(app(BackupRepository::class)->all())->toHaveCount(1);
 });
 
 it('cant be deleted by a user without delete permisson', function () {
@@ -24,6 +25,7 @@ it('cant be deleted by a user without delete permisson', function () {
     $res = deleteJson(cp_route('api.itiden.backup.destroy', $backup->timestamp));
 
     expect($res->status())->toBe(403);
+    expect(app(BackupRepository::class)->all())->toHaveCount(1);
 });
 
 it('can be deleted by a user with delete backups permission', function () {
