@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Response as HttpResponse;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +15,7 @@ uses()->group('restore backup');
 it('cant restore from path by a guest', function () {
     $response = postJson(cp_route('api.itiden.backup.restore', 'timestamp'));
 
-    expect($response->status())->toBe(HttpResponse::HTTP_UNAUTHORIZED);
+    expect($response->status())->toBe(Response::HTTP_UNAUTHORIZED);
 });
 
 it('cant restore from path by a user without permissons a backup', function () {
@@ -23,7 +23,7 @@ it('cant restore from path by a user without permissons a backup', function () {
 
     $response = postJson(cp_route('api.itiden.backup.restore', 'timestamp'));
 
-    expect($response->status())->toBe(HttpResponse::HTTP_FORBIDDEN);
+    expect($response->status())->toBe(Response::HTTP_FORBIDDEN);
 });
 
 it('can restore from path and delete after', function () {
@@ -37,7 +37,7 @@ it('can restore from path and delete after', function () {
 
     $response = postJson(cp_route('api.itiden.backup.restore', $backup->timestamp));
 
-    expect($response->status())->toBe(HttpResponse::HTTP_OK);
+    expect($response->status())->toBe(Response::HTTP_OK);
 });
 
 it('dispatches backup restored event', function () {
@@ -55,7 +55,7 @@ it('dispatches backup restored event', function () {
     Event::assertDispatched(BackupRestored::class, function ($event) use ($backup) {
         return $event->backup->timestamp === $backup->timestamp;
     });
-    expect($response->status())->toBe(HttpResponse::HTTP_OK);
+    expect($response->status())->toBe(Response::HTTP_OK);
 });
 
 it('will not restore from command if you say no', function () {

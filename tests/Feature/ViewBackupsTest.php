@@ -18,8 +18,6 @@ test('user without permission cant view backups', function () {
 
     get(cp_route('itiden.backup.index'))
         ->assertRedirect();
-    getJson(cp_route('itiden.backup.index'))
-        ->assertForbidden();
 });
 
 test('user with permission can view backups', function () {

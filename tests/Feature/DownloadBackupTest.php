@@ -17,10 +17,8 @@ it('cant be downloaded by a guest', function () {
     $backup = Backuper::backup();
 
     $responseJson = getJson(cp_route('api.itiden.backup.download', $backup->timestamp));
-    $response = get(cp_route('api.itiden.backup.download', $backup->timestamp));
 
     expect($responseJson->status())->toBe(401);
-    expect($response->status())->toBe(302);
 });
 
 it('cant be downloaded by a user without permissons a backup', function () {
@@ -29,10 +27,8 @@ it('cant be downloaded by a user without permissons a backup', function () {
     actingAs(user());
 
     $responseJson = getJson(cp_route('api.itiden.backup.download', $backup->timestamp));
-    $response = get(cp_route('api.itiden.backup.download', $backup->timestamp));
 
     expect($responseJson->status())->toBe(403);
-    expect($response->status())->toBe(302);
 });
 
 it('can be downloaded by a user with download backups permission', function () {

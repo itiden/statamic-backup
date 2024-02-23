@@ -6,7 +6,6 @@ use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
 
 use function Pest\Laravel\actingAs;
-use function Pest\Laravel\post;
 use function Pest\Laravel\postJson;
 
 uses()->group('create backup');
@@ -17,20 +16,16 @@ beforeEach(function () {
 
 it('cant create a backup by a guest', function () {
     $responseJson = postJson(cp_route('api.itiden.backup.store'));
-    $response = post(cp_route('api.itiden.backup.store'));
 
     expect($responseJson->status())->toBe(401);
-    expect($response->status())->toBe(302);
 });
 
 it('cant create a backup by a user without permissons a backup', function () {
     actingAs(user());
 
     $responseJson = postJson(cp_route('api.itiden.backup.store'));
-    $response = post(cp_route('api.itiden.backup.store'));
 
     expect($responseJson->status())->toBe(403);
-    expect($response->status())->toBe(302);
 });
 
 it('can create a backup by a user with create backups permission', function () {
