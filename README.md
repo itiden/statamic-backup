@@ -70,6 +70,10 @@ php artisan statamic:backup:clear
 
 Read the configuration [docs](docs/configuration.md)!
 
+## Notifications/Events
+
+You can send notifications when a backup is created. Read the notifications [docs](docs/notifications.md)!
+
 ## Usage
 
 Using the Statamic Backup Addon is a breeze:
