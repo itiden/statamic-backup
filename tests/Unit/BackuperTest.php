@@ -41,6 +41,7 @@ it('can enforce max backups', function () {
     config()->set('backup.max_backups', 5);
 
     for ($i = 0; $i < 10; $i++) {
+        // It were to fast so they all got the same timestamp
         Carbon::setTestNow(Carbon::now()->addDays($i));
         Backuper::backup();
 
