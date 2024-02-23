@@ -12,13 +12,13 @@ use function Pest\Laravel\postJson;
 
 uses()->group('restore backup');
 
-it('cant restore from path by a guest', function () {
+it('cant restore by timestamp by a guest', function () {
     $response = postJson(cp_route('api.itiden.backup.restore', 'timestamp'));
 
     expect($response->status())->toBe(Response::HTTP_UNAUTHORIZED);
 });
 
-it('cant restore from path by a user without permissons a backup', function () {
+it('cant restore by timestamp by a user without permissons a backup', function () {
     actingAs(user());
 
     $response = postJson(cp_route('api.itiden.backup.restore', 'timestamp'));
@@ -26,7 +26,19 @@ it('cant restore from path by a user without permissons a backup', function () {
     expect($response->status())->toBe(Response::HTTP_FORBIDDEN);
 });
 
-it('can restore from path and delete after', function () {
+it('returns error if backup is not found', function () {
+    $user = user();
+
+    $user->assignRole('super admin')->save();
+
+    actingAs($user);
+
+    $response = postJson(cp_route('api.itiden.backup.restore', 'timestamp'));
+
+    expect($response->status())->toBe(Response::HTTP_INTERNAL_SERVER_ERROR);
+});
+
+it('can restore by timestamp', function () {
     $backup = Backuper::backup();
 
     $user = user();
