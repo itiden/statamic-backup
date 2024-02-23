@@ -8,6 +8,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Itiden\Backup\Console\Commands\BackupCommand;
 use Itiden\Backup\Console\Commands\ClearFilesCommand;
 use Itiden\Backup\Console\Commands\RestoreCommand;
+use Itiden\Backup\Widgets\IsBackedUpWidget;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
@@ -18,6 +19,10 @@ class ServiceProvider extends AddonServiceProvider
 
     protected $routes = [
         'cp' => __DIR__ . '/../routes/cp.php',
+    ];
+
+    protected $widgets = [
+        IsBackedUpWidget::class,
     ];
 
     protected $vite = [
