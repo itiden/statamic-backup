@@ -5,7 +5,9 @@
                 <span class="text-3xl text-red-500">{{ __('Not backed up.') }}</span>
             @else
                 <span class="text-xl">
-                    {{ __('Your site was backed up') }} <span class="text-green-500">{{ $lastBackup->created_at }}</span>
+                    {{ __('Your site was backed up') }} <span class="text-green-500">
+                        {{ Carbon\Carbon::createFromTimestamp($lastBackup->timestamp)->diffForHumans() }}
+                    </span>
                 </span>
             @endif
         </h2>
