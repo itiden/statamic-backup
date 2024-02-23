@@ -2,14 +2,22 @@
     <div class="card h-full p-4 text-center">
         <h2 class="mb-2 font-bold">
             @if (!$lastBackup)
-                {{ __('No backups have been created yet.') }}
+                <span class="text-3xl text-red-500">{{ __('Not backed up.') }}</span>
             @else
-                {{ __('Your site was backed up') }} {{ $lastBackup->created_at }}
+                <span class="text-xl">
+                    {{ __('Your site was backed up') }} <span class="text-green-500">{{ $lastBackup->created_at }}</span>
+                </span>
             @endif
         </h2>
 
-        <div class="text-center text-sm">
-            <a href="{{ cp_route('itiden.backup.index') }}" class="hover:text-blue py-1">{{ __('View Backups') }}</a>
-        </div>
+        @if ($lastBackup)
+            <a href="{{ cp_route('itiden.backup.index') }}" class="hover:text-blue py-1 text-sm">{{ __('View Backups') }}</a>
+        @else
+            @can('create backups')
+                <a href={{ cp_route('itiden.backup.index') }}>
+                    {{ __('You should create a backup now.') }}
+                </a>
+            @endcan
+        @endif
     </div>
 @endcan
