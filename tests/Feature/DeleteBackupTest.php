@@ -1,9 +1,12 @@
 <?php
 
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Facades\Backuper;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\deleteJson;
+
+uses()->group('delete backup');
 
 it('cant be deleted by a guest', function () {
     $backup = Backuper::backup();
@@ -35,4 +38,7 @@ it('can be deleted by a user with delete backups permission', function () {
     $response = deleteJson(cp_route('api.itiden.backup.destroy', $backup->timestamp));
 
     expect($response->status())->toBe(200);
+    expect($response->json('message'))->toBe('Deleted ' . $backup->name);
+
+    expect(app(BackupRepository::class)->all())->toHaveCount(0);
 });
