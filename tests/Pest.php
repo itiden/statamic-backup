@@ -1,10 +1,13 @@
 <?php
 
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Tests\TestCase;
 use Statamic\Facades\Role;
 use Statamic\Facades\User;
 
-uses(TestCase::class)->in(__DIR__);
+uses(TestCase::class)
+    ->afterEach(fn () => app(BackupRepository::class)->empty())
+    ->in(__DIR__);
 
 function user()
 {
