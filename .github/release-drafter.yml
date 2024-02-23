@@ -1,0 +1,14 @@
+categories:
+  - title: "Features"
+    label: "feature"
+  - title: "Fixes"
+    labels:
+      - "fix"
+      - "bugfix"
+      - "bug"
+  - title: "Chores"
+    labels:
+      - "chore"
+      - "dependencies"
+template: |
+  $CHANGES
