@@ -5,7 +5,13 @@
                 <span class="text-3xl text-red-500">{{ __('Not backed up.') }}</span>
             @else
                 <span class="text-xl">
-                    {{ __('Your site was backed up') }} <span class="text-green-500">
+                    {{ __('Your site was backed up') }} <span @class([
+                        'text-green-500' => $lastBackup->timestamp > now()->subDay()->timestamp,
+                        'text-orange' =>
+                            $lastBackup->timestamp < now()->subDay()->timestamp &&
+                            $lastBackup->timestamp > now()->subWeek()->timestamp,
+                        'text-red-500' => $lastBackup->timestamp < now()->subWeek()->timestamp,
+                    ])>
                         {{ Carbon\Carbon::createFromTimestamp($lastBackup->timestamp)->diffForHumans() }}
                     </span>
                 </span>
