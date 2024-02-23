@@ -15,6 +15,7 @@ use Itiden\Backup\Events\BackupRestored;
 use Itiden\Backup\Events\RestoreFailed;
 use Itiden\Backup\Exceptions\RestoreFailedException;
 use Itiden\Backup\Support\Zipper;
+use RuntimeException;
 
 final class Restorer
 {
@@ -33,7 +34,7 @@ final class Restorer
         $backup = $this->repository->find($timestamp);
 
         if (!$backup) {
-            throw new Exception("Backup with timestamp {$timestamp} not found.");
+            throw new RuntimeException("Backup with timestamp {$timestamp} not found.");
         }
 
         $this->restore($backup);
@@ -100,6 +101,7 @@ final class Restorer
         if (config("filesystems.disks.{$disk}.driver") === 'local') {
             return Storage::disk($disk)->path($backup->path);
         }
+
         $tempDisk = Storage::build([
             'driver' => 'local',
             'root' => config('backup.temp_path') . DIRECTORY_SEPARATOR . 'backup',
