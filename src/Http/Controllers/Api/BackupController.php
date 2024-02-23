@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Itiden\Backup\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Controller;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 
 class BackupController extends Controller
 {
-    public function __invoke(BackupRepository $repo): JsonResponse|RedirectResponse
+    public function __invoke(BackupRepository $repo): JsonResponse
     {
         $backups = $repo->all();
 

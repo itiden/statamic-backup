@@ -15,7 +15,7 @@ use Itiden\Backup\Http\Response;
 
 class RestoreFromPathController extends Controller
 {
-    public function __invoke(RestoreFromPathRequest $request): JsonResponse|RedirectResponse
+    public function __invoke(RestoreFromPathRequest $request): JsonResponse
     {
         Restorer::restore(BackupDto::fromAbsolutePath($request->validated('path')));
 
@@ -23,6 +23,8 @@ class RestoreFromPathController extends Controller
             File::delete($request->validated('path'));
         }
 
-        return Response::success('Backup restored.');
+        return response()->json([
+            'message' => 'Backup restored.',
+        ]);
     }
 }
