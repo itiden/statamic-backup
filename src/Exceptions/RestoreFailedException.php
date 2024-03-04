@@ -13,6 +13,6 @@ class RestoreFailedException extends Exception
     public function __construct(
         public BackupDto $backup
     ) {
-        parent::__construct('Backup failed ' . Carbon::now()->format('Ymd'));
+        parent::__construct("Restore to backup {$this->backup->name} failed " . Carbon::now()->format('Ymd'));
     }
 }
