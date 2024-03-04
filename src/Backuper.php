@@ -53,7 +53,9 @@ final class Backuper
 
             return $backup;
         } catch (Exception $e) {
-            $exception = new BackupFailedException($e);
+            report($e);
+
+            $exception = new BackupFailedException();
 
             event(new BackupFailed($exception));
 
