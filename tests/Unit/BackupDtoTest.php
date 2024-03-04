@@ -1,8 +1,6 @@
 <?php
 
 use Carbon\Carbon;
-use Itiden\Backup\Contracts\Repositories\BackupRepository;
-use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Backuper;
 
 uses()->group('backupdto');
