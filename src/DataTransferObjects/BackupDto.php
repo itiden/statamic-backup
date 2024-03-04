@@ -14,7 +14,7 @@ final readonly class BackupDto
 {
     public function __construct(
         public string $name,
-        public string $created_at,
+        public Carbon $created_at,
         public string $size,
         public string $path,
         public string $timestamp,
@@ -22,7 +22,7 @@ final readonly class BackupDto
     }
 
     /**
-     * Create a new BackupDto from a file path
+     * Create a new BackupDto from a file path in the configured disk
      */
     public static function fromFile(string $path): self
     {
@@ -31,7 +31,7 @@ final readonly class BackupDto
 
         return new self(
             name: File::name($path),
-            created_at: Carbon::createFromTimestamp($timestamp)->format('Y-m-d H:i:s'),
+            created_at: Carbon::createFromTimestamp($timestamp),
             size: StatamicStr::fileSizeForHumans($bytes, 2),
             path: $path,
             timestamp: $timestamp,
@@ -48,7 +48,7 @@ final readonly class BackupDto
 
         return new self(
             name: File::name($path),
-            created_at: Carbon::createFromTimestamp($timestamp)->format('Y-m-d H:i:s'),
+            created_at: Carbon::createFromTimestamp($timestamp),
             size: StatamicStr::fileSizeForHumans($bytes, 2),
             path: $path,
             timestamp: $timestamp,
