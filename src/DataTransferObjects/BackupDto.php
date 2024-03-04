@@ -7,7 +7,6 @@ namespace Itiden\Backup\DataTransferObjects;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Statamic\Support\Str as StatamicStr;
 
 final readonly class BackupDto
@@ -26,7 +25,7 @@ final readonly class BackupDto
      */
     public static function fromFile(string $path): self
     {
-        $timestamp = Str::between(basename($path), '-', '.zip');
+        $timestamp = str(basename($path))->afterLast('-')->before('.zip')->toString();
         $bytes = Storage::disk(config('backup.destination.disk'))->size($path);
 
         return new self(
@@ -43,7 +42,7 @@ final readonly class BackupDto
      */
     public static function fromAbsolutePath(string $path): self
     {
-        $timestamp = Str::between(basename($path), '-', '.zip');
+        $timestamp = str(basename($path))->afterLast('-')->before('.zip')->toString();
         $bytes = File::size($path);
 
         return new self(
