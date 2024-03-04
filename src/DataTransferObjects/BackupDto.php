@@ -22,7 +22,7 @@ final readonly class BackupDto
     }
 
     /**
-     * Create a new BackupDto from a file path
+     * Create a new BackupDto from a file path in the configured disk
      */
     public static function fromFile(string $path): self
     {
