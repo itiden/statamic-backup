@@ -77,7 +77,9 @@ final class Restorer
                 '--quiet' => true,
             ]);
         } catch (Exception $e) {
-            $exception = new RestoreFailedException($backup, $e);
+            report($e);
+
+            $exception = new RestoreFailedException($backup);
 
             event(new RestoreFailed($exception));
 
