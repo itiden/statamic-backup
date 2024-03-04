@@ -9,8 +9,8 @@ use Exception;
 
 class BackupFailedException extends Exception
 {
-    public function __construct(Exception $e)
+    public function __construct()
     {
-        parent::__construct('Backup failed ' . Carbon::now()->format('Ymd'), 0, $e);
+        parent::__construct('Backup failed ' . Carbon::now()->format('Ymd'));
     }
 }

@@ -11,9 +11,8 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 class RestoreFailedException extends Exception
 {
     public function __construct(
-        public BackupDto $backup,
-        Exception $exception
+        public BackupDto $backup
     ) {
-        parent::__construct('Backup failed ' . Carbon::now()->format('Ymd'), 0, $exception);
+        parent::__construct('Backup failed ' . Carbon::now()->format('Ymd'));
     }
 }
