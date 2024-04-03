@@ -51,7 +51,7 @@ final class Restorer
             $path = $this->getLocalBackupPath($backup);
 
             if (!File::exists($path)) {
-                throw new Exception("Path {$path} does not exist.");
+                throw new RuntimeException("Path {$path} does not exist.");
             }
 
             if (File::mimeType($path) === 'application/zip') {
