@@ -2,6 +2,12 @@
 
 Backup is an extensible and powerful backup tool for statamic sites, it enables you to create, manage and schedule backups of your site with ease in the control panel.
 
+Why use our backup addon?
+
+- Chunked uploads - upload huge backups from other servers without the need to change your `php.ini`.
+- Choose exactly what you want to backup by changing the backup [pipeline](docs/pipeline.md).
+- Easy to extend due to the pipeline design, [just create a new pipes](docs/pipeline.md#creating-a-new-backup-pipe)!
+
 ## Installation
 
 To install this addon, require it using composer.
@@ -21,6 +27,8 @@ php artisan statamic:backup:create
 ```
 
 ### Scheduling
+
+Configure the backup schedule in the configuration file, read more about it [here](docs/scheduling.md).
 
 To use the scheduling you need to run the laravel scheduler. Read more about that here: [Running the scheduler](https://laravel.com/docs/10.x/scheduling#running-the-scheduler).
 
@@ -42,6 +50,8 @@ Then you can configure:
 - Max amount of backups to keep
 - Backup password
 - The Backup pipeline
+
+Read more about the configuration [here](docs/configuration.md)!
 
 ## License
 
