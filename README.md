@@ -6,7 +6,9 @@ Why use our backup addon?
 
 - Chunked uploads - upload huge backups from other servers without the need to change your `php.ini`.
 - Choose exactly what you want to backup by changing the backup [pipeline](docs/pipeline.md).
-- Easy to extend due to the pipeline design, [just create a new pipes](docs/pipeline.md#creating-a-new-backup-pipe)!
+  - Easy to extend due to the pipeline design, [just create a new pipes](docs/pipeline.md#creating-a-new-backup-pipe)!
+- UI to manage backups
+- Permissions - choose exactly which users can manage your backups with [permissions](https://statamic.dev/users#permissions).
 
 ## Installation
 
