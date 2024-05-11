@@ -10,8 +10,7 @@
   ],
   "require": {
     "ext-zip": "*",
-    "statamic/cms": "^4.20",
-    "laravel/framework": "^10.0",
+    "statamic/cms": "^5.0.0",
     "pixelfear/composer-dist-plugin": "^0.1.6"
   },
   "require-dev": {
