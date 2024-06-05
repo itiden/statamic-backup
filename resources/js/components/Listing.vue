@@ -29,20 +29,20 @@
             <dropdown-list>
               <dropdown-item
                 v-if="canDownload"
-                :text="__('Download')"
+                :text="__('statamic-backup::backup.download')"
                 :redirect="download_url(backup.timestamp)"
               />
               <span v-if="canRestore">
                 <hr class="divider" />
                 <dropdown-item
-                  :text="__('Restore')"
+                  :text="__('statamic-backup::backup.restore')"
                   @click="initiateRestore(backup.timestamp, backup.name)"
                 />
               </span>
               <span v-if="canDestroy">
                 <hr class="divider" />
                 <dropdown-item
-                  :text="__('Remove')"
+                  :text="__('statamic-backup::backup.destroy')"
                   dangerous="true"
                   @click="initiateDestroy(backup.timestamp, backup.name)"
                 />
@@ -55,18 +55,18 @@
 
     <confirmation-modal
       v-if="confirmingRestore"
-      title="Restore Site"
-      :bodyText="`Are you sure you want to restore your site to the state it was ${activeName} ?`"
-      buttonText="Restore"
+      :title="__('statamic-backup::backup.restore_title')"
+      :bodyText="__(`statamic-backup::backup.restore_body`, { name: activeName })"
+      :buttonText="__('statamic-backup::backup.restore')"
       @confirm="restore()"
       @cancel="confirmingRestore = false"
     />
 
     <confirmation-modal
       v-if="confirmingDestroy"
-      title="Remove backup"
-      :bodyText="`Are you sure you want to remove the backup from ${activeName} ?`"
-      buttonText="Remove"
+      :title="__('statamic-backup::backup.destroy_title')"
+      :bodyText="__(`statamic-backup::backup.destroy_body`, { name: activeName })"
+      :buttonText="__('statamic-backup::backup.destroy')"
       @confirm="destroy()"
       @cancel="confirmingDestroy = false"
     />
@@ -135,7 +135,7 @@ export default {
     },
     restore() {
       this.confirmingRestore = false;
-      this.$toast.info(__(`Starting restore to ${this.activeName}...`));
+      this.$toast.info(__('statamic-backup::backup.restore_started_name', {name:this.activeName}));
       this.$axios
         .post(this.restore_url(this.activeTimestamp))
         .then(({ data }) => {
@@ -143,7 +143,7 @@ export default {
           this.$emit("onRestored");
         })
         .catch((error) => {
-          let message = "Something went wrong.";
+          let message = __('statamic-backup::backup.restore_failed');
 
           if (error.response.data.message) {
             message = error.response.data.message;

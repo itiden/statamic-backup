@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="flex">
-      <h1 class="mb-6">Backups</h1>
+      <h1 class="mb-6">{{ __("statamic-backup::backup.title") }}</h1>
       <backup-actions @openBrowser="openBrowser" />
     </div>
 

@@ -15,7 +15,7 @@ class StoreBackupController extends Controller
         $backup = Backuper::backup();
 
         return response()->json([
-            'message' => 'Backup created ' . $backup->name,
+            'message' => __('statamic-backup::backup.created', ['name' => $backup->name]),
         ]);
     }
 }
