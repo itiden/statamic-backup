@@ -42,7 +42,7 @@
               <span v-if="canDestroy">
                 <hr class="divider" />
                 <dropdown-item
-                  :text="__('statamic-backup::backup.destroy')"
+                  :text="__('statamic-backup::backup.destroy.label')"
                   dangerous="true"
                   @click="initiateDestroy(backup.timestamp, backup.name)"
                 />
@@ -55,18 +55,18 @@
 
     <confirmation-modal
       v-if="confirmingRestore"
-      :title="__('statamic-backup::backup.restore_title')"
-      :bodyText="__(`statamic-backup::backup.restore_body`, { name: activeName })"
-      :buttonText="__('statamic-backup::backup.restore')"
+      :title="__('statamic-backup::backup.restore.confirm_title')"
+      :bodyText="__(`statamic-backup::backup.restore.confirm_body`, { name: activeName })"
+      :buttonText="__('statamic-backup::backup.restore.label')"
       @confirm="restore()"
       @cancel="confirmingRestore = false"
     />
 
     <confirmation-modal
       v-if="confirmingDestroy"
-      :title="__('statamic-backup::backup.destroy_title')"
-      :bodyText="__(`statamic-backup::backup.destroy_body`, { name: activeName })"
-      :buttonText="__('statamic-backup::backup.destroy')"
+      :title="__('statamic-backup::backup.destroy.confirm_title')"
+      :bodyText="__(`statamic-backup::backup.destroy.confirm_body`, { name: activeName })"
+      :buttonText="__('statamic-backup::backup.destroy.label')"
       @confirm="destroy()"
       @cancel="confirmingDestroy = false"
     />

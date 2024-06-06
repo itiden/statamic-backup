@@ -1,25 +1,40 @@
 <?php
 
 return [
+
     'title' => 'Backups',
 
     'create' => 'Create Backup',
     'failed' => 'Failed to create backup on :date',
     'backup_started' => 'Starting backup...',
 
-    'upload' => 'Upload Backup',
-    'upload_cancelled' => 'Upload Cancelled',
+    'upload' => [
+        'label' => 'Upload Backup',
 
-    'destroy' => 'Delete',
-    'destroy_title' => 'Remove backup',
-    'destroy_body' => 'Are you sure you want to remove the backup from :name ?',
+        'cancelled' => 'Upload Cancelled',
+    ],
 
-    'restore' => 'Restore',
-    'restore_started' => 'Starting restore...',
-    'restore_started_name' => 'Starting restore :name...',
-    'restore_title' => 'Restore Site',
-    'restore_body' => 'Are you sure you want to restore your site to the state it was :name ?',
-    'restore_success' => 'Successfully restored',
-    'restore_failed' => 'Restore to backup :name failed'
+    'destroy' => [
+        'label' => 'Delete',
+
+        'confirm_title' => 'Remove backup',
+        'confirm_body' => 'Are you sure you want to remove the backup from :name ?',
+
+        'success' => 'Deleted :name',
+    ],
+
+    'restore' => [
+        'label' => 'Restore',
+
+        'confirm_title' => 'Restore backup',
+        'confirm_body' => 'Are you sure you want to restore your site to the state it was :name ?',
+
+        'started' => 'Starting restore...',
+        'started_name' => 'Starting restore :name...',
+
+        'success' => 'Successfully restored',
+        'failed' => 'Restore to backup :name failed',
+
+    ],
 
 ];

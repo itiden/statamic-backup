@@ -33,7 +33,7 @@
     </div>
 
     <div class="px-2">
-      <p v-if="status === 'canceled'">{{ __('statamic-backup::backup.upload_cancelled') }}</p>
+      <p v-if="status === 'canceled'">{{ __('statamic-backup::backup.upload.cancelled') }}</p>
 
       <div v-if="status === 'error'">
         {{ error }}
@@ -59,13 +59,13 @@
         class="btn-primary"
       >
         <svg-icon name="folder-home" class="h-4 w-4 mr-2 text-current" />
-        <span>{{ __("statamic-backup::backup.restore") }}</span>
+        <span>{{ __("statamic-backup::backup.restore.label") }}</span>
       </button>
 
       <loading-graphic v-if="status === 'restoring'" :inline="true" text="" />
 
       <span v-if="status === 'restored'" class="text-green-500 filename">
-        {{ __("statamic-backup::backup.restore_success") }}
+        {{ __("statamic-backup::backup.restore.success") }}
         <svg-icon
           v-if="status === 'restored'"
           name="light/check"

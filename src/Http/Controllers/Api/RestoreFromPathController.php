@@ -22,7 +22,7 @@ class RestoreFromPathController extends Controller
         }
 
         return response()->json([
-            'message' => 'Backup restored.',
+            'message' => __('statamic-backup::backup.restore.success'),
         ]);
     }
 }
