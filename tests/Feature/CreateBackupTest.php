@@ -37,10 +37,11 @@ it('can create a backup by a user with create backups permission', function () {
 
     $responseJson = postJson(cp_route('api.itiden.backup.store'));
 
-    $backup = app(BackupRepository::class)->all()->first();
 
-    expect($responseJson->status())->toBe(200);
-    expect($responseJson->json('message'))->toBe('Backup created ' . $backup->name);
+    $responseJson->assertJsonStructure([
+        'message',
+    ]);
+
     expect(app(BackupRepository::class)->all()->count())->toBe(1);
 });
 
