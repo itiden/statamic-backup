@@ -26,11 +26,17 @@ Why use our backup addon?
 
 ## Installation
 
-To install this addon, require it using composer.
+1. To install this addon, require it using composer.
 
-```bash
-composer require itiden/statamic-backup
-```
+   ```bash
+   composer require itiden/statamic-backup
+   ```
+
+2. Set the `content_path` config value to the path of your content, start with publishing the config:
+   ```bash
+   php artisan vendor:publish --tag="backup-config"
+   ```
+   default is `storage_path('content')`
 
 ## Configuration
 
