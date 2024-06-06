@@ -7,11 +7,16 @@ return [
     'create' => 'Create Backup',
     'failed' => 'Failed to create backup on :date',
     'backup_started' => 'Starting backup...',
+    'created' => 'Backup :name created',
 
     'upload' => [
         'label' => 'Upload Backup',
 
         'cancelled' => 'Upload Cancelled',
+    ],
+
+    'download' => [
+        'label' => 'Download',
     ],
 
     'destroy' => [

@@ -85,7 +85,7 @@ export default {
       this.confirming = false;
       file.status = "restoring";
 
-      this.$toast.info(__("statamic-backup::backup.restore_started"));
+      this.$toast.info(__("statamic-backup::backup.restore.started"));
       this.$axios
         .post(cp_url("api/backups/restore-from-path"), {
           path: file.path,

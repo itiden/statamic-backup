@@ -29,13 +29,13 @@
             <dropdown-list>
               <dropdown-item
                 v-if="canDownload"
-                :text="__('statamic-backup::backup.download')"
+                :text="__('statamic-backup::backup.download.label')"
                 :redirect="download_url(backup.timestamp)"
               />
               <span v-if="canRestore">
                 <hr class="divider" />
                 <dropdown-item
-                  :text="__('statamic-backup::backup.restore')"
+                  :text="__('statamic-backup::backup.restore.label')"
                   @click="initiateRestore(backup.timestamp, backup.name)"
                 />
               </span>
@@ -135,7 +135,7 @@ export default {
     },
     restore() {
       this.confirmingRestore = false;
-      this.$toast.info(__('statamic-backup::backup.restore_started_name', {name:this.activeName}));
+      this.$toast.info(__('statamic-backup::backup.restore.started_name', {name:this.activeName}));
       this.$axios
         .post(this.restore_url(this.activeTimestamp))
         .then(({ data }) => {
