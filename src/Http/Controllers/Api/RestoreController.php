@@ -15,7 +15,7 @@ class RestoreController extends Controller
         Restorer::restoreFromTimestamp($timestamp);
 
         return response()->json([
-            'message' => 'Backup restored.',
+            'message' => __('statamic-backup::backup.restore.success'),
         ]);
     }
 }

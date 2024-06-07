@@ -16,7 +16,7 @@ class DestroyBackupController extends Controller
         $backup = $repo->remove($timestamp);
 
         return response()->json([
-            'message' => 'Deleted ' . $backup->name,
+            'message' => __('statamic-backup::backup.destroy.success', ['name' => $backup->name])
         ]);
     }
 }

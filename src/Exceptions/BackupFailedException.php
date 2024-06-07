@@ -11,6 +11,6 @@ class BackupFailedException extends Exception
 {
     public function __construct()
     {
-        parent::__construct('Backup failed ' . Carbon::now()->format('Ymd'));
+        parent::__construct(__('statamic-backup::backup.failed', ['date' => Carbon::now()->format('Ymd')]));
     }
 }

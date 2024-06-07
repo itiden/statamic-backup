@@ -11,7 +11,7 @@
         @click="backup()"
       >
         <svg-icon name="upload-cloud" class="h-4 w-4 mr-2 text-current" />
-        <span>{{ __("Backup") }}</span>
+        <span>{{ __("statamic-backup::backup.create") }}</span>
       </button>
     </div>
 
@@ -61,7 +61,7 @@ export default {
       this.loading = true;
       this.confirming = false;
 
-      this.$toast.info(__("Starting backup..."));
+      this.$toast.info(__("statamic-backup::backup.backup_started"));
       this.$axios
         .post(cp_url("api/backups"), { comment: this.value })
         .then(({ data }) => {
@@ -85,7 +85,7 @@ export default {
       this.confirming = false;
       file.status = "restoring";
 
-      this.$toast.info(__("Starting restore..."));
+      this.$toast.info(__("statamic-backup::backup.restore.started"));
       this.$axios
         .post(cp_url("api/backups/restore-from-path"), {
           path: file.path,
@@ -95,7 +95,7 @@ export default {
           this.$toast.success(__(data.message));
         })
         .catch((error) => {
-          let message = "Something went wrong.";
+          let message = __("statamic-backup::backup.restore_failed");
 
           if (error.response.data.message) {
             message = error.response.data.message;
