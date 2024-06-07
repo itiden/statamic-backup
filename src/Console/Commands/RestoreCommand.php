@@ -19,25 +19,19 @@ use function Laravel\Prompts\spin;
  */
 class RestoreCommand extends Command implements PromptsForMissingInput
 {
-    protected $signature = 'statamic:backup:restore {--path} {--force}';
+    protected $signature = 'statamic:backup:restore {--path=} {--force}';
 
     protected $description = 'Reset or restore content from a directory / backup';
-
-    protected function promptForMissingArgumentsUsing()
-    {
-        return [
-            'path' => 'Which filepath does your backup have?',
-        ];
-    }
 
     public function handle(BackupRepository $repo)
     {
         /* @var BackupDto $backup */
         $backup = match (true) {
-            $this->hasOption('path') => BackupDto::fromAbsolutePath($this->option('path')),
+            (bool) $this->option('path') => BackupDto::fromAbsolutePath($this->option('path')),
             default => BackupDto::fromFile(select(
-                'Which backup do you want to restore to?',
-                $repo->all()->flatMap(
+                label: 'Which backup do you want to restore to?',
+                scroll: 10,
+                options: $repo->all()->flatMap(
                     fn (BackupDto $backup) => [$backup->path => $backup->path]
                 )
             )),
