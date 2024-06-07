@@ -7,6 +7,7 @@ namespace Itiden\Backup\Console\Commands;
 use Illuminate\Console\Command;
 use Itiden\Backup\Facades\Backuper;
 
+use function Laravel\Prompts\info;
 use function Laravel\Prompts\spin;
 
 /**
@@ -22,6 +23,6 @@ class BackupCommand extends Command
     {
         $backup = spin(fn () => Backuper::backup(), 'Backing up...');
 
-        $this->components->info('Backup saved to ' . $backup->path);
+        info('Backup saved to ' . $backup->path);
     }
 }

@@ -45,6 +45,8 @@ class RestoreCommand extends Command implements PromptsForMissingInput
             )
         ) {
             spin(fn () => Restorer::restore($backup), 'Restoring backup');
+
+            info('Backup restored!');
         }
     }
 }
