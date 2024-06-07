@@ -10,9 +10,7 @@ use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Restorer;
 
-use function Laravel\Prompts\confirm;
-use function Laravel\Prompts\select;
-use function Laravel\Prompts\spin;
+use function Laravel\Prompts\{confirm, spin, info, select};
 
 /**
  * Restore content from a directory / backup
