@@ -50,6 +50,11 @@ return [
     ],
 
     /**
+     * The backup repository
+     */
+    'repository' => \Itiden\Backup\Repositories\FileBackupRepository::class,
+
+    /**
      * The backup steps to use
      *
      * These are the steps/pipes that will be used to backup your site
