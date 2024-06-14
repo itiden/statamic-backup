@@ -6,8 +6,11 @@ namespace Itiden\Backup\Pipes;
 
 use Closure;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Itiden\Backup\Abstracts\BackupPipe;
 use Itiden\Backup\Support\Zipper;
+use RuntimeException;
+use Statamic\Facades\Stache;
 
 class Users extends BackupPipe
 {
@@ -18,7 +21,7 @@ class Users extends BackupPipe
 
     public function restore(string $restoringFromPath, Closure $next)
     {
-        $destination = config('statamic.stache.stores.users.directory');
+        $destination = Stache::store('users')?->directory();
         $users = $this->getDirectoryPath($restoringFromPath);
 
         File::copyDirectory($users, $destination);
@@ -28,7 +31,13 @@ class Users extends BackupPipe
 
     public function backup(Zipper $zip, Closure $next)
     {
-        $zip->addDirectory(config('statamic.stache.stores.users.directory'), static::getKey());
+        $usersDir = Stache::store('users')?->directory();
+
+        if (!$usersDir) {
+            throw new RuntimeException('Users directory not found');
+        }
+
+        $zip->addDirectory($usersDir, static::getKey());
 
         return $next($zip);
     }
