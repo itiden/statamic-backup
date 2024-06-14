@@ -12,6 +12,7 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
 use Itiden\Backup\Exceptions\BackupFailedException;
+use Illuminate\Support\Str;
 
 final class Backuper
 {
@@ -28,7 +29,7 @@ final class Backuper
     public function backup(): BackupDto
     {
         try {
-            $temp_zip_path = config('backup.temp_path') . '/temp.zip';
+            $temp_zip_path = config('backup.temp_path') . DIRECTORY_SEPARATOR . Str::uuid() . '.zip';
 
             $zipper = Zipper::open($temp_zip_path);
 
@@ -59,7 +60,7 @@ final class Backuper
 
             event(new BackupFailed($exception));
 
-            throw $exception;
+            throw $e;
         }
     }
 

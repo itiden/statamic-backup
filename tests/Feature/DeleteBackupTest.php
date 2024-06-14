@@ -40,7 +40,7 @@ it('can be deleted by a user with delete backups permission', function () {
     $response = deleteJson(cp_route('api.itiden.backup.destroy', $backup->timestamp));
 
     expect($response->status())->toBe(200);
-    expect($response->json('message'))->toBe('Deleted ' . $backup->name);
+    expect($response->json('message'))->toBe(__('statamic-backup::backup.destroy.success', ['name' => $backup->name]));
 
     expect(app(BackupRepository::class)->all())->toHaveCount(0);
 });
