@@ -16,7 +16,7 @@ it('can backup', function () {
     expect($backup)->toBeInstanceOf(BackupDto::class);
 
     expect(Storage::disk(config('backup.destination.disk'))
-        ->exists(config('backup.destination.path') . "/{$backup->name}.zip"))->toBeTrue();
+        ->exists(config('backup.destination.path') . "/{$backup->timestamp}.zip"))->toBeTrue();
 });
 
 it('backups correct files', function () {

@@ -31,7 +31,7 @@ final class FileBackupRepository implements BackupRepository
     public function all(): Collection
     {
         return collect(Storage::disk($this->disk)->files($this->path))
-            ->map(BackupDto::fromFile(...))
+            ->map(BackupDto::fromDiskPath(...))
             ->sortByDesc('timestamp');
     }
 
@@ -58,7 +58,7 @@ final class FileBackupRepository implements BackupRepository
             return null;
         }
 
-        return BackupDto::fromFile($path);
+        return BackupDto::fromDiskPath($path);
     }
 
     public function remove(string $timestamp): BackupDto

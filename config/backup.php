@@ -17,6 +17,20 @@ return [
     ],
 
     /**
+     * Were to store the backup registry
+     *
+     * This is used to keep track of the backups and not have to scan the disk every time
+     */
+    'registry_directory' => storage_path('backups'),
+
+    /**
+     * The backup name generator
+     *
+     * Must implement Itiden\Backup\Contracts\BackupNameGenerator
+     */
+    'name_generator' => \Itiden\Backup\Actions\GenerateName::class,
+
+    /**
      * The path to the temp directory
      */
     'temp_path' => storage_path('framework/statamic-backup'),
@@ -54,7 +68,7 @@ return [
      *
      * the repository handles resolving and managing backups
      */
-    'repository' => \Itiden\Backup\Repositories\FileBackupRepository::class,
+    'repository' => \Itiden\Backup\Repositories\YamlBackupRepository::class,
 
     /**
      * The backup steps to use

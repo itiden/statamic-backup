@@ -8,6 +8,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Itiden\Backup\Console\Commands\BackupCommand;
 use Itiden\Backup\Console\Commands\ClearFilesCommand;
 use Itiden\Backup\Console\Commands\RestoreCommand;
+use Itiden\Backup\Contracts\BackupNameGenerator;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
@@ -72,6 +73,11 @@ class ServiceProvider extends AddonServiceProvider
         $this->app->bind(
             BackupRepository::class,
             config('backup.repository')
+        );
+
+        $this->app->bind(
+            BackupNameGenerator::class,
+            config('backup.name_generator')
         );
     }
 

@@ -21,11 +21,26 @@ final readonly class BackupDto
     }
 
     /**
+     * Create a new BackupDto from the registry data
+     */
+    public static function fromRegistryData(array $data): self
+    {
+        $createdAt = Carbon::parse($data['created_at']);
+        return new self(
+            name: $data['name'],
+            created_at: $createdAt,
+            size: $data['size'],
+            path: $data['path'],
+            timestamp: (string) $createdAt->unix()
+        );
+    }
+
+    /**
      * Create a new BackupDto from a file path in the configured disk
      */
-    public static function fromFile(string $path): self
+    public static function fromDiskPath(string $path): self
     {
-        $timestamp = str(basename($path))->afterLast('-')->before('.zip')->toString();
+        $timestamp = str(basename($path))->before('.zip')->toString();
         $bytes = Storage::disk(config('backup.destination.disk'))->size($path);
 
         return new self(
@@ -42,7 +57,7 @@ final readonly class BackupDto
      */
     public static function fromAbsolutePath(string $path): self
     {
-        $timestamp = str(basename($path))->afterLast('-')->before('.zip')->toString();
+        $timestamp = str(basename($path))->before('.zip')->toString();
         $bytes = File::size($path);
 
         return new self(
