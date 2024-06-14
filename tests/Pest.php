@@ -2,7 +2,6 @@
 
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Repositories\FileBackupRepository;
-use Itiden\Backup\Repositories\YamlBackupRepository;
 use Itiden\Backup\Tests\TestCase;
 use Statamic\Facades\Role;
 use Statamic\Facades\User;
