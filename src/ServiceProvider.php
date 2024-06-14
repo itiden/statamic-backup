@@ -8,10 +8,13 @@ use Illuminate\Console\Scheduling\Schedule;
 use Itiden\Backup\Console\Commands\BackupCommand;
 use Itiden\Backup\Console\Commands\ClearFilesCommand;
 use Itiden\Backup\Console\Commands\RestoreCommand;
+// use Itiden\Backup\Console\Commands\SyncBackupsCommand;
 use Itiden\Backup\Contracts\BackupNameGenerator;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
+use Itiden\Backup\Stores\BackupStore;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
+use Statamic\Facades\Stache;
 use Statamic\Providers\AddonServiceProvider;
 
 class ServiceProvider extends AddonServiceProvider
@@ -37,6 +40,8 @@ class ServiceProvider extends AddonServiceProvider
 
         $this->setUpPermissions();
 
+        Stache::registerStore(new BackupStore());
+
         Nav::extend(function ($nav) {
             $nav->content('Backups')
                 ->can('manage backups')
@@ -49,6 +54,7 @@ class ServiceProvider extends AddonServiceProvider
             RestoreCommand::class,
             BackupCommand::class,
             ClearFilesCommand::class,
+            // SyncBackupsCommand::class,
         ]);
     }
 

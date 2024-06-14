@@ -7,6 +7,8 @@ namespace Itiden\Backup\DataTransferObjects;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Itiden\Backup\Stores\BackupStore;
+use Statamic\Facades\Stache;
 use Statamic\Support\Str as StatamicStr;
 
 final readonly class BackupDto
@@ -17,7 +19,44 @@ final readonly class BackupDto
         public string $size,
         public string $path,
         public string $timestamp,
+        public ?string $disk = null,
     ) {
+    }
+
+    /**
+     * for stache
+     */
+    public function id(): string
+    {
+        return $this->timestamp;
+    }
+
+    /**
+     * for stache
+     */
+    public function path(): string
+    {
+        /** @var BackupStore */
+        $store = Stache::store('backups');
+
+        return implode("", [
+            $store->directory(),
+            DIRECTORY_SEPARATOR,
+            $this->id(),
+            '.',
+            $store->fileExtension()
+        ]);
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'timestamp' => $this->timestamp,
+            'name' => $this->name,
+            'created_at' => $this->created_at->toISOString(),
+            'size' => $this->size,
+            'path' => $this->path,
+        ];
     }
 
     /**
@@ -26,6 +65,7 @@ final readonly class BackupDto
     public static function fromRegistryData(array $data): self
     {
         $createdAt = Carbon::parse($data['created_at']);
+
         return new self(
             name: $data['name'],
             created_at: $createdAt,
