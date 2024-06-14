@@ -51,7 +51,7 @@ return [
 
     /**
      * The backup repository
-     * 
+     *
      * the repository handles resolving and managing backups
      */
     'repository' => \Itiden\Backup\Repositories\FileBackupRepository::class,
