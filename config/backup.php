@@ -50,9 +50,16 @@ return [
     ],
 
     /**
+     * The backup repository
+     *
+     * the repository handles resolving and managing backups
+     */
+    'repository' => \Itiden\Backup\Repositories\FileBackupRepository::class,
+
+    /**
      * The backup steps to use
      *
-     * These are the steps/pipes that will be used to backup your site
+     * these are the steps/pipes that will be used to backup your site
      * You can add your own here
      *
      * All pipes are expected to be instances of Itiden\Backup\Abtracts\BackupPipe

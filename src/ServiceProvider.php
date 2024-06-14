@@ -8,6 +8,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Itiden\Backup\Console\Commands\BackupCommand;
 use Itiden\Backup\Console\Commands\ClearFilesCommand;
 use Itiden\Backup\Console\Commands\RestoreCommand;
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
@@ -63,14 +64,14 @@ class ServiceProvider extends AddonServiceProvider
 
     public function register()
     {
-        $this->app->bind(
-            \Itiden\Backup\Contracts\Repositories\BackupRepository::class,
-            \Itiden\Backup\Repositories\FileBackupRepository::class
-        );
-
         $this->mergeConfigFrom(
             __DIR__ . '/../config/backup.php',
             'backup'
+        );
+
+        $this->app->bind(
+            BackupRepository::class,
+            config('backup.repository')
         );
     }
 
