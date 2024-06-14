@@ -29,29 +29,14 @@ class Users extends BackupPipe
 
     public function backup(Zipper $zip, Closure $next)
     {
-        $zip->addDirectory($this->getConfig()['users']->directory(), static::getKey());
+        $usersDir = Stache::store('users')?->directory();
+
+        if (!$usersDir) {
+            throw new RuntimeException('Users directory not found');
+        }
+
+        $zip->addDirectory($usersDir, static::getKey());
 
         return $next($zip);
-    }
-
-    private function getConfig()
-    {
-        $config = require base_path('vendor').'/statamic/cms/config/stache.php';
-        $published = config('statamic.stache.stores');
-
-        $nativeStores = collect($config['stores'])
-            ->reject(fn ($config, $key) => $key === 'users' && config('statamic.users.repository') !== 'file')
-            ->map(function ($config, $key) use ($published) {
-                return array_merge($config, $published[$key] ?? []);
-            });
-
-        // Merge in any user defined stores that aren't native.
-        $stores = $nativeStores->merge(collect($published)->diffKeys($nativeStores));
-
-        $stores = $stores->map(function ($config) {
-            return app($config['class'])->directory($config['directory'] ?? null);
-        });
-
-        return $stores->all();
     }
 }
