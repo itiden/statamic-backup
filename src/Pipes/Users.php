@@ -21,7 +21,7 @@ class Users extends BackupPipe
 
     public function restore(string $restoringFromPath, Closure $next)
     {
-        $destination = $this->getConfig()['users']->directory();
+        $destination = Stache::store('users')?->directory();
         $users = $this->getDirectoryPath($restoringFromPath);
 
         File::copyDirectory($users, $destination);
