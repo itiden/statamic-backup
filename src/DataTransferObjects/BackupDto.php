@@ -17,6 +17,7 @@ final readonly class BackupDto
         public string $size,
         public string $path,
         public string $timestamp,
+        public ?string $disk = null,
     ) {
     }
 
@@ -31,7 +32,8 @@ final readonly class BackupDto
             created_at: $createdAt,
             size: $data['size'],
             path: $data['path'],
-            timestamp: (string) $createdAt->unix()
+            timestamp: (string) $createdAt->unix(),
+            disk: $data['disk'] ?? null,
         );
     }
 
@@ -40,24 +42,25 @@ final readonly class BackupDto
      *
      * @deprecated Should not be used since it contains logic that wont work with the new backup registry
      */
-    public static function fromDiskPath(string $path): self
+    public static function fromDiskPath(string $path): static
     {
         $timestamp = str(basename($path))->afterLast('-')->before('.zip')->toString();
         $bytes = Storage::disk(config('backup.destination.disk'))->size($path);
 
-        return new self(
+        return new static(
             name: File::name($path),
             created_at: Carbon::createFromTimestamp($timestamp),
             size: StatamicStr::fileSizeForHumans($bytes, 2),
             path: $path,
             timestamp: $timestamp,
+            disk: config('backup.destination.disk'),
         );
     }
 
     /**
      * Create a new BackupDto from a absolute path
      */
-    public static function fromAbsolutePath(string $path): self
+    public static function fromAbsolutePath(string $path): static
     {
         $timestampFromFileName = str(basename($path))->afterLast('-')->before('.zip')->toString();
 
@@ -74,7 +77,7 @@ final readonly class BackupDto
 
         $bytes = File::size($path);
 
-        return new self(
+        return new static(
             name: File::name($path),
             created_at: $timestamp,
             size: StatamicStr::fileSizeForHumans($bytes, 2),
