@@ -1,11 +1,14 @@
 <?php
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Backuper;
 
 uses()->group('backup_repositories');
+
+// TODO: Bind the backup repository to each of the repositories
+// beforeEach(function () {
+// });
 
 it('can get backups', function (string $repository) {
     Backuper::backup();
@@ -45,8 +48,8 @@ it('can delete backup by timestamp', function (string $repository) {
     $backup = app($repository)->remove($backup->timestamp);
 
     expect($backup)->toBeInstanceOf(BackupDto::class);
-    expect(Storage::disk(config('backup.destination.disk'))
-        ->exists(config('backup.destination.path') . "/{$backup->name}.zip"))->toBeFalse();
+    expect(app($repository)->find($backup->timestamp))->toBeNull();
+    expect(app($repository)->all()->count())->toBe(0);
 })->with('backup_repositories');
 
 it('will throw exception when trying to remove non-existing backup', function (string $repository) {

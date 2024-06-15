@@ -37,17 +37,16 @@ final class FileBackupRepository implements BackupRepository
 
     private function getRegistryData(): Collection
     {
-        if (!File::exists($this->registryDirectory . '/' . self::FILE)) {
-            File::ensureDirectoryExists($this->registryDirectory);
-            File::put($this->registryDirectory . '/' . self::FILE, $this->yaml->dump([]));
+        if (!File::exists($this->getRegistryPath())) {
             return collect();
         }
-
         return collect($this->yaml->parseFile($this->getRegistryPath()));
     }
 
     private function writeRegistry(Collection $data): int|bool
     {
+        File::ensureDirectoryExists($this->registryDirectory);
+
         return File::put($this->getRegistryPath(), $this->yaml->dump($data->toArray()));
     }
 
@@ -86,7 +85,7 @@ final class FileBackupRepository implements BackupRepository
             $this->getRegistryData()
                 ->put((string) $createdAt->unix(), [
                     'name' => app(BackupNameGenerator::class)->generate($createdAt),
-                    'created_at' => $createdAt->toString(),
+                    'created_at' => $createdAt->toISOString(),
                     'size' => StatamicStr::fileSizeForHumans(Storage::disk($this->backupDisk)->size($path), 2),
                     'disk' => $this->backupDisk,
                     'path' => $path,
