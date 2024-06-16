@@ -68,7 +68,7 @@ return [
      *
      * the repository handles resolving and managing backups
      */
-    'repository' => \Itiden\Backup\Repositories\YamlBackupRepository::class,
+    'repository' => \Itiden\Backup\Repositories\StacheBackupRepository::class,
 
     /**
      * The backup steps to use

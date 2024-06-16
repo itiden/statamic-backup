@@ -1,7 +1,7 @@
 <?php
 
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
-use Itiden\Backup\Repositories\FileBackupRepository;
+use Itiden\Backup\Repositories\StacheBackupRepository;
 use Itiden\Backup\Tests\TestCase;
 use Statamic\Facades\Role;
 use Statamic\Facades\User;
@@ -11,7 +11,7 @@ uses(TestCase::class)
     ->in(__DIR__);
 
 dataset('backup_repositories', [
-    FileBackupRepository::class
+    StacheBackupRepository::class
 ]);
 
 function user()

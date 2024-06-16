@@ -3,8 +3,9 @@
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Facades\Backuper;
-use Itiden\Backup\Repositories\FileBackupRepository;
+use Itiden\Backup\Repositories\YamlBackupRepository;
 use Statamic\Facades\YAML;
 
 uses()->group('file_backup_repository');
@@ -21,6 +22,7 @@ function backupRegistry(): Collection
 }
 
 it('can can create a backup', function () {
+    app()->bind(BackupRepository::class, YamlBackupRepository::class);
     expect(backupRegistry()->count())->toBe(0);
     $backup = Backuper::backup();
 
@@ -38,9 +40,10 @@ it('can can create a backup', function () {
 });
 
 it('can delete a backup by timestamp', function () {
+    app()->bind(BackupRepository::class, YamlBackupRepository::class);
     $backup = Backuper::backup();
 
-    $backup = app(FileBackupRepository::class)->remove($backup->timestamp);
+    $backup = app(BackupRepository::class)->remove($backup->timestamp);
 
     expect(backupRegistry()->count())->toBe(0);
     expect(Storage::disk(config('backup.destination.disk'))
