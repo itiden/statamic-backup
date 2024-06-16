@@ -10,42 +10,72 @@ php artisan vendor:publish --tag="backup-config"
 
 ## Configuration Options
 
-Now, let's dive into the exciting world of configuration. Here's an overview of each option:
+This is the default contents of the configuration:
 
-- **`content_path`**:
+```php
+return [
+    /**
+     * The path to the content directory
+     *
+     * This is used by the default content backup driver
+     */
+    'content_path' => storage_path('content'),
 
-  - _Description_: Specifies the path to your content directory, used by the default content backup driver.
-  - _Default_: `storage_path('content')`
+    /**
+     * The backup destination options
+     */
+    'destination' => [
+        'disk' => 'local',
+        'path' => 'statamic-backups',
+    ],
 
-- **`destination`**:
+    /**
+     * The path to the temp directory
+     */
+    'temp_path' => storage_path('framework/statamic-backup'),
 
-  - _Description_: Defines the backup destination disk and path.
-  - _Default_: statamic-backups on the local disk.
+    /**
+     * The maximum number of backups to keep
+     *
+     * when exceeded the oldest backup will be deleted
+     */
+    'max_backups' => 10,
 
-- **`temp_path`**:
+    /**
+     * The backup password
+     *
+     * set to null to disable password protection
+     */
+    'password' => env('BACKUP_PASSWORD', null),
 
-  - _Description_: Specifies the path to the temporary directory used for backup operations.
-  - _Defualt_: `storage_path('framework/statamic-backup')`
+    /**
+     * The backup schedule options
+     *
+     * set to null to disable automatic backups
+     * frequency can be any of the laravel schedule frequencies
+     * time should be parameters the frequency expects
+     *
+     * see https://laravel.com/docs/10.x/scheduling#schedule-frequency-options
+     */
+    'schedule' => [
+        'frequency' => 'daily',
+        // 'time' => '03:00',
+    ],
 
-- **`max_backups`**:
-
-  - _Description_: Determines the maximum number of backups to keep. When this limit is exceeded, the oldest backup will be automatically deleted.
-  - _Default_: 10
-
-- **`password`**:
-
-  - _Description_: Sets a backup password. If set to null, password protection is disabled.
-  - _Default_: `env('BACKUP_PASSWORD')`
-
-- **`schedule`**:
-
-  - _Description_: Configure the backup schedule options. Specify the frequency and time for automatic backups.
-  - _Configuration_: Check out our scheduling docs [here](scheduling.md).
-  - _Default_: Daily at midnight
-
-- **`pipeline`**:
-  - _Description_: Specifies the backup pipeline. These "pipes" determine what parts of your site will be backed up.
-  - _Configuration_: Check out our backup pipes docs [here](pipes.md).
-  - _Default_: Content, Assets, and Users.
+    /**
+     * The backup steps to use
+     *
+     * These are the steps/pipes that will be used to backup your site
+     * You can add your own here
+     *
+     * All pipes are expected to be instances of Itiden\Backup\Abtracts\BackupPipe
+     */
+    'pipeline' => [
+        Itiden\Backup\Pipes\Content::class,
+        Itiden\Backup\Pipes\Assets::class,
+        Itiden\Backup\Pipes\Users::class,
+    ],
+];
+```
 
 There you have it! With these options, you can fine-tune your backup setup to suit your needs and keep your data safe and sound. Happy configuring! 😄🚀

@@ -1,6 +1,6 @@
 # Backup
 
-Welcome to the Backup Addon! This addon supercharges your Statamic experience by providing powerful backup management capabilities. Say goodbye to data loss worries and hello to peace of mind!
+Backup is an extensible and powerful backup tool for statamic sites, it enables you to create, manage and schedule backups of your site with ease in the control panel.
 
 ## Table of Contents
 
@@ -8,86 +8,77 @@ Welcome to the Backup Addon! This addon supercharges your Statamic experience by
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
-- [Contributing](#contributing)
+  - [Scheduling](#scheduling)
+- [Documentation](#documentation)
 - [License](#license)
 
 ## Features
 
-- 📂 **Customizable Storage**: Choose where your backups are stored, whether it's on your local disk or a different storage provider.
-- 🔄 **Backup Rotation**: Automatically manage your backups by setting a maximum number to keep. Old backups are deleted to make room for new ones.
-- 🔒 **Password Protection**: Keep your backups secure with an optional password. No unauthorized access allowed!
-- ⏰ **Scheduled Backups**: Set it and forget it! Schedule backups to run automatically at your preferred frequency.
+Why use our backup addon?
+
+- Control panel page where you can manage backups
+- Chunked uploads - upload huge backups from other servers without the need to change your `php.ini`.
+- Permissions - choose exactly which users can manage your backups with [permissions](https://statamic.dev/users#permissions).
+- Choose exactly what you want to backup by configuring the backup [pipeline](docs/pipeline.md).
+  - Easy to extend and customize, [just create a new pipes](docs/pipeline.md#creating-a-new-backup-pipe)!
+- Uses laravels [storage system](https://laravel.com/docs/11.x/filesystem) and thus supports external storage out of the box.
+- Tested, we have over 140 assertions in this addon.
 
 ## Installation
 
-To install this addon, follow these simple steps:
-
-1. **Composer Installation**:
-
-   Run the following composer command in your Statamic project:
+1. To install this addon, require it using composer.
 
    ```bash
    composer require itiden/statamic-backup
    ```
 
-2. **Configuration**:
-
-   Publish the configuration file:
-
-   ```sh
+2. Set the `content_path` config value to the path of your content, start with publishing the config:
+   ```bash
    php artisan vendor:publish --tag="backup-config"
    ```
-
-   Next, configure the addon by editing the `config/backup.php` file. Customize settings such as content path, backup destination, and more.
-
-   Read the full configuration documentation [here](docs/configuration.md)!
-
-3. **Usage**:
-
-   You're all set! Start using the addon to handle your backups effortlessly.
-
-## Commands
-
-Backup your site:
-
-```sh
-php artisan statamic:backup
-```
-
-Restore your site from an absolute path
-
-```sh
-php artisan statamic:backup:restore {path}
-```
-
-Clear the temp file directory
-
-```sh
-php artisan statamic:backup:clear
-```
+   default is `storage_path('content')`
 
 ## Configuration
 
-Read the configuration [docs](docs/configuration.md)!
+You can configure the backup settings in the `config/backup.php` file, first publish the configuration file using the following command:
 
-## Notifications/Events
+```bash
+php artisan vendor:publish --tag="backup-config"
+```
 
-You can send notifications when a backup is created. Read the notifications [docs](docs/notifications.md)!
+Then you can configure:
+
+- Backup path
+- Backup disk
+- Backup filename
+- Backup schedule
+- Temporary files path
+- Max amount of backups to keep
+- Backup password
+- The Backup pipeline
+
+Read more about the configuration [here](docs/configuration.md)!
 
 ## Usage
 
-Using the Statamic Backup Addon is a breeze:
+To create a backup, navigate to the Backup section in the control panel and click the "Create Backup" button. There you can also see a list of all your backups and download or restore them if needed.
 
-1. Configure your backup settings in `config/backup.php` to match your needs [[docs]](docs/configuration.md).
+Or if you prefer to use the command line, you can use the following command:
 
-2. Run the backup command manually or let scheduled backups take care of it automatically.
+```bash
+php artisan statamic:backup:create
+```
 
-3. Enjoy the peace of mind knowing your data is backed up, secure, and accessible when you need it.
+### Scheduling
 
-## Contributing
+Configure the backup schedule in the configuration file, read more about it [here](docs/scheduling.md).
 
-We welcome contributions from the Statamic community! Whether it's bug fixes, new features, or improvements, please feel free to contribute.
+To use the scheduling you need to run the laravel scheduler. Read more about that here: [Running the scheduler](https://laravel.com/docs/10.x/scheduling#running-the-scheduler).
+
+## Documentation
+
+In the docs directory you can read more about the pipeline, scheduling and notification configurations.
 
 ## License
 
-This addon is open-source and available under the [MIT License](LICENSE).
+Backup is open-sourced software licensed under the [MIT license](LICENSE.md).
