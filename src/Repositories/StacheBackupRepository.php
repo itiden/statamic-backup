@@ -12,32 +12,31 @@ use Illuminate\Support\Str;
 use Itiden\Backup\Contracts\BackupNameGenerator;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
+use Itiden\Backup\Stores\BackupStore;
 use Statamic\Facades\Stache;
 use Symfony\Component\Yaml\Yaml;
 use Statamic\Support\Str as StatamicStr;
 
 final class StacheBackupRepository implements BackupRepository
 {
-    private string $backupDisk;
-    private string $backupDirectory;
+    private BackupStore $store;
 
     public function __construct(
         private Yaml $yaml,
     ) {
-        $this->backupDisk = config('backup.destination.disk');
-        $this->backupDirectory = config('backup.destination.path');
+        $this->store = Stache::store('backups');
     }
 
     public function all(): Collection
     {
-        return Stache::store('backups')
+        return $this->store
             ->getItemsFromFiles()
             ->sortByDesc('timestamp');
     }
 
     public function find(string $timestamp): ?BackupDto
     {
-        $data = Stache::store('backups')->getItem($timestamp);
+        $data = $this->store->getItem($timestamp);
 
         if (!$data) {
             return null;
@@ -46,28 +45,11 @@ final class StacheBackupRepository implements BackupRepository
         return $data;
     }
 
-    public function add(string $path): BackupDto
+    public function add(BackupDto $dto): BackupDto
     {
-        Storage::disk($this->backupDisk)->makeDirectory($this->backupDirectory);
+        $this->store->save($dto);
 
-        $createdAt = Carbon::now();
-
-        $path = Storage::disk($this->backupDisk)->putFileAs(
-            $this->backupDirectory,
-            new StreamableFile($path),
-            $createdAt->unix() . '.zip'
-        );
-
-        Stache::store('backups')->save(new BackupDto(
-            name: app(BackupNameGenerator::class)->generate($createdAt),
-            created_at: $createdAt,
-            size: StatamicStr::fileSizeForHumans(Storage::disk($this->backupDisk)->size($path), 2),
-            timestamp: (string) $createdAt->unix(),
-            path: $path,
-            disk: $this->backupDisk,
-        ));
-
-        return $this->find((string) $createdAt->unix());
+        return $this->find($dto->timestamp);
     }
 
     public function remove(string $timestamp): BackupDto
@@ -76,7 +58,7 @@ final class StacheBackupRepository implements BackupRepository
 
         Storage::disk(config('backup.destination.disk'))->delete($backup->path);
 
-        Stache::store('backups')->delete($backup);
+        $this->store->delete($backup);
 
         return $backup;
     }
@@ -86,7 +68,7 @@ final class StacheBackupRepository implements BackupRepository
         $removed = Storage::disk(config('backup.destination.disk'))->deleteDirectory(config('backup.destination.path'));
 
         if ($removed) {
-            Stache::store('backups')->clear();
+            $this->store->clear();
         }
 
         return $removed;

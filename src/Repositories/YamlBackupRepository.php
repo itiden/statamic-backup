@@ -68,31 +68,14 @@ final class YamlBackupRepository implements BackupRepository
         return BackupDto::fromRegistryData($data);
     }
 
-    public function add(string $path): BackupDto
+    public function add(BackupDto $backup): BackupDto
     {
-        Storage::disk($this->backupDisk)->makeDirectory($this->backupDirectory);
-
-
-        $createdAt = Carbon::now();
-
-        $path = Storage::disk($this->backupDisk)->putFileAs(
-            $this->backupDirectory,
-            new StreamableFile($path),
-            $createdAt->unix() . '.zip'
-        );
-
         $this->writeRegistry(
             $this->getRegistryData()
-                ->put((string) $createdAt->unix(), [
-                    'name' => app(BackupNameGenerator::class)->generate($createdAt),
-                    'created_at' => $createdAt->toISOString(),
-                    'size' => StatamicStr::fileSizeForHumans(Storage::disk($this->backupDisk)->size($path), 2),
-                    'disk' => $this->backupDisk,
-                    'path' => $path,
-                ])
+                ->put($backup->id(), $backup->toArray())
         );
 
-        return $this->find((string) $createdAt->unix());
+        return $this->find($backup->timestamp);
     }
 
     public function remove(string $timestamp): BackupDto

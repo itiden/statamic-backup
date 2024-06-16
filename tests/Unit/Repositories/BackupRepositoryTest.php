@@ -7,8 +7,6 @@ use Itiden\Backup\Facades\Backuper;
 uses()->group('backup_repositories');
 
 // TODO: Bind the backup repository to each of the repositories
-// beforeEach(function () {
-// });
 
 it('can get backups', function (string $repository) {
     Backuper::backup();

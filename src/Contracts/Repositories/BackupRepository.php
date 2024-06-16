@@ -23,7 +23,7 @@ interface BackupRepository
     /**
      * Add a backup.
      */
-    public function add(string $path): BackupDto;
+    public function add(BackupDto $path): BackupDto;
 
     /**
      * Delete a backup by timestamp.

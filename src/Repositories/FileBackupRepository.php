@@ -38,17 +38,9 @@ final class FileBackupRepository implements BackupRepository
             ->sortByDesc('timestamp');
     }
 
-    public function add(string $path): BackupDto
+    public function add(BackupDto $dto): BackupDto
     {
-        Storage::disk($this->disk)->makeDirectory($this->path);
-
-        $timestamp = (string) Carbon::now()->unix();
-
-        Storage::disk($this->disk)->putFileAs(
-            $this->path,
-            new File($path),
-            $this->makeFilename($timestamp)
-        );
+        $timestamp = $dto->timestamp;
 
         return $this->find($timestamp);
     }

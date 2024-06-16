@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Itiden\Backup;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Pipeline;
+use Illuminate\Http\File as StreamableFile;
+use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Support\Zipper;
 use Itiden\Backup\DataTransferObjects\BackupDto;
@@ -13,6 +16,8 @@ use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
 use Itiden\Backup\Exceptions\BackupFailedException;
 use Illuminate\Support\Str;
+use Itiden\Backup\Contracts\BackupNameGenerator;
+use Statamic\Support\Str as StatamicStr;
 
 final class Backuper
 {
@@ -44,7 +49,31 @@ final class Backuper
 
             $zipper->close();
 
-            $backup = $this->repository->add($temp_zip_path);
+            $disk = config('backup.destination.disk');
+            $directory = config('backup.destination.path');
+
+            // Ensure the backup target directory exists
+            Storage::disk($disk)->makeDirectory($directory);
+
+            $createdAt = Carbon::now();
+
+            // Move the backup to the destination disk
+            $path = Storage::disk($disk)->putFileAs(
+                $directory,
+                new StreamableFile($temp_zip_path),
+                $createdAt->unix() . '.zip'
+            );
+
+            $backup = $this->repository->add(
+                new BackupDto(
+                    name: app(BackupNameGenerator::class)->generate($createdAt),
+                    created_at: $createdAt,
+                    size: StatamicStr::fileSizeForHumans(filesize($temp_zip_path)),
+                    timestamp: (string) $createdAt->unix(),
+                    path: $path,
+                    disk: $disk,
+                )
+            );
 
             event(new BackupCreated($backup));
 
