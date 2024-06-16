@@ -5,122 +5,76 @@ declare(strict_types=1);
 namespace Itiden\Backup\Repositories;
 
 use Carbon\Carbon;
-use Illuminate\Http\File as StreamableFile;
+use Illuminate\Http\File;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Itiden\Backup\Contracts\BackupNameGenerator;
+use Illuminate\Support\Str;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
-use Symfony\Component\Yaml\Yaml;
-use Statamic\Support\Str as StatamicStr;
 
+/**
+ * @deprecated
+ */
 final class FileBackupRepository implements BackupRepository
 {
-    private const FILE = 'backups.yaml';
-    private string $registryDirectory;
-    private string $backupDisk;
-    private string $backupDirectory;
+    private string $disk;
+    private string $path;
 
-    public function __construct(
-        private Yaml $yaml,
-    ) {
-        $this->registryDirectory = config('backup.registry_directory');
-        $this->backupDisk = config('backup.destination.disk');
-        $this->backupDirectory = config('backup.destination.path');
+    public function __construct()
+    {
+        $this->disk = config('backup.destination.disk');
+        $this->path = config('backup.destination.path');
     }
 
-    private function getRegistryPath(): string
+    private function makeFilename(string $timestamp): string
     {
-        return "{$this->registryDirectory}/" . self::FILE;
-    }
-
-    private function getRegistryData(): Collection
-    {
-        if (!File::exists($this->getRegistryPath())) {
-            return collect();
-        }
-        return collect($this->yaml->parseFile($this->getRegistryPath()));
-    }
-
-    private function writeRegistry(Collection $data): int|bool
-    {
-        File::ensureDirectoryExists($this->registryDirectory);
-
-        return File::put($this->getRegistryPath(), $this->yaml->dump($data->toArray()));
+        return Str::slug(config('app.name')) . '-' . $timestamp . '.zip';
     }
 
     public function all(): Collection
     {
-        return $this->getRegistryData()
-            ->map(BackupDto::fromRegistryData(...))
+        return collect(Storage::disk($this->disk)->files($this->path))
+            ->map(BackupDto::fromDiskPath(...))
             ->sortByDesc('timestamp');
-    }
-
-    public function find(string $timestamp): ?BackupDto
-    {
-        $data = $this->getRegistryData()->get($timestamp);
-
-        if (!$data) {
-            return null;
-        }
-
-        return BackupDto::fromRegistryData($data);
     }
 
     public function add(string $path): BackupDto
     {
-        Storage::disk($this->backupDisk)->makeDirectory($this->backupDirectory);
+        Storage::disk($this->disk)->makeDirectory($this->path);
 
+        $timestamp = (string) Carbon::now()->unix();
 
-        $createdAt = Carbon::now();
-
-        $path = Storage::disk($this->backupDisk)->putFileAs(
-            $this->backupDirectory,
-            new StreamableFile($path),
-            $createdAt->unix() . '.zip'
+        Storage::disk($this->disk)->putFileAs(
+            $this->path,
+            new File($path),
+            $this->makeFilename($timestamp)
         );
 
-        $this->writeRegistry(
-            $this->getRegistryData()
-                ->put((string) $createdAt->unix(), [
-                    'name' => app(BackupNameGenerator::class)->generate($createdAt),
-                    'created_at' => $createdAt->toISOString(),
-                    'size' => StatamicStr::fileSizeForHumans(Storage::disk($this->backupDisk)->size($path), 2),
-                    'disk' => $this->backupDisk,
-                    'path' => $path,
-                ])
-        );
+        return $this->find($timestamp);
+    }
 
-        return $this->find((string) $createdAt->unix());
+    public function find(string $timestamp): ?BackupDto
+    {
+        $path = "{$this->path}/{$this->makeFilename($timestamp)}";
+
+        if (!Storage::disk($this->disk)->exists($path)) {
+            return null;
+        }
+
+        return BackupDto::fromDiskPath($path);
     }
 
     public function remove(string $timestamp): BackupDto
     {
         $backup = $this->find($timestamp);
 
-        if ($backup === null) {
-            throw new \Exception("Backup with timestamp {$timestamp} not found.");
-        }
-
         Storage::disk(config('backup.destination.disk'))->delete($backup->path);
-
-        $this->writeRegistry(
-            $this->getRegistryData()
-                ->forget($timestamp)
-        );
 
         return $backup;
     }
 
     public function empty(): bool
     {
-        $removed = Storage::disk(config('backup.destination.disk'))->deleteDirectory(config('backup.destination.path'));
-
-        if ($removed) {
-            $this->writeRegistry(collect());
-        }
-
-        return $removed;
+        return Storage::disk(config('backup.destination.disk'))->deleteDirectory(config('backup.destination.path'));
     }
 }
