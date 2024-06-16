@@ -33,7 +33,7 @@ final class BackupStore extends BasicStore
      */
     public function makeItemFromFile($path, $contents): BackupDto
     {
-        return BackupDto::fromRegistryData(
+        return BackupDto::fromArray(
             YAML::parse($contents)
         );
     }

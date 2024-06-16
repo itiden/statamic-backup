@@ -19,12 +19,17 @@ final readonly class BackupDto
         public string $size,
         public string $path,
         public string $timestamp,
+        /**
+         * If backup is stored on a disk, this will be the disk name
+         * If null, it's assumed to be stored locally and the path is an absolute path
+         */
         public ?string $disk = null,
     ) {
     }
 
     /**
-     * for stache
+     * Get the backup identifier
+     * required(?) by the stache store
      */
     public function id(): string
     {
@@ -32,7 +37,7 @@ final readonly class BackupDto
     }
 
     /**
-     * for stache
+     * Get the path to the backup meta file
      */
     public function path(): string
     {
@@ -63,7 +68,7 @@ final readonly class BackupDto
     /**
      * Create a new BackupDto from the registry data
      */
-    public static function fromRegistryData(array $data): self
+    public static function fromArray(array $data): self
     {
         $createdAt = Carbon::parse($data['created_at']);
 

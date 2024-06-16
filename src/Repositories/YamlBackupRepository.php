@@ -53,7 +53,7 @@ final class YamlBackupRepository implements BackupRepository
     public function all(): Collection
     {
         return $this->getRegistryData()
-            ->map(BackupDto::fromRegistryData(...))
+            ->map(BackupDto::fromArray(...))
             ->sortByDesc('timestamp');
     }
 
@@ -65,7 +65,7 @@ final class YamlBackupRepository implements BackupRepository
             return null;
         }
 
-        return BackupDto::fromRegistryData($data);
+        return BackupDto::fromArray($data);
     }
 
     public function add(BackupDto $backup): BackupDto
