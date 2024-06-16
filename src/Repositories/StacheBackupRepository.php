@@ -15,7 +15,7 @@ use Statamic\Facades\Stache;
 use Symfony\Component\Yaml\Yaml;
 use Statamic\Support\Str as StatamicStr;
 
-final class FileBackupRepository implements BackupRepository
+final class StacheBackupRepository implements BackupRepository
 {
     private string $backupDisk;
     private string $backupDirectory;
