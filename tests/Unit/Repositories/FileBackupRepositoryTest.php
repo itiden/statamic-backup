@@ -32,10 +32,11 @@ it('can can create a backup', function () {
     expect(backupRegistry()->count())->toBe(1);
     expect(backupRegistry()->get($backup->timestamp))->toBe([
         'name' => $backup->name,
-        'created_at' => $backup->created_at->toISOString(),
+        'timestamp' => $backup->timestamp,
         'size' => $backup->size,
-        'disk' => $backup->disk,
         'path' => $backup->path,
+        'disk' => $backup->disk,
+        'created_at' => $backup->created_at->toISOString(),
     ]);
 });
 

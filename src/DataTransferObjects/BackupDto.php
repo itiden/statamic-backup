@@ -51,11 +51,12 @@ final readonly class BackupDto
     public function toArray(): array
     {
         return [
-            'timestamp' => $this->timestamp,
             'name' => $this->name,
-            'created_at' => $this->created_at->toISOString(),
+            'timestamp' => $this->timestamp,
             'size' => $this->size,
             'path' => $this->path,
+            'disk' => $this->disk,
+            'created_at' => $this->created_at->toISOString(),
         ];
     }
 
