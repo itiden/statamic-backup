@@ -49,31 +49,7 @@ final class Backuper
 
             $zipper->close();
 
-            $disk = config('backup.destination.disk');
-            $directory = config('backup.destination.path');
-
-            // Ensure the backup target directory exists
-            Storage::disk($disk)->makeDirectory($directory);
-
-            $createdAt = Carbon::now();
-
-            // Move the backup to the destination disk
-            $path = Storage::disk($disk)->putFileAs(
-                $directory,
-                new StreamableFile($temp_zip_path),
-                $createdAt->unix() . '.zip'
-            );
-
-            $backup = $this->repository->add(
-                new BackupDto(
-                    name: app(BackupNameGenerator::class)->generate($createdAt),
-                    created_at: $createdAt,
-                    size: StatamicStr::fileSizeForHumans(filesize($temp_zip_path)),
-                    timestamp: (string) $createdAt->unix(),
-                    path: $path,
-                    disk: $disk,
-                )
-            );
+            $backup = $this->moveBackupToStorage($temp_zip_path);
 
             event(new BackupCreated($backup));
 
@@ -109,5 +85,37 @@ final class Backuper
                 $this->repository->remove($backup->timestamp);
             });
         }
+    }
+
+    /**
+     * Move the backup to the configured storage disk.
+     */
+    private function moveBackupToStorage(string $temp_zip_path): BackupDto
+    {
+        $disk = config('backup.destination.disk');
+        $directory = config('backup.destination.path');
+
+        // Ensure the backup target directory exists
+        Storage::disk($disk)->makeDirectory($directory);
+
+        $createdAt = Carbon::now();
+
+        // Stream the file to the destination storage disk and store the path
+        $path = Storage::disk($disk)->putFileAs(
+            $directory,
+            new StreamableFile($temp_zip_path),
+            $createdAt->unix() . '.zip'
+        );
+
+        return $this->repository->add(
+            new BackupDto(
+                name: app(BackupNameGenerator::class)->generate($createdAt),
+                created_at: $createdAt,
+                size: StatamicStr::fileSizeForHumans(filesize($temp_zip_path)),
+                timestamp: (string) $createdAt->unix(),
+                path: $path,
+                disk: $disk,
+            )
+        );
     }
 }
