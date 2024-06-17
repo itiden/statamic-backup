@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Repositories;
 
-use Carbon\Carbon;
-use Illuminate\Http\File;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 
+/**
+ * @deprecated
+ */
 final class FileBackupRepository implements BackupRepository
 {
     private string $disk;
@@ -31,21 +32,13 @@ final class FileBackupRepository implements BackupRepository
     public function all(): Collection
     {
         return collect(Storage::disk($this->disk)->files($this->path))
-            ->map(BackupDto::fromFile(...))
+            ->map(BackupDto::fromDiskPath(...))
             ->sortByDesc('timestamp');
     }
 
-    public function add(string $path): BackupDto
+    public function add(BackupDto $dto): BackupDto
     {
-        Storage::disk($this->disk)->makeDirectory($this->path);
-
-        $timestamp = (string) Carbon::now()->unix();
-
-        Storage::disk($this->disk)->putFileAs(
-            $this->path,
-            new File($path),
-            $this->makeFilename($timestamp)
-        );
+        $timestamp = $dto->timestamp;
 
         return $this->find($timestamp);
     }
@@ -58,7 +51,7 @@ final class FileBackupRepository implements BackupRepository
             return null;
         }
 
-        return BackupDto::fromFile($path);
+        return BackupDto::fromDiskPath($path);
     }
 
     public function remove(string $timestamp): BackupDto

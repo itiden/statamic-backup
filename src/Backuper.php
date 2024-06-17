@@ -4,14 +4,20 @@ declare(strict_types=1);
 
 namespace Itiden\Backup;
 
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Pipeline;
+use Illuminate\Http\File as StreamableFile;
+use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Support\Zipper;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
 use Itiden\Backup\Exceptions\BackupFailedException;
+use Illuminate\Support\Str;
+use Itiden\Backup\Contracts\BackupNameGenerator;
+use Statamic\Support\Str as StatamicStr;
 
 final class Backuper
 {
@@ -28,7 +34,7 @@ final class Backuper
     public function backup(): BackupDto
     {
         try {
-            $temp_zip_path = config('backup.temp_path') . '/temp.zip';
+            $temp_zip_path = config('backup.temp_path') . DIRECTORY_SEPARATOR . Str::uuid() . '.zip';
 
             $zipper = Zipper::open($temp_zip_path);
 
@@ -43,7 +49,7 @@ final class Backuper
 
             $zipper->close();
 
-            $backup = $this->repository->add($temp_zip_path);
+            $backup = $this->moveBackupToStorage($temp_zip_path);
 
             event(new BackupCreated($backup));
 
@@ -59,7 +65,7 @@ final class Backuper
 
             event(new BackupFailed($exception));
 
-            throw $exception;
+            throw $e;
         }
     }
 
@@ -79,5 +85,37 @@ final class Backuper
                 $this->repository->remove($backup->timestamp);
             });
         }
+    }
+
+    /**
+     * Move the backup to the configured storage disk.
+     */
+    private function moveBackupToStorage(string $temp_zip_path): BackupDto
+    {
+        $disk = config('backup.destination.disk');
+        $directory = config('backup.destination.path');
+
+        // Ensure the backup target directory exists
+        Storage::disk($disk)->makeDirectory($directory);
+
+        $createdAt = Carbon::now();
+
+        // Stream the file to the destination storage disk and store the path
+        $path = Storage::disk($disk)->putFileAs(
+            $directory,
+            new StreamableFile($temp_zip_path),
+            $createdAt->unix() . '.zip'
+        );
+
+        return $this->repository->add(
+            new BackupDto(
+                name: app(BackupNameGenerator::class)->generate($createdAt),
+                created_at: $createdAt,
+                size: StatamicStr::fileSizeForHumans(filesize($temp_zip_path)),
+                timestamp: (string) $createdAt->unix(),
+                path: $path,
+                disk: $disk,
+            )
+        );
     }
 }
