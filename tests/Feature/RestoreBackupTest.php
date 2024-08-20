@@ -75,19 +75,19 @@ it('will not restore from command if you say no', function () {
 
     File::cleanDirectory(config('backup.content_path'));
 
-    $this->artisan('statamic:backup:restore', ['path' => Storage::path($backup->path)])
+    $this->artisan('statamic:backup:restore', ['--path' => Storage::path($backup->path)])
         ->expectsConfirmation('Are you sure you want to restore your content?', 'no');
 
     expect(File::isEmptyDirectory(config('backup.content_path')))->toBeTrue();
 
-    $this->artisan('statamic:backup:restore', ['path' => Storage::path($backup->path), '--force' => true])
+    $this->artisan('statamic:backup:restore', ['--path' => Storage::path($backup->path), '--force' => true])
         ->assertExitCode(0);
 });
 
 it('can restore from path command', function () {
     $backup = Backuper::backup();
 
-    $this->artisan('statamic:backup:restore', ['path' => Storage::path($backup->path), '--force' => true])
+    $this->artisan('statamic:backup:restore', ['--path' => Storage::path($backup->path), '--force' => true])
         ->assertExitCode(0);
 
     expect(File::isEmptyDirectory(config('backup.content_path')))->toBeFalse();
