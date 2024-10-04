@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Itiden\Backup\Repositories;
 
 use Carbon\Carbon;
-use Illuminate\Http\File;
+use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Filesystem\FilesystemAdapter;
+use Illuminate\Http\File as StreamableFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -14,13 +16,15 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 
 final class FileBackupRepository implements BackupRepository
 {
-    private string $disk;
     private string $path;
+
+    /** @var FilesystemAdapter */
+    private Filesystem $filesystem;
 
     public function __construct()
     {
-        $this->disk = config('backup.destination.disk');
         $this->path = config('backup.destination.path');
+        $this->filesystem = Storage::disk(config('backup.destination.disk'));
     }
 
     private function makeFilename(string $timestamp): string
@@ -30,21 +34,21 @@ final class FileBackupRepository implements BackupRepository
 
     public function all(): Collection
     {
-        return collect(Storage::disk($this->disk)->files($this->path))
+        return collect($this->filesystem->files($this->path))
             ->map(BackupDto::fromFile(...))
             ->sortByDesc('timestamp');
     }
 
     public function add(string $path): BackupDto
     {
-        Storage::disk($this->disk)->makeDirectory($this->path);
+        $this->filesystem->makeDirectory(path: $this->path);
 
         $timestamp = (string) Carbon::now()->unix();
 
-        Storage::disk($this->disk)->putFileAs(
-            $this->path,
-            new File($path),
-            $this->makeFilename($timestamp)
+        $this->filesystem->putFileAs(
+            path: $this->path,
+            file: new StreamableFile($path),
+            name: $this->makeFilename($timestamp)
         );
 
         return $this->find($timestamp);
@@ -54,7 +58,7 @@ final class FileBackupRepository implements BackupRepository
     {
         $path = "{$this->path}/{$this->makeFilename($timestamp)}";
 
-        if (!Storage::disk($this->disk)->exists($path)) {
+        if (!$this->filesystem->exists($path)) {
             return null;
         }
 
