@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
+use Itiden\Backup\Events\BackupDeleted;
 
 final class FileBackupRepository implements BackupRepository
 {
@@ -71,11 +72,14 @@ final class FileBackupRepository implements BackupRepository
 
         Storage::disk(config('backup.destination.disk'))->delete($backup->path);
 
+        event(new BackupDeleted($backup));
+
         return $backup;
     }
 
     public function empty(): bool
     {
+        $this->all()->each(fn(BackupDto $backup) => $this->remove($backup->timestamp));
         return Storage::disk(config('backup.destination.disk'))->deleteDirectory(config('backup.destination.path'));
     }
 }
