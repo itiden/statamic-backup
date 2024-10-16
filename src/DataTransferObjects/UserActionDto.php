@@ -2,19 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Itiden\Backup\Models;
+namespace Itiden\Backup\DataTransferObjects;
 
 use Carbon\CarbonImmutable;
 use Statamic\Contracts\Auth\User;
 use Statamic\Facades\User as FacadesUser;
 
-final readonly class UserAction
+final readonly class UserActionDto
 {
     public function __construct(
         public string $userId,
         public string $timestamp,
-    ) {
-    }
+    ) {}
 
     public function getUserId(): string
     {

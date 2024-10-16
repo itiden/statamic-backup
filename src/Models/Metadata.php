@@ -12,6 +12,7 @@ use Itiden\Backup\Abstracts\BackupPipe;
 use Statamic\Facades\User;
 use Statamic\Facades\YAML;
 use Illuminate\Support\Facades\Storage;
+use Itiden\Backup\DataTransferObjects\UserActionDto;
 
 final class Metadata
 {
@@ -20,10 +21,10 @@ final class Metadata
     /** @var int|string|null */
     private $createdBy = null;
 
-    /** @var UserAction[] */
+    /** @var UserActionDto[] */
     private array $downloads;
 
-    /** @var UserAction[] */
+    /** @var UserActionDto[] */
     private array $restores;
 
     /** @var array<class-string<BackupPipe>> */
@@ -34,14 +35,14 @@ final class Metadata
     ) {
         $this->filesystem = Storage::build([
             'driver' => 'local',
-            'root' => storage_path() . 'backups/metadata',
+            'root' => storage_path() . 'statamic-backup/.metadata',
         ]);
 
         $yaml = YAML::parse($this->filesystem->get($this->backup->timestamp) ?? '');
 
         $this->createdBy = $yaml['created_by'] ?? null;
-        $this->downloads = array_map(UserAction::fromArray(...), $yaml['downloads'] ?? []);
-        $this->restores = array_map(UserAction::fromArray(...), $yaml['restores'] ?? []);
+        $this->downloads = array_map(UserActionDto::fromArray(...), $yaml['downloads'] ?? []);
+        $this->restores = array_map(UserActionDto::fromArray(...), $yaml['restores'] ?? []);
         $this->skippedPipes = $yaml['skipped_pipes'] ?? [];
 
         if ($yaml === null) {
@@ -61,7 +62,7 @@ final class Metadata
 
     public function addDownload(Authenticatable $user)
     {
-        $this->downloads[] = new UserAction(
+        $this->downloads[] = new UserActionDto(
             userId: $user->getAuthIdentifier(),
             timestamp: now()->toString(),
         );
@@ -71,7 +72,7 @@ final class Metadata
 
     public function addRestore(Authenticatable $user)
     {
-        $this->restores[] = new UserAction(
+        $this->restores[] = new UserActionDto(
             userId: $user->getAuthIdentifier(),
             timestamp: now()->toString(),
         );
@@ -79,13 +80,13 @@ final class Metadata
         $this->save();
     }
 
-    /** @return Collection<UserAction> */
+    /** @return Collection<UserActionDto> */
     public function getDownloads(): Collection
     {
         return collect($this->downloads);
     }
 
-    /** @return Collection<UserAction> */
+    /** @return Collection<UserActionDto> */
     public function getRestores(): Collection
     {
         return collect($this->restores);
@@ -116,8 +117,8 @@ final class Metadata
     {
         $this->filesystem->put($this->backup->timestamp, YAML::dump([
             'created_by' => $this->createdBy,
-            'downloads' => array_map(fn (UserAction $action) => $action->toArray(), $this->downloads),
-            'restores' => array_map(fn (UserAction $action) => $action->toArray(), $this->restores),
+            'downloads' => array_map(fn(UserActionDto $action) => $action->toArray(), $this->downloads),
+            'restores' => array_map(fn(UserActionDto $action) => $action->toArray(), $this->restores),
             'skipped_pipes' => $this->skippedPipes,
         ]));
     }

@@ -4,7 +4,7 @@ use Illuminate\Support\Carbon;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Models\Metadata;
-use Itiden\Backup\Models\UserAction;
+use Itiden\Backup\DataTransferObjects\UserActionDto;
 use Itiden\Backup\Pipes\Users as UserPipe;
 
 uses()->group('metadata')->afterEach(function () {
@@ -46,7 +46,7 @@ it('can get the downloads for a backup', function () {
     $metadata->addDownload($user);
 
     expect($metadata->getDownloads())->toHaveCount(1);
-    expect($metadata->getDownloads()->first())->toBeInstanceOf(UserAction::class);
+    expect($metadata->getDownloads()->first())->toBeInstanceOf(UserActionDto::class);
     expect($metadata->getDownloads()->first()->getUser()->getAuthIdentifier())->toBe($user->getAuthIdentifier());
     expect($metadata->getDownloads()->first()->getTimestamp())->toEqual(Carbon::now());
 });
@@ -64,7 +64,7 @@ it('can get the restores for a backup', function () {
     $metadata->addRestore($user);
 
     expect($metadata->getRestores())->toHaveCount(1);
-    expect($metadata->getRestores()->first())->toBeInstanceOf(UserAction::class);
+    expect($metadata->getRestores()->first())->toBeInstanceOf(UserActionDto::class);
     expect($metadata->getRestores()->first()->getUser()->getAuthIdentifier())->toBe($user->getAuthIdentifier());
     expect($metadata->getRestores()->first()->getTimestamp())->toEqual(Carbon::now());
 });
