@@ -1,6 +1,7 @@
 <?php
 
 use Itiden\Backup\Facades\Backuper;
+use Itiden\Backup\Pipes\Users;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -57,7 +58,13 @@ test('user with permission can get backups from api', function () {
 
     actingAs($user);
 
-    Backuper::backup();
+    $backup = Backuper::backup();
+
+    // Set some metadata so we can test it has correct structure
+    $backup->getMetadata()->addDownload($user);
+    $backup->getMetadata()->addRestore($user);
+    $backup->getMetadata()->addSkippedPipe(Users::class, 'Oh no it failed!');
+
 
     getJson(cp_route('api.itiden.backup.index'))
         ->assertOk()
