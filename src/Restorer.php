@@ -21,8 +21,7 @@ final class Restorer
 {
     public function __construct(
         protected BackupRepository $repository
-    ) {
-    }
+    ) {}
 
     /**
      * Restore from a backup with a given timestamp.
@@ -64,6 +63,10 @@ final class Restorer
                 ->thenReturn();
 
             event(new BackupRestored($backup));
+
+            if ($user = auth()->user()) {
+                $backup->getMetadata()->addRestore($user);
+            }
 
             File::cleanDirectory(config('backup.temp_path'));
 
