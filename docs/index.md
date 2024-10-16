@@ -18,7 +18,7 @@ hero:
 features:
   - title: Manage from the control panel
     icon: 🏠
-    details: Manage your backups from within the statamic controlpanel, real simple.
+    details: Manage your backups from within the statamic control panel, real simple.
     link: ./getting-started.md#usage
     linkText: Learn more
   - title: Permissions
