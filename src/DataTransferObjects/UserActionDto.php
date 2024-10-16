@@ -13,7 +13,8 @@ final readonly class UserActionDto
     public function __construct(
         public string $userId,
         public string $timestamp,
-    ) {}
+    ) {
+    }
 
     public function getUserId(): string
     {
