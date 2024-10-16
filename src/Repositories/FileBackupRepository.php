@@ -66,9 +66,13 @@ final class FileBackupRepository implements BackupRepository
         return BackupDto::fromFile($path);
     }
 
-    public function remove(string $timestamp): BackupDto
+    public function remove(string $timestamp): ?BackupDto
     {
         $backup = $this->find($timestamp);
+
+        if (!$backup) {
+            return null;
+        }
 
         Storage::disk(config('backup.destination.disk'))->delete($backup->path);
 
@@ -79,7 +83,7 @@ final class FileBackupRepository implements BackupRepository
 
     public function empty(): bool
     {
-        $this->all()->each(fn (BackupDto $backup) => $this->remove($backup->timestamp));
+        $this->all()->each(fn(BackupDto $backup) => $this->remove($backup->timestamp));
         return Storage::disk(config('backup.destination.disk'))->deleteDirectory(config('backup.destination.path'));
     }
 }
