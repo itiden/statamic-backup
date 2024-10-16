@@ -3,12 +3,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
     "@vitejs/plugin-vue2": "^2.3.1",
     "laravel-vite-plugin": "^1.0.2",
-    "vite": "^5.2.11"
+    "vite": "^5.2.11",
+    "vitepress": "^1.4.1"
   },
   "dependencies": {
     "resumablejs": "^1.1.0"
