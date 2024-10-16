@@ -4,6 +4,7 @@ import { defineConfig } from "vitepress";
 export default defineConfig({
   title: "Statamic Backup",
   description: 'Documentation for the statamic addon "Statamic backup"',
+  base: "/statamic-backup",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [{ text: "Start", link: "/" }],
