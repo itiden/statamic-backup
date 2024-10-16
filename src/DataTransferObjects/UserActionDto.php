@@ -6,15 +6,14 @@ namespace Itiden\Backup\DataTransferObjects;
 
 use Carbon\CarbonImmutable;
 use Statamic\Contracts\Auth\User;
-use Statamic\Facades\User as FacadesUser;
+use Statamic\Facades\User as UserFacade;
 
 final readonly class UserActionDto
 {
     public function __construct(
         public string $userId,
         public string $timestamp,
-    ) {
-    }
+    ) {}
 
     public function getUserId(): string
     {
@@ -23,7 +22,7 @@ final readonly class UserActionDto
 
     public function getUser(): ?User
     {
-        return FacadesUser::find($this->userId);
+        return UserFacade::find($this->userId);
     }
 
     public function getTimestamp(): CarbonImmutable
