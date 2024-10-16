@@ -86,3 +86,15 @@ it('dispatches failed event when error occurs', function () {
 
     Event::assertDispatched(BackupFailed::class);
 });
+
+it('sets created by metadata when user is authenticated', function () {
+    $user = user();
+
+    $user->assignRole('admin')->save();
+
+    actingAs($user);
+
+    postJson(cp_route('api.itiden.backup.store'));
+
+    expect(app(BackupRepository::class)->all()->first()->getMetadata()->getCreatedBy())->toBe($user);
+});

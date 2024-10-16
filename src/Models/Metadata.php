@@ -27,7 +27,6 @@ final class Metadata
     /** @var UserActionDto[] */
     private array $restores;
 
-    /** @var array<class-string<BackupPipe>> */
     private array $skippedPipes;
 
     public function __construct(
@@ -58,6 +57,8 @@ final class Metadata
     public function setCreatedBy(Authenticatable $user)
     {
         $this->createdBy = $user->getAuthIdentifier();
+
+        $this->save();
     }
 
     public function addDownload(Authenticatable $user)
@@ -98,11 +99,12 @@ final class Metadata
     }
 
     /**
-     * @param class-string<BackupPipe> $pipe
+     * @param class-string<BackupPipe> $pipe The pipe that was skipped.
+     * @param string $reason The reason why the pipe was skipped.
      */
-    public function addSkippedPipe(string $pipe)
+    public function addSkippedPipe(string $pipe, string $reason)
     {
-        $this->skippedPipes[] = $pipe;
+        $this->skippedPipes[] = ['pipe' => $pipe, 'reason' => $reason];
 
         $this->save();
     }
@@ -117,8 +119,8 @@ final class Metadata
     {
         $this->filesystem->put($this->backup->timestamp, YAML::dump([
             'created_by' => $this->createdBy,
-            'downloads' => array_map(fn(UserActionDto $action) => $action->toArray(), $this->downloads),
-            'restores' => array_map(fn(UserActionDto $action) => $action->toArray(), $this->restores),
+            'downloads' => array_map(fn (UserActionDto $action) => $action->toArray(), $this->downloads),
+            'restores' => array_map(fn (UserActionDto $action) => $action->toArray(), $this->restores),
             'skipped_pipes' => $this->skippedPipes,
         ]));
     }

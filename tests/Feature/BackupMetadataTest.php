@@ -76,8 +76,9 @@ it('can get the skipped pipes for a backup', function () {
 
     expect($metadata->getSkippedPipes())->toBeEmpty();
 
-    $metadata->addSkippedPipe(UserPipe::class);
+    $metadata->addSkippedPipe(pipe: UserPipe::class, reason: 'Some reason');
 
     expect($metadata->getSkippedPipes())->toHaveCount(1);
-    expect($metadata->getSkippedPipes()->first())->toBe(UserPipe::class);
+    expect($metadata->getSkippedPipes()->first()['pipe'])->toBe(UserPipe::class);
+    expect($metadata->getSkippedPipes()->first()['reason'])->toBe('Some reason');
 });
