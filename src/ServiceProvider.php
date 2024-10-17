@@ -23,7 +23,7 @@ class ServiceProvider extends AddonServiceProvider
 
     protected $vite = [
         'input' => [
-            'resources/js/backup.js',
+            'src/main.js',
         ],
         'publicDirectory' => 'resources/dist',
     ];
