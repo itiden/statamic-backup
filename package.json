@@ -1,16 +1,21 @@
 {
-  "name": "@statamic-backup/client",
-  "type": "module",
+  "name": "statamic-backup",
+  "version": "1.0.0",
+  "description": "Backup is an extensible and powerful backup tool for statamic sites, it enables you to create, manage and schedule backups of your site with ease in the control panel.",
+  "workspaces": [
+    "client",
+    "docs"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
   "scripts": {
-    "dev": "vite",
-    "build": "vite build"
+    "docs:dev": "npm run dev --workspace=docs",
+    "docs:build": "npm run build --workspace=docs",
+    "docs:preview": "npm run preview --workspace=docs",
+    "dev": "npm run dev --workspace=client",
+    "build": "npm run build --workspace=client"
   },
-  "devDependencies": {
-    "@vitejs/plugin-vue2": "^2.3.1",
-    "laravel-vite-plugin": "^1.0.2",
-    "vite": "^5.2.11"
-  },
-  "dependencies": {
-    "resumablejs": "^1.1.0"
-  }
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
 }
