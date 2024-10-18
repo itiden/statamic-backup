@@ -1,0 +1,17 @@
+{
+  "name": "@statmic-backup/docs",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev pages",
+    "build": "vitepress build pages",
+    "preview": "vitepress preview pages"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "vitepress": "^1.4.1"
+  }
+}
