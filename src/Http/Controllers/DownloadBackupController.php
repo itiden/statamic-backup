@@ -23,6 +23,8 @@ class DownloadBackupController extends Controller
     {
         $backup = $repo->find($timestamp);
 
+        $backup->getMetadata()->addDownload(auth()->user());
+
         return Storage::disk(config('backup.backup.disk'))->download($backup->path);
     }
 }

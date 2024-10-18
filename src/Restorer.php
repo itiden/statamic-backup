@@ -65,6 +65,10 @@ final class Restorer
 
             event(new BackupRestored($backup));
 
+            if ($user = auth()->user()) {
+                $backup->getMetadata()->addRestore($user);
+            }
+
             File::cleanDirectory(config('backup.temp_path'));
 
             /**

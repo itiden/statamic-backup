@@ -33,4 +33,13 @@ abstract class BackupPipe
     {
         return $path . DIRECTORY_SEPARATOR . static::getKey();
     }
+
+    /**
+     * Mark pipe as skipped.
+     */
+    protected function skip(string $reason, Closure $next, Zipper $zip)
+    {
+        $zip->addMeta(static::class, ['skipped' => $reason]);
+        return $next($zip);
+    }
 }

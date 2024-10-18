@@ -44,3 +44,20 @@ it('can be downloaded by a user with download backups permission', function () {
 
     expect($response)->assertDownload();
 });
+
+it('adds a download action to the metadata', function () {
+    $backup = Backuper::backup();
+
+    $user = user();
+
+    $user->assignRole('admin')->save();
+
+    actingAs($user);
+
+    get(cp_route('api.itiden.backup.download', $backup->timestamp));
+
+    $metadata = $backup->getMetadata();
+
+    expect($metadata->getDownloads())->toHaveCount(1);
+    expect($metadata->getDownloads()[0]->getUser()->id)->toBe($user->id);
+});

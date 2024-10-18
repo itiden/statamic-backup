@@ -8,7 +8,6 @@ use Closure;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Abstracts\BackupPipe;
 use Itiden\Backup\Support\Zipper;
-use RuntimeException;
 use Statamic\Facades\Stache;
 
 class Users extends BackupPipe
@@ -32,8 +31,12 @@ class Users extends BackupPipe
     {
         $usersDir = Stache::store('users')?->directory();
 
-        if (!$usersDir) {
-            throw new RuntimeException('Users directory not found');
+        if (!File::exists($usersDir)) {
+            return $this->skip(
+                reason: 'No users found.',
+                next: $next,
+                zip: $zip
+            );
         }
 
         $zip->addDirectory($usersDir, static::getKey());
