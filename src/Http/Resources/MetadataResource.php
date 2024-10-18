@@ -17,7 +17,7 @@ final class MetadataResource extends JsonResource
             'created_by' => $this->getCreatedBy(),
             'downloads' => $this->getDownloads(),
             'restores' => $this->getRestores(),
-            'skipped_pipes' => $this->getSkippedPipes()->map(fn(array $pipe) => [
+            'skipped_pipes' => $this->getSkippedPipes()->map(fn (array $pipe) => [
                 'pipe' => $pipe['pipe']::getKey(),
                 'reason' => $pipe['reason'],
             ]),
