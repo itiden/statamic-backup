@@ -12,6 +12,7 @@ use Itiden\Backup\Abstracts\BackupPipe;
 use Statamic\Facades\User;
 use Statamic\Facades\YAML;
 use Illuminate\Support\Facades\Storage;
+use Itiden\Backup\DataTransferObjects\SkippedPipeDto;
 use Itiden\Backup\DataTransferObjects\UserActionDto;
 
 final class Metadata
@@ -27,6 +28,7 @@ final class Metadata
     /** @var UserActionDto[] */
     private array $restores;
 
+    /** @var SkippedPipeDto[] */
     private array $skippedPipes;
 
     public function __construct(
@@ -42,7 +44,7 @@ final class Metadata
         $this->createdBy = $yaml['created_by'] ?? null;
         $this->downloads = array_map(UserActionDto::fromArray(...), $yaml['downloads'] ?? []);
         $this->restores = array_map(UserActionDto::fromArray(...), $yaml['restores'] ?? []);
-        $this->skippedPipes = $yaml['skipped_pipes'] ?? [];
+        $this->skippedPipes = array_map(SkippedPipeDto::fromArray(...), $yaml['skipped_pipes'] ?? []);
 
         if (count($yaml) === 0) {
             $this->save();
@@ -104,7 +106,10 @@ final class Metadata
      */
     public function addSkippedPipe(string $pipe, string $reason)
     {
-        $this->skippedPipes[] = ['pipe' => $pipe, 'reason' => $reason];
+        $this->skippedPipes[] = new SkippedPipeDto(
+            pipe: $pipe,
+            reason: $reason,
+        );
 
         $this->save();
     }
@@ -121,7 +126,7 @@ final class Metadata
             'created_by' => $this->createdBy,
             'downloads' => array_map(fn(UserActionDto $action) => $action->toArray(), $this->downloads),
             'restores' => array_map(fn(UserActionDto $action) => $action->toArray(), $this->restores),
-            'skipped_pipes' => $this->skippedPipes,
+            'skipped_pipes' => array_map(fn(SkippedPipeDto $dto) => $dto->toArray(), $this->skippedPipes),
         ]));
     }
 }

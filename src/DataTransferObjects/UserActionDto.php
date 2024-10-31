@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Itiden\Backup\DataTransferObjects;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Contracts\Support\Arrayable;
 use Statamic\Contracts\Auth\User;
 use Statamic\Facades\User as UserFacade;
 
-final readonly class UserActionDto
+final readonly class UserActionDto implements Arrayable
 {
     public function __construct(
         public string $userId,
         public string $timestamp,
-    ) {
-    }
+    ) {}
 
     public function getUserId(): string
     {
