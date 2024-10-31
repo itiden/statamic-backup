@@ -37,14 +37,14 @@ final class Metadata
             'root' => storage_path() . 'statamic-backup/.metadata',
         ]);
 
-        $yaml = YAML::parse($this->filesystem->get($this->backup->timestamp) ?? '');
+        $yaml = YAML::parse($this->filesystem->get($this->backup->timestamp) ?? "");
 
         $this->createdBy = $yaml['created_by'] ?? null;
         $this->downloads = array_map(UserActionDto::fromArray(...), $yaml['downloads'] ?? []);
         $this->restores = array_map(UserActionDto::fromArray(...), $yaml['restores'] ?? []);
         $this->skippedPipes = $yaml['skipped_pipes'] ?? [];
 
-        if ($yaml === null) {
+        if (count($yaml) === 0) {
             $this->save();
         }
     }
@@ -119,8 +119,8 @@ final class Metadata
     {
         $this->filesystem->put($this->backup->timestamp, YAML::dump([
             'created_by' => $this->createdBy,
-            'downloads' => array_map(fn (UserActionDto $action) => $action->toArray(), $this->downloads),
-            'restores' => array_map(fn (UserActionDto $action) => $action->toArray(), $this->restores),
+            'downloads' => array_map(fn(UserActionDto $action) => $action->toArray(), $this->downloads),
+            'restores' => array_map(fn(UserActionDto $action) => $action->toArray(), $this->restores),
             'skipped_pipes' => $this->skippedPipes,
         ]));
     }

@@ -19,6 +19,20 @@ it('can generate a metadata file for a backup', function () {
     expect($metadata)->toBeInstanceOf(Metadata::class);
 });
 
+it('creates a file if its missing', function () {
+    $backup = Backuper::backup();
+
+    $metadata = $backup->getMetadata();
+
+    expect($metadata)->toBeInstanceOf(Metadata::class);
+
+    $metadata->delete();
+
+    $metadata = $backup->getMetadata();
+
+    expect($metadata)->toBeInstanceOf(Metadata::class);
+});
+
 it('can get the user that created the backup', function () {
     $backup = Backuper::backup();
 

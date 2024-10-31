@@ -21,8 +21,7 @@ final class Restorer
 {
     public function __construct(
         protected BackupRepository $repository
-    ) {
-    }
+    ) {}
 
     /**
      * Restore from a backup with a given timestamp.
@@ -83,7 +82,7 @@ final class Restorer
         } catch (Exception $e) {
             report($e);
 
-            $exception = new RestoreFailedException($backup);
+            $exception = new RestoreFailedException($backup, previous: $e);
 
             event(new RestoreFailed($exception));
 

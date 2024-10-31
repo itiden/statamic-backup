@@ -51,7 +51,7 @@
       "@php vendor/bin/pint"
     ],
     "test": [
-      "@php vendor/bin/pest"
+      "XDEBUG_MODE=coverage vendor/bin/pest --coverage"
     ]
   },
   "extra": {
