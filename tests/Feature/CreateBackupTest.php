@@ -1,6 +1,5 @@
 <?php
 
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Event;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Events\BackupCreated;

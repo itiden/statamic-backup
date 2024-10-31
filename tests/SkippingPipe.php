@@ -8,7 +8,6 @@ use Itiden\Backup\Support\Zipper;
 
 final class SkippingPipe extends BackupPipe
 {
-
     public static function getKey(): string
     {
         return 'skipping';

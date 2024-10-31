@@ -124,9 +124,9 @@ final class Metadata
     {
         $this->filesystem->put($this->backup->timestamp, YAML::dump([
             'created_by' => $this->createdBy,
-            'downloads' => array_map(fn(UserActionDto $action) => $action->toArray(), $this->downloads),
-            'restores' => array_map(fn(UserActionDto $action) => $action->toArray(), $this->restores),
-            'skipped_pipes' => array_map(fn(SkippedPipeDto $dto) => $dto->toArray(), $this->skippedPipes),
+            'downloads' => array_map(fn (UserActionDto $action) => $action->toArray(), $this->downloads),
+            'restores' => array_map(fn (UserActionDto $action) => $action->toArray(), $this->restores),
+            'skipped_pipes' => array_map(fn (SkippedPipeDto $dto) => $dto->toArray(), $this->skippedPipes),
         ]));
     }
 }

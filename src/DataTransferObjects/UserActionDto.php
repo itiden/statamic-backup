@@ -14,7 +14,8 @@ final readonly class UserActionDto implements Arrayable
     public function __construct(
         public string $userId,
         public string $timestamp,
-    ) {}
+    ) {
+    }
 
     public function getUserId(): string
     {

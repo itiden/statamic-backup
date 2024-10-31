@@ -15,7 +15,8 @@ final readonly class SkippedPipeDto implements Arrayable
     public function __construct(
         public string $pipe,
         public string $reason,
-    ) {}
+    ) {
+    }
 
     public function toArray(): array
     {

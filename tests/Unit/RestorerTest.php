@@ -27,6 +27,5 @@ it('throws an exception if the backup path does not exist', function () {
         size: 0,
         path: 'test/path',
         timestamp: now()->timestamp,
-
     ));
 })->throws(RestoreFailedException::class);
