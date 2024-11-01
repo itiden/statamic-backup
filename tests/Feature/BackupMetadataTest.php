@@ -1,11 +1,13 @@
 <?php
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\File;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Models\Metadata;
 use Itiden\Backup\DataTransferObjects\UserActionDto;
 use Itiden\Backup\Pipes\Users as UserPipe;
+use Statamic\Yaml\Yaml;
 
 uses()->group('metadata')->afterEach(function () {
     app(BackupRepository::class)->empty();
@@ -95,4 +97,21 @@ it('can get the skipped pipes for a backup', function () {
     expect($metadata->getSkippedPipes())->toHaveCount(1);
     expect($metadata->getSkippedPipes()->first()->pipe)->toBe(UserPipe::class);
     expect($metadata->getSkippedPipes()->first()->reason)->toBe('Some reason');
+});
+
+it('stores metadata files in the correct directory', function () {
+    $backup = Backuper::backup();
+
+    $metadata = $backup->getMetadata();
+    $metadata->addSkippedPipe(pipe: UserPipe::class, reason: 'Some reason');
+
+    $file = File::get(config('backup.metadata_path') . '/.meta/' . $backup->timestamp);
+    $yaml = app(Yaml::class)->parse($file);
+
+    expect($file)->not->toBeEmpty();
+
+    expect($metadata->getSkippedPipes())->toHaveCount(1);
+    expect($yaml['skipped_pipes'])->toHaveCount(1);
+    expect($yaml['skipped_pipes'][0]['pipe'])->toBe(UserPipe::class);
+    expect($yaml['skipped_pipes'][0]['reason'])->toBe('Some reason');
 });
