@@ -31,13 +31,14 @@ For this package to use your pipe it must extend the `BackupPipe` abstract which
 - `getKey` this is used for identifying when a specific driver should be should run.
 - `restore` which runs on restore, gets a path like this `path/to/backup/driver_key`.
 - `backup` runs on backup and it gets a zipper object you can use (zipper a zipArchive wrapper).
-- `skip` will mark the pipe as skipped, takes a zipper instance, next closure and a reason string.
 
 ## How it works
 
 Since each backup pipe has a unique (it should be) key, it is pretty handy for the pipes to use this key to identify their backup files. For example, the `Content` pipe will backup to `path/to/backup/content` and the `Assets` pipe will backup to `path/to/backup/assets`.
 
 Then when restoring, the pipe will get the path to the backup file and it can then use the key to identify its own backup file/dir. There is a helper method (`getDirectoryPath`) for that in the `BackupPipe` abstract.
+
+When backing up and you want the pipe to be skipped, if for example if something doesn't exist, you can return the results of the `skip` method. `skip` takes a zipper instance, next closure and a reason string.
 
 ### Backing up
 
