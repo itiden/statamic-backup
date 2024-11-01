@@ -1,12 +1,16 @@
 <?php
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
+use Itiden\Backup\Events\BackupDeleted;
 use Itiden\Backup\Facades\Backuper;
 
-uses()->group('backuprepository');
+uses()->group('backuprepository')->afterEach(function () {
+    app(BackupRepository::class)->empty();
+});
 
 it('can get backups', function () {
     Backuper::backup();
@@ -37,6 +41,23 @@ it('can remove all backups', function () {
     app(BackupRepository::class)->empty();
 
     expect(app(BackupRepository::class)->all()->count())->toBe(0);
+});
+
+it('dispatches backup removed event', function () {
+    Event::fake();
+
+    $backup = Backuper::backup();
+    app(BackupRepository::class)->remove($backup->timestamp);
+
+    Event::assertDispatched(BackupDeleted::class);
+});
+
+it('removes all metadata files when removing all backups', function () {
+    Backuper::backup();
+
+    app(BackupRepository::class)->empty();
+
+    expect(Storage::disk('local')->files(storage_path('statamic-backup/.metadata')))->toBeEmpty();
 });
 
 

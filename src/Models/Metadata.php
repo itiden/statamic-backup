@@ -36,7 +36,7 @@ final class Metadata
     ) {
         $this->filesystem = Storage::build([
             'driver' => 'local',
-            'root' => storage_path() . 'statamic-backup/.metadata',
+            'root' => storage_path('statamic-backup/.metadata'),
         ]);
 
         $yaml = YAML::parse($this->filesystem->get($this->backup->timestamp) ?? "");
