@@ -17,11 +17,6 @@ final readonly class UserActionDto implements Arrayable
     ) {
     }
 
-    public function getUserId(): string
-    {
-        return $this->userId;
-    }
-
     public function getUser(): ?User
     {
         return UserFacade::find($this->userId);

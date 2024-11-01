@@ -106,5 +106,5 @@ it('will add an restore entry to metadata', function () {
 
     expect($response->status())->toBe(Response::HTTP_OK);
     expect($backup->getMetadata()->getRestores())->toHaveCount(1);
-    expect($backup->getMetadata()->getRestores()[0]->getUserId())->toBe($user->id);
+    expect($backup->getMetadata()->getRestores()[0]->userId)->toBe($user->id);
 });
