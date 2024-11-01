@@ -31,6 +31,7 @@ For this package to use your pipe it must extend the `BackupPipe` abstract which
 - `getKey` this is used for identifying when a specific driver should be should run.
 - `restore` which runs on restore, gets a path like this `path/to/backup/driver_key`.
 - `backup` runs on backup and it gets a zipper object you can use (zipper a zipArchive wrapper).
+- `skip` will mark the pipe as skipped, takes a zipper instance, next closure and a reason string.
 
 ## How it works
 
@@ -93,6 +94,14 @@ final class Logs extends BackupPipe
      */
     public function backup(Zipper $zip, Closure $next): void
     {
+        if (!file_exists(storage_path('logs'))) {
+            return $this->skip(
+                reason: 'There was no logs directory',
+                next: $next
+                zip: $zip
+            )
+        }
+
         // Implement the logic to create a backup of your data and add it to the ZipArchive instance $zip.
         $zip->addDirectory(storage_path('logs'), static::getKey());
 
