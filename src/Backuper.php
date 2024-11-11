@@ -45,6 +45,18 @@ final class Backuper
 
             $backup = $this->repository->add($temp_zip_path);
 
+            $metadata = $backup->getMetadata();
+
+            if ($user = auth()->user()) {
+                $metadata->setCreatedBy($user);
+            }
+
+            $zipper->getMeta()->each(function ($meta, $key) use ($metadata) {
+                if (isset($meta['skipped'])) {
+                    $metadata->addSkippedPipe($key, $meta['skipped']);
+                }
+            });
+
             event(new BackupCreated($backup));
 
             unlink($temp_zip_path);

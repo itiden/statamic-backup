@@ -38,6 +38,8 @@ Since each backup pipe has a unique (it should be) key, it is pretty handy for t
 
 Then when restoring, the pipe will get the path to the backup file and it can then use the key to identify its own backup file/dir. There is a helper method (`getDirectoryPath`) for that in the `BackupPipe` abstract.
 
+When backing up and you want the pipe to be skipped, if for example if something doesn't exist, you can return the results of the `skip` method. `skip` takes a zipper instance, next closure and a reason string.
+
 ### Backing up
 
 - Creates a zip archive
@@ -93,6 +95,14 @@ final class Logs extends BackupPipe
      */
     public function backup(Zipper $zip, Closure $next): void
     {
+        if (!file_exists(storage_path('logs'))) {
+            return $this->skip(
+                reason: 'There was no logs directory',
+                next: $next
+                zip: $zip
+            )
+        }
+
         // Implement the logic to create a backup of your data and add it to the ZipArchive instance $zip.
         $zip->addDirectory(storage_path('logs'), static::getKey());
 

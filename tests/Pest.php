@@ -2,6 +2,7 @@
 
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Tests\TestCase;
+use Statamic\Auth\User as StatamicUser;
 use Statamic\Facades\Role;
 use Statamic\Facades\User;
 
@@ -9,7 +10,7 @@ uses(TestCase::class)
     ->afterEach(fn () => app(BackupRepository::class)->empty())
     ->in(__DIR__);
 
-function user()
+function user(): StatamicUser
 {
     Role::make('user')
         ->title('User')

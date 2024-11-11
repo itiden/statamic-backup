@@ -92,3 +92,19 @@ it('can restore from path command', function () {
 
     expect(File::isEmptyDirectory(config('backup.content_path')))->toBeFalse();
 });
+
+it('will add an restore entry to metadata', function () {
+    $backup = Backuper::backup();
+
+    $user = user();
+
+    $user->assignRole('super admin')->save();
+
+    actingAs($user);
+
+    $response = postJson(cp_route('api.itiden.backup.restore', $backup->timestamp));
+
+    expect($response->status())->toBe(Response::HTTP_OK);
+    expect($backup->getMetadata()->getRestores())->toHaveCount(1);
+    expect($backup->getMetadata()->getRestores()[0]->userId)->toBe($user->id);
+});

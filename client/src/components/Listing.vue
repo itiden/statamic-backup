@@ -21,6 +21,13 @@
         />
 
         <data-list-table>
+          <template slot="cell-name" slot-scope="{ row: backup, value }">
+            <div class="flex items-center">
+              <svg-icon name="alert" class="h-4 w-4 mr-2 text-orange" v-if="backup.metadata.skipped_pipes.length" v-tooltip="{ content: backup.metadata.skipped_pipes.map(x => `${x.pipe}: ${x.reason}`).join('<br/>'), html:true}"/>
+              {{ value }}
+            </div>
+          </template>
+
           <template
             slot="actions"
             slot-scope="{ row: backup }"

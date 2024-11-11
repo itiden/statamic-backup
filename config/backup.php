@@ -17,6 +17,11 @@ return [
     ],
 
     /**
+     * The directory where backup will put metadata files
+     */
+    'metadata_path' => storage_path('statamic-backups'),
+
+    /**
      * The path to the temp directory
      */
     'temp_path' => storage_path('framework/statamic-backup'),

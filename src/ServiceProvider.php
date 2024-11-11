@@ -9,6 +9,7 @@ use Itiden\Backup\Console\Commands\BackupCommand;
 use Itiden\Backup\Console\Commands\ClearFilesCommand;
 use Itiden\Backup\Console\Commands\RestoreCommand;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
+use Itiden\Backup\Events\BackupDeleted;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
@@ -26,6 +27,12 @@ class ServiceProvider extends AddonServiceProvider
             'src/main.js',
         ],
         'publicDirectory' => 'resources/dist',
+    ];
+
+    protected $listen = [
+        BackupDeleted::class => [
+            \Itiden\Backup\Listeners\BackupDeletedListener::class,
+        ],
     ];
 
     public function bootAddon()
