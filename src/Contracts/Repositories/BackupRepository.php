@@ -11,7 +11,7 @@ interface BackupRepository
 {
     /**
      * Get all backups.
-     * 
+     *
      * @return Collection<BackupDto>
      */
     public function all(): Collection;
