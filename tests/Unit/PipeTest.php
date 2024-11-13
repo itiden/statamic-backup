@@ -57,8 +57,9 @@ test('can skip a pipe', function () {
 
     $pipe->backup(zip: $zipper, next: $callable);
 
-    $zipper->close();
 
     expect($zipper->getMeta())->toHaveKey(Users::class);
     expect($zipper->getMeta()[Users::class])->toHaveKey('skipped', 'No users found.');
+
+    $zipper->close();
 });

@@ -110,10 +110,16 @@ class Zipper
     /**
      * Add some data so that it can be extracted later.
      */
-    public function addMeta(string $key, array $meta): self
+    public function addMeta(string $key, array|string $meta): self
     {
-        $current = $this->meta[$key] ?? [];
-        $this->meta[$key] = array_merge($current, $meta);
+        if (is_array($meta)) {
+            $current = $this->meta[$key] ?? [];
+            $this->meta[$key] = array_merge($current, $meta);
+        } else {
+            $this->meta[$key] = $meta;
+        }
+
+        $this->zip->setArchiveComment(comment: json_encode($this->meta));
 
         return $this;
     }
@@ -125,6 +131,10 @@ class Zipper
      */
     public function getMeta(): Collection
     {
+        if ($comment = $this->zip->getArchiveComment()) {
+            $this->meta = json_decode($comment, true);
+        }
+
         return collect($this->meta);
     }
 }
