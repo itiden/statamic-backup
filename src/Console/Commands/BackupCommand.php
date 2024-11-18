@@ -16,7 +16,7 @@ class BackupCommand extends Command
 {
     protected $signature = 'statamic:backup';
 
-    protected $description = 'Backup your stuff';
+    protected $description = 'Run the backup pipeline';
 
     public function handle()
     {
