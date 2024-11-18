@@ -7,6 +7,7 @@ namespace Itiden\Backup\DataTransferObjects;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Itiden\Backup\Models\Metadata;
 use Statamic\Support\Str as StatamicStr;
 
 final readonly class BackupDto
@@ -18,6 +19,11 @@ final readonly class BackupDto
         public string $path,
         public string $timestamp,
     ) {
+    }
+
+    public function getMetadata(): Metadata
+    {
+        return new Metadata($this);
     }
 
     /**

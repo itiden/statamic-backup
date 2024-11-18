@@ -16,7 +16,7 @@ jobs:
           php_extensions: zip
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Compile assets
         run: npm run build

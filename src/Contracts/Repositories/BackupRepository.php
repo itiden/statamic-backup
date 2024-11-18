@@ -11,6 +11,8 @@ interface BackupRepository
 {
     /**
      * Get all backups.
+     *
+     * @return Collection<BackupDto>
      */
     public function all(): Collection;
 
@@ -27,7 +29,7 @@ interface BackupRepository
     /**
      * Delete a backup by timestamp.
      */
-    public function remove(string $timestamp): BackupDto;
+    public function remove(string $timestamp): ?BackupDto;
 
     /**
      * Clear all backups.

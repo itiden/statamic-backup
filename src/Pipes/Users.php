@@ -8,6 +8,7 @@ use Closure;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Abstracts\BackupPipe;
 use Itiden\Backup\Support\Zipper;
+use Statamic\Facades\Stache;
 
 class Users extends BackupPipe
 {
@@ -18,7 +19,7 @@ class Users extends BackupPipe
 
     public function restore(string $restoringFromPath, Closure $next)
     {
-        $destination = config('statamic.stache.stores.users.directory');
+        $destination = Stache::store('users')?->directory();
         $users = $this->getDirectoryPath($restoringFromPath);
 
         File::copyDirectory($users, $destination);
@@ -28,7 +29,17 @@ class Users extends BackupPipe
 
     public function backup(Zipper $zip, Closure $next)
     {
-        $zip->addDirectory(config('statamic.stache.stores.users.directory'), static::getKey());
+        $usersDir = Stache::store('users')?->directory();
+
+        if (!File::exists($usersDir)) {
+            return $this->skip(
+                reason: 'No users found.',
+                next: $next,
+                zip: $zip
+            );
+        }
+
+        $zip->addDirectory($usersDir, static::getKey());
 
         return $next($zip);
     }

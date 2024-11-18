@@ -121,3 +121,19 @@ it('can encrypt when zipping', function () {
     expect(File::allFiles($unzip)[0]->getRelativePathname())->toBe("test.txt");
     expect(File::get($unzip . '/test.txt'))->toBe('test');
 });
+
+it('can write meta to zip', function () {
+    $target = storage_path('test.zip');
+
+    Zipper::open($target)
+        ->addFromString('test.txt', 'test')
+        ->addMeta('test', 'test')
+        ->close();
+
+    $zip = Zipper::open($target, true);
+
+    expect($zip->getMeta())->toHaveKey('test');
+    expect($zip->getMeta())->get('test')->toBe('test');
+
+    $zip->close();
+});

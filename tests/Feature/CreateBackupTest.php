@@ -4,6 +4,10 @@ use Illuminate\Support\Facades\Event;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
+use Itiden\Backup\Exceptions\RestoreFailedException;
+use Itiden\Backup\Facades\Backuper;
+use Itiden\Backup\Facades\Restorer;
+use Itiden\Backup\Tests\SkippingPipe;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\postJson;
@@ -86,3 +90,42 @@ it('dispatches failed event when error occurs', function () {
 
     Event::assertDispatched(BackupFailed::class);
 });
+
+it('sets created by metadata when user is authenticated', function () {
+    $user = user();
+
+    $user->assignRole('admin')->save();
+
+    actingAs($user);
+
+    postJson(cp_route('api.itiden.backup.store'));
+
+    expect(app(BackupRepository::class)->all()->first()->getMetadata()->getCreatedBy())->toBe($user);
+});
+
+it('adds skipped pipes to meta', function () {
+    $user = user();
+
+    $user->assignRole('admin')->save();
+
+    config()->set('backup.pipeline', [
+        ...config('backup.pipeline'),
+        SkippingPipe::class,
+    ]);
+
+    actingAs($user);
+
+    postJson(cp_route('api.itiden.backup.store'));
+
+    expect(app(BackupRepository::class)->all()->first()->getMetadata()->getSkippedPipes())->toHaveCount(1);
+});
+
+it('can encrypt backup with password', function () {
+    config()->set('backup.password', 'password');
+
+    $backup = Backuper::backup();
+
+    config()->set('backup.password', null);
+
+    Restorer::restore($backup);
+})->throws(RestoreFailedException::class, 'statamic-backup::backup.restore_failed');

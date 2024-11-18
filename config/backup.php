@@ -17,6 +17,11 @@ return [
     ],
 
     /**
+     * The directory where backup will put metadata files
+     */
+    'metadata_path' => storage_path('statamic-backups'),
+
+    /**
      * The path to the temp directory
      */
     'temp_path' => storage_path('framework/statamic-backup'),
@@ -40,7 +45,7 @@ return [
      *
      * set to null to disable automatic backups
      * frequency can be any of the laravel schedule frequencies
-     * time should be what the frequency expects
+     * time should be parameters the frequency expects
      *
      * see https://laravel.com/docs/10.x/scheduling#schedule-frequency-options
      */
@@ -50,9 +55,16 @@ return [
     ],
 
     /**
+     * The backup repository
+     *
+     * the repository handles resolving and managing backups
+     */
+    'repository' => \Itiden\Backup\Repositories\FileBackupRepository::class,
+
+    /**
      * The backup steps to use
      *
-     * These are the steps/pipes that will be used to backup your site
+     * these are the steps/pipes that will be used to backup your site
      * You can add your own here
      *
      * All pipes are expected to be instances of Itiden\Backup\Abtracts\BackupPipe

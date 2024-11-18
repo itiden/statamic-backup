@@ -7,6 +7,7 @@ use Itiden\Backup\Pipes\Assets;
 use Itiden\Backup\Pipes\Content;
 use Itiden\Backup\Pipes\Users;
 use Itiden\Backup\Support\Zipper;
+use Statamic\Facades\Stache;
 
 uses()->group('pipes');
 
@@ -41,3 +42,24 @@ test('restore pipes can pass closure', function (string $pipe) {
     Content::class,
     Assets::class,
 ]);
+
+test('can skip a pipe', function () {
+    /** @var Users::class $pipe */
+    $pipe = app()->make(Users::class);
+
+    $callable = function ($z) {
+        return $z;
+    };
+
+    File::deleteDirectory(Stache::store('users')->directory());
+
+    $zipper = Zipper::open(config('backup.temp_path') . '/backup.zip');
+
+    $pipe->backup(zip: $zipper, next: $callable);
+
+
+    expect($zipper->getMeta())->toHaveKey(Users::class);
+    expect($zipper->getMeta()[Users::class])->toHaveKey('skipped', 'No users found.');
+
+    $zipper->close();
+});

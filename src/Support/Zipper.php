@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Support;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Finder\SplFileInfo;
 use ZipArchive;
@@ -11,6 +12,7 @@ use ZipArchive;
 class Zipper
 {
     private ZipArchive $zip;
+    private array $meta = [];
 
     public function __construct(string $path, int $flags = ZipArchive::CREATE | ZipArchive::OVERWRITE)
     {
@@ -103,5 +105,36 @@ class Zipper
     public function getArchive(): ZipArchive
     {
         return $this->zip;
+    }
+
+    /**
+     * Add some data so that it can be extracted later.
+     */
+    public function addMeta(string $key, array|string $meta): self
+    {
+        if (is_array($meta)) {
+            $current = $this->meta[$key] ?? [];
+            $this->meta[$key] = array_merge($current, $meta);
+        } else {
+            $this->meta[$key] = $meta;
+        }
+
+        $this->zip->setArchiveComment(comment: json_encode($this->meta));
+
+        return $this;
+    }
+
+    /**
+     * Get the meta data associated with the Zipper instance.
+     *
+     * @return Collection<string, array>
+     */
+    public function getMeta(): Collection
+    {
+        if ($comment = $this->zip->getArchiveComment()) {
+            $this->meta = json_decode($comment, true);
+        }
+
+        return collect($this->meta);
     }
 }
