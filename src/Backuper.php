@@ -41,6 +41,8 @@ final class Backuper
                 $zipper->encrypt($password);
             }
 
+            $zipper->addMeta('created_at', now()->toIso8601String());
+
             $zipMeta = $this->resolveMetaFromZip($zipper);
 
             $zipper->close();
