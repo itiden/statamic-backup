@@ -14,9 +14,9 @@ use function Laravel\Prompts\info;
  */
 class ClearFilesCommand extends Command
 {
-    protected $signature = 'statamic:backup:clear';
+    protected $signature = 'statamic:backup:temp-clear';
 
-    protected $description = 'Empty the temp directory';
+    protected $description = 'Clear the backup temp directory';
 
     public function handle()
     {
