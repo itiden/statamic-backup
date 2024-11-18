@@ -56,7 +56,7 @@ final class Backuper
             }
 
             $zipMeta->each(fn ($meta, $key) => match ($key) {
-                'skipped' => $meta->each($metadata->addSkippedPipe(...)),
+                'skipped' => $meta->each(fn (string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason)),
             });
 
             event(new BackupCreated($backup));
