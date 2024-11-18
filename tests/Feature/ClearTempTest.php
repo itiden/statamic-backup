@@ -9,7 +9,7 @@ it("will not crash if the temp path doesn't exist", function () {
 
     File::deleteDirectory($temp_path);
 
-    $this->artisan('statamic:backup:clear')->assertExitCode(0);
+    $this->artisan('statamic:backup:temp-clear')->assertExitCode(0);
 });
 
 it("will clear temp path when running backup clear command", function () {
@@ -21,7 +21,7 @@ it("will clear temp path when running backup clear command", function () {
 
     expect(File::allFiles($temp_path))->toHaveCount(1);
 
-    $this->artisan('statamic:backup:clear');
+    $this->artisan('statamic:backup:temp-clear');
 
     expect(File::allFiles($temp_path))->toHaveCount(0);
 });

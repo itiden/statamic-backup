@@ -12,7 +12,10 @@ export default defineConfig({
     sidebar: [
       {
         text: "Introduction",
-        items: [{ text: "Getting started", link: "/getting-started.md" }],
+        items: [
+          { text: "Getting started", link: "/getting-started.md" },
+          { text: "Commands", link: "/commands.md" },
+        ],
       },
       {
         text: "Configuration",
@@ -26,6 +29,7 @@ export default defineConfig({
         items: [
           { text: "Pipeline", link: "/pipeline.md" },
           { text: "Notifications", link: "/notifications.md" },
+          { text: "Metadata", link: "/metadata.md" },
         ],
       },
     ],

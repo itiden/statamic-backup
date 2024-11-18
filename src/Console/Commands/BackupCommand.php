@@ -7,6 +7,8 @@ namespace Itiden\Backup\Console\Commands;
 use Illuminate\Console\Command;
 use Itiden\Backup\Facades\Backuper;
 
+use function Laravel\Prompts\{info, spin};
+
 /**
  * Backup site
  */
@@ -14,14 +16,12 @@ class BackupCommand extends Command
 {
     protected $signature = 'statamic:backup';
 
-    protected $description = 'Backup your stuff';
+    protected $description = 'Run the backup pipeline';
 
     public function handle()
     {
-        $this->components->info('Backing up content');
+        $backup = spin(fn () => Backuper::backup(), 'Backing up...');
 
-        $backup_location = Backuper::backup();
-
-        $this->components->info('Backup saved to ' . $backup_location->path);
+        info('Backup saved to ' . $backup->path);
     }
 }

@@ -43,7 +43,7 @@ test('restore pipes can pass closure', function (string $pipe) {
     Assets::class,
 ]);
 
-test('can skip a pipe', function () {
+test('can skip a pipe with users', function () {
     /** @var Users::class $pipe */
     $pipe = app()->make(Users::class);
 
@@ -62,4 +62,29 @@ test('can skip a pipe', function () {
     expect($zipper->getMeta()[Users::class])->toHaveKey('skipped', 'No users found.');
 
     $zipper->close();
+});
+
+test('can skip a pipe with content', function () {
+    /** @var Users::class $pipe */
+    $pipe = app()->make(Content::class);
+
+    $callable = function ($z) {
+        return $z;
+    };
+
+    File::copyDirectory(config('backup.content_path'), config('backup.content_path') . '_backup');
+    File::deleteDirectory(config('backup.content_path'));
+
+    $zipper = Zipper::open(config('backup.temp_path') . '/backup.zip');
+
+    $pipe->backup(zip: $zipper, next: $callable);
+
+
+    expect($zipper->getMeta())->toHaveKey(Content::class);
+    expect($zipper->getMeta()[Content::class])->toHaveKey('skipped', 'Content directory didn\'t exist, is it configured correctly?');
+
+    $zipper->close();
+
+    File::copyDirectory(config('backup.content_path') . '_backup', config('backup.content_path'));
+    File::deleteDirectory(config('backup.content_path') . '_backup');
 });

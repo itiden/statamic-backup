@@ -5,30 +5,47 @@ declare(strict_types=1);
 namespace Itiden\Backup\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Console\PromptsForMissingInput;
+use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Restorer;
+
+use function Laravel\Prompts\{confirm, spin, info, select};
 
 /**
  * Restore content from a directory / backup
  */
-class RestoreCommand extends Command implements PromptsForMissingInput
+final class RestoreCommand extends Command
 {
-    protected $signature = 'statamic:backup:restore {path} {--force}';
+    protected $signature = 'statamic:backup:restore {--path=} {--force}';
 
     protected $description = 'Reset or restore content from a directory / backup';
 
-    protected function promptForMissingArgumentsUsing()
+    public function handle(BackupRepository $repo)
     {
-        return [
-            'path' => 'Which filepath does your backup have?',
-        ];
-    }
+        /* @var BackupDto $backup */
+        $backup = match (true) {
+            (bool) $this->option('path') => BackupDto::fromAbsolutePath($this->option('path')),
+            default => BackupDto::fromFile(select(
+                label: 'Which backup do you want to restore to?',
+                scroll: 10,
+                options: $repo->all()->flatMap(
+                    fn (BackupDto $backup) => [$backup->path => $backup->path]
+                ),
+                required: true
+            )),
+        };
 
-    public function handle()
-    {
-        if ($this->option('force') || $this->confirm('Are you sure you want to restore your content?')) {
-            Restorer::restore(BackupDto::fromAbsolutePath($this->argument('path')));
+        if (
+            $this->option('force')
+            || confirm(
+                label: "Are you sure you want to restore your content?",
+                hint: "This will overwrite your current content with state from {$backup->created_at->format('Y-m-d H:i:s')}",
+                required: true
+            )
+        ) {
+            spin(fn () => Restorer::restore($backup), 'Restoring backup');
+
+            info('Backup restored!');
         }
     }
 }
