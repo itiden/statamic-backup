@@ -41,6 +41,10 @@ final class Backuper
                 $zipper->encrypt($password);
             }
 
+            $zipper->addMeta('created_at', now()->toIso8601String());
+
+            $zipMeta = $this->resolveMetaFromZip($zipper);
+
             $zipper->close();
 
             $backup = $this->repository->add($temp_zip_path);
@@ -51,10 +55,8 @@ final class Backuper
                 $metadata->setCreatedBy($user);
             }
 
-            $zipper->getMeta()->each(function ($meta, $key) use ($metadata) {
-                if (isset($meta['skipped'])) {
-                    $metadata->addSkippedPipe($key, $meta['skipped']);
-                }
+            $zipMeta->each(fn ($meta, $key) => match ($key) {
+                'skipped' => $meta->each(fn (string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason)),
             });
 
             event(new BackupCreated($backup));
@@ -73,6 +75,21 @@ final class Backuper
 
             throw $exception;
         }
+    }
+
+    private function resolveMetaFromZip(Zipper $zip)
+    {
+        $metadata = collect([
+            'skipped' => collect(),
+        ]);
+
+        $zip->getMeta()->each(function ($meta, $key) use ($metadata) {
+            if (isset($meta['skipped'])) {
+                $metadata->get('skipped')->put($key, $meta['skipped']);
+            }
+        });
+
+        return $metadata;
     }
 
     /**
