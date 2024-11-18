@@ -2,13 +2,12 @@
 
 Backup is an extensible and powerful backup tool for statamic sites, it enables you to create, manage and schedule backups of your site with ease in the control panel.
 
+![image](https://github.com/user-attachments/assets/3dfe3930-8997-4e73-a270-342585c75fee)
+
 ## Table of Contents
 
 - [Features](#features)
 - [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-  - [Scheduling](#scheduling)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -22,9 +21,13 @@ Why use our backup addon?
 - Choose exactly what you want to backup by configuring the backup [pipeline](docs/pipeline.md).
   - Easy to extend and customize, [just create a new pipes](docs/pipeline.md#creating-a-new-backup-pipe)!
 - Uses laravels [storage system](https://laravel.com/docs/11.x/filesystem) and thus supports external storage out of the box.
-- Tested, we have over 140 assertions in this addon.
+- Tested, the addon have over 85% test coverage.
 
 ## Installation
+
+Read the more detailed guide in the documentation, [here](https://itiden.github.io/statamic-backup/getting-started.html).
+
+Otherwise, here is a "quickstart guide":
 
 1. To install this addon, require it using composer.
 
@@ -36,48 +39,10 @@ Why use our backup addon?
    ```bash
    php artisan vendor:publish --tag="backup-config"
    ```
-   default is `storage_path('content')`
-
-## Configuration
-
-You can configure the backup settings in the `config/backup.php` file, first publish the configuration file using the following command:
-
-```bash
-php artisan vendor:publish --tag="backup-config"
-```
-
-Then you can configure:
-
-- Backup path
-- Backup disk
-- Backup filename
-- Backup schedule
-- Temporary files path
-- Max amount of backups to keep
-- Backup password
-- The Backup pipeline
-
-Read more about the configuration [here](docs/configuration.md)!
-
-## Usage
-
-To create a backup, navigate to the Backup section in the control panel and click the "Create Backup" button. There you can also see a list of all your backups and download or restore them if needed.
-
-Or if you prefer to use the command line, you can use the following command:
-
-```bash
-php artisan statamic:backup:create
-```
-
-### Scheduling
-
-Configure the backup schedule in the configuration file, read more about it [here](docs/scheduling.md).
-
-To use the scheduling you need to run the laravel scheduler. Read more about that here: [Running the scheduler](https://laravel.com/docs/10.x/scheduling#running-the-scheduler).
 
 ## Documentation
 
-In the docs directory you can read more about the pipeline, scheduling and notification configurations.
+Read more about configuration, installation, usage and more advanced topics in our [documentation](https://itiden.github.io/statamic-backup/)!
 
 ## License
 
