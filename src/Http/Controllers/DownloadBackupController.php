@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Http\Controllers;
 
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class DownloadBackupController extends Controller
+final readonly class DownloadBackupController
 {
-    use AuthorizesRequests;
-    use ValidatesRequests;
 
     /**
      * Handle the incoming request.
