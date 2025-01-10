@@ -25,6 +25,6 @@ class DownloadBackupController extends Controller
 
         $backup->getMetadata()->addDownload(auth()->user());
 
-        return Storage::disk(config('backup.backup.disk'))->download($backup->path);
+        return Storage::disk(config('backup.destination.disk'))->download($backup->path);
     }
 }
