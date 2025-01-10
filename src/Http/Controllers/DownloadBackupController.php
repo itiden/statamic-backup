@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final readonly class DownloadBackupController
 {
-
     /**
      * Handle the incoming request.
      */
