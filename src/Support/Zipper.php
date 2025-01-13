@@ -48,7 +48,7 @@ final class Zipper
     {
         $this->zip->setPassword($password);
 
-        collect(range(0, $this->zip->numFiles - 1))->each(fn($file) => $this->zip->setEncryptionIndex($file, ZipArchive::EM_AES_256));
+        collect(range(0, $this->zip->numFiles - 1))->each(fn ($file) => $this->zip->setEncryptionIndex($file, ZipArchive::EM_AES_256));
 
         return $this;
     }

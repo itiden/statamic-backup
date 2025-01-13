@@ -13,7 +13,6 @@ use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Events\BackupRestored;
 use Itiden\Backup\Events\RestoreFailed;
-use Itiden\Backup\Exceptions;
 use Itiden\Backup\Support\Zipper;
 use RuntimeException;
 
@@ -21,7 +20,8 @@ final class Restorer
 {
     public function __construct(
         protected BackupRepository $repository
-    ) {}
+    ) {
+    }
 
     /**
      * Restore from a backup with a given timestamp.

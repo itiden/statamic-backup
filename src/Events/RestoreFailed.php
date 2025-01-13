@@ -8,5 +8,7 @@ use Itiden\Backup\Exceptions;
 
 final readonly class RestoreFailed
 {
-    public function __construct(public Exceptions\RestoreFailed $exception) {}
+    public function __construct(public Exceptions\RestoreFailed $exception)
+    {
+    }
 }
