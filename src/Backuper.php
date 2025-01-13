@@ -11,19 +11,18 @@ use Itiden\Backup\Support\Zipper;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
-use Itiden\Backup\Exceptions\BackupFailedException;
+use Itiden\Backup\Exceptions;
 
 final class Backuper
 {
     public function __construct(
         protected BackupRepository $repository
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new backup.
      *
-     * @throws BackupFailedException
+     * @throws Exceptions\BackupFailed
      */
     public function backup(): BackupDto
     {
@@ -55,8 +54,8 @@ final class Backuper
                 $metadata->setCreatedBy($user);
             }
 
-            $zipMeta->each(fn ($meta, $key) => match ($key) {
-                'skipped' => $meta->each(fn (string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason)),
+            $zipMeta->each(fn($meta, $key) => match ($key) {
+                'skipped' => $meta->each(fn(string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason)),
             });
 
             event(new BackupCreated($backup));
@@ -69,7 +68,7 @@ final class Backuper
         } catch (Exception $e) {
             report($e);
 
-            $exception = new BackupFailedException();
+            $exception = new Exceptions\BackupFailed();
 
             event(new BackupFailed($exception));
 

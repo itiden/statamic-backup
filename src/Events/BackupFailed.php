@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Events;
 
-use Itiden\Backup\Exceptions\BackupFailedException;
+use Itiden\Backup\Exceptions;
 
-class BackupFailed
+final readonly class BackupFailed
 {
-    public function __construct(public BackupFailedException $exception)
-    {
-    }
+    public function __construct(public Exceptions\BackupFailed $exception) {}
 }

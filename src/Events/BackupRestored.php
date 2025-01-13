@@ -6,10 +6,9 @@ namespace Itiden\Backup\Events;
 
 use Itiden\Backup\DataTransferObjects\BackupDto;
 
-class BackupRestored
+final readonly class BackupRestored
 {
     public function __construct(
         public BackupDto $backup
-    ) {
-    }
+    ) {}
 }

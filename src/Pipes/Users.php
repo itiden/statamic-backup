@@ -10,7 +10,7 @@ use Itiden\Backup\Abstracts\BackupPipe;
 use Itiden\Backup\Support\Zipper;
 use Statamic\Facades\Stache;
 
-class Users extends BackupPipe
+final class Users extends BackupPipe
 {
     public static function getKey(): string
     {

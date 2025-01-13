@@ -6,14 +6,13 @@ namespace Itiden\Backup\DataTransferObjects;
 
 use Illuminate\Http\Request;
 
-readonly class ChunkyTestDto
+final readonly class ChunkyTestDto
 {
     public function __construct(
         public string $path,
         public string $filename,
         public int $currentChunk,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new ChunkyTestDto from a request

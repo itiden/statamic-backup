@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Event;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
-use Itiden\Backup\Exceptions\RestoreFailedException;
+use Itiden\Backup\Exceptions\RestoreFailed;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Facades\Restorer;
 use Itiden\Backup\Tests\SkippingPipe;
@@ -128,4 +128,4 @@ it('can encrypt backup with password', function () {
     config()->set('backup.password', null);
 
     Restorer::restore($backup);
-})->throws(RestoreFailedException::class, 'statamic-backup::backup.restore_failed');
+})->throws(RestoreFailed::class, 'statamic-backup::backup.restore_failed');

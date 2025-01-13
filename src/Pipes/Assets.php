@@ -11,7 +11,7 @@ use Itiden\Backup\Support\Zipper;
 use Statamic\Assets\AssetContainer as Container;
 use Statamic\Facades\AssetContainer;
 
-class Assets extends BackupPipe
+final class Assets extends BackupPipe
 {
     public static function getKey(): string
     {

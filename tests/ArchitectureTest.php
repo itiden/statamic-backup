@@ -1,12 +1,10 @@
 <?php
 
-use Itiden\Backup\Contracts\Restorer;
+use Itiden\Backup\Abstracts\BackupPipe;
 
 uses()->group('architecture');
 
-test('strict types')
-    ->expect('Itiden\Backup')
-    ->toUseStrictTypes();
+arch(null)->preset()->strict()->ignoring(BackupPipe::class);
 
 test('dtos are readonly')
     ->expect('Itiden\Backup\DataTransferObjects')
@@ -22,5 +20,5 @@ test('controllers are invokable')
     ->toBeInvokable();
 
 test('clients implements correct contract')
-    ->expect('Itiden\Backup\Clients')
-    ->toImplement(Restorer::class);
+    ->expect('Itiden\Backup\Pipes')
+    ->toExtend(BackupPipe::class);

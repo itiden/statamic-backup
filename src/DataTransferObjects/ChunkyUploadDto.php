@@ -7,7 +7,7 @@ namespace Itiden\Backup\DataTransferObjects;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 
-readonly class ChunkyUploadDto
+final readonly class ChunkyUploadDto
 {
     public function __construct(
         public string $path,
@@ -17,8 +17,7 @@ readonly class ChunkyUploadDto
         public int $totalSize,
         public string $identifier,
         public UploadedFile $file,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new ChunkyUploadDto from a request

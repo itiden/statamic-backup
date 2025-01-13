@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\DataTransferObjects\BackupDto;
-use Itiden\Backup\Exceptions\RestoreFailedException;
+use Itiden\Backup\Exceptions\RestoreFailed;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Facades\Restorer;
 
@@ -28,4 +28,4 @@ it('throws an exception if the backup path does not exist', function () {
         path: 'test/path',
         timestamp: now()->timestamp,
     ));
-})->throws(RestoreFailedException::class);
+})->throws(RestoreFailed::class);

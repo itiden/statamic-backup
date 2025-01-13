@@ -6,7 +6,7 @@ namespace Itiden\Backup\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ChunkyUploadRequest extends FormRequest
+final class ChunkyUploadRequest extends FormRequest
 {
     public function rules()
     {

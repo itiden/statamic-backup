@@ -12,7 +12,7 @@ use function Laravel\Prompts\info;
 /**
  * Clear the backup temp directory
  */
-class ClearFilesCommand extends Command
+final class ClearFilesCommand extends Command
 {
     protected $signature = 'statamic:backup:temp-clear';
 
