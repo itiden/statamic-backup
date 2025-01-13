@@ -128,4 +128,4 @@ it('can encrypt backup with password', function () {
     config()->set('backup.password', null);
 
     Restorer::restore($backup);
-})->throws(RestoreFailedException::class, 'statamic-backup::backup.restore_failed');
+})->throws(RestoreFailedException::class, 'statamic-backup::backup.restore.failed');

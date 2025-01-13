@@ -16,7 +16,7 @@ class RestoreFailedException extends Exception
         ?Throwable $previous = null
     ) {
         parent::__construct(
-            message: __('statamic-backup::backup.restore_failed', ['name' => Carbon::now()->format('Ymd')]),
+            message: __('statamic-backup::backup.restore.failed', ['name' => Carbon::now()->format('Ymd')]),
             previous: $previous
         );
     }

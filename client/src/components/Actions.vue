@@ -95,7 +95,7 @@ export default {
           this.$toast.success(__(data.message));
         })
         .catch((error) => {
-          let message = __("statamic-backup::backup.restore_failed");
+          let message = __("statamic-backup::backup.restore.failed");
 
           if (error.response.data.message) {
             message = error.response.data.message;
