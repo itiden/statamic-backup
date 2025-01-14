@@ -59,7 +59,7 @@ describe('api:restore-from-upload', function () {
         // The zip file cant be empty, but when extracting it can if the password is wrong.
         Zipper::open($emptyArchive)
             ->addFromString('empty.txt', 'empty')
-            ->encrypt('notthepasswordwedecryptwith')
+            ->encrypt('not-the-password-we-decrypt-with')
             ->close();
 
         $user->assignRole('super admin')->save();
