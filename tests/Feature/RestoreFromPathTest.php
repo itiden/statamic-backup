@@ -4,7 +4,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Events\RestoreFailed;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Support\Zipper;
@@ -12,73 +11,71 @@ use Itiden\Backup\Support\Zipper;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\postJson;
 
-uses()->group('restore-from-path');
+describe('api:restore-from-upload', function () {
+    it('can restore from path', function () {
+        $backup = Backuper::backup();
 
-afterEach(function () {
-    File::cleanDirectory(config('backup.temp_path'));
-    app(BackupRepository::class)->empty();
-});
+        $user = user();
 
-it('can restore from path', function () {
-    $backup = Backuper::backup();
+        $user->assignRole('super admin')->save();
 
-    $user = user();
+        actingAs($user);
 
-    $user->assignRole('super admin')->save();
+        $path = Storage::disk(config('backup.destination.disk'))->path($backup->path);
 
-    actingAs($user);
+        $response = postJson(cp_route('api.itiden.backup.restore-from-path'), [
+            'path' => $path,
+        ]);
 
-    $path = Storage::disk(config('backup.destination.disk'))->path($backup->path);
+        expect($response->status())->toBe(Response::HTTP_OK);
+    });
 
-    $response = postJson(cp_route('api.itiden.backup.restore-from-path'), [
-        'path' => $path,
-    ]);
+    it('can restore from path and delete after', function () {
+        $backup = Backuper::backup();
 
-    expect($response->status())->toBe(Response::HTTP_OK);
-});
+        $user = user();
 
-it('can restore from path and delete after', function () {
-    $backup = Backuper::backup();
+        $user->assignRole('super admin')->save();
 
-    $user = user();
+        actingAs($user);
 
-    $user->assignRole('super admin')->save();
+        $path = Storage::disk(config('backup.destination.disk'))->path($backup->path);
 
-    actingAs($user);
+        $response = postJson(cp_route('api.itiden.backup.restore-from-path'), [
+            'path' => $path,
+            'destroyAfterRestore' => true,
+        ]);
 
-    $path = Storage::disk(config('backup.destination.disk'))->path($backup->path);
+        expect($response->status())->toBe(Response::HTTP_OK);
+        expect(File::exists($path))->toBeFalse();
+    });
 
-    $response = postJson(cp_route('api.itiden.backup.restore-from-path'), [
-        'path' => $path,
-        'destroyAfterRestore' => true,
-    ]);
+    it("will not restore empty archives and dispatches failed event", function () {
+        Event::fake();
+        $user = user();
 
-    expect($response->status())->toBe(Response::HTTP_OK);
-    expect(File::exists($path))->toBeFalse();
-});
+        $emptyArchive = storage_path(config('backup.temp_path') . '/empty.zip');
 
-it("will not restore empty archives and dispatches failed event", function () {
-    Event::fake();
-    $user = user();
+        // The zip file cant be empty, but when extracting it can if the password is wrong.
+        Zipper::open($emptyArchive)
+            ->addFromString('empty.txt', 'empty')
+            ->encrypt('notthepasswordwedecryptwith')
+            ->close();
 
-    $emptyArchive = storage_path(config('backup.temp_path') . '/empty.zip');
+        $user->assignRole('super admin')->save();
 
-    // The zip file cant be empty, but when extracting it can if the password is wrong.
-    Zipper::open($emptyArchive)
-        ->addFromString('empty.txt', 'empty')
-        ->encrypt('notthepasswordwedecryptwith')
-        ->close();
+        actingAs($user);
 
-    $user->assignRole('super admin')->save();
+        $response = postJson(cp_route('api.itiden.backup.restore-from-path'), [
+            'path' => $emptyArchive,
+            'destroyAfterRestore' => true,
+        ]);
 
-    actingAs($user);
+        Event::assertDispatched(RestoreFailed::class);
 
-    $response = postJson(cp_route('api.itiden.backup.restore-from-path'), [
-        'path' => $emptyArchive,
-        'destroyAfterRestore' => true,
-    ]);
-
-    Event::assertDispatched(RestoreFailed::class);
-
-    expect($response->status())->toBe(Response::HTTP_INTERNAL_SERVER_ERROR);
-});
+        expect($response->status())->toBe(Response::HTTP_INTERNAL_SERVER_ERROR);
+    });
+})->group('restore-from-path')
+    ->afterEach(function () {
+        File::cleanDirectory(config('backup.temp_path'));
+    });

@@ -7,91 +7,91 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Laravel\getJson;
 
-uses()->group('view');
+describe('api:view', function () {
+    test('guest cant view backups', function () {
+        $this->get(cp_route('itiden.backup.index'))
+            ->assertRedirect(cp_route('login'));
+    });
 
-test('guest cant view backups', function () {
-    $this->get(cp_route('itiden.backup.index'))
-        ->assertRedirect(cp_route('login'));
-});
+    test('user without permission cant view backups', function () {
+        $this->withoutVite();
 
-test('user without permission cant view backups', function () {
-    $this->withoutVite();
+        actingAs(user());
 
-    actingAs(user());
+        get(cp_route('itiden.backup.index'))
+            ->assertRedirect();
+    });
 
-    get(cp_route('itiden.backup.index'))
-        ->assertRedirect();
-});
+    test('user with permission can view backups', function () {
+        $this->withoutVite();
 
-test('user with permission can view backups', function () {
-    $this->withoutVite();
+        $user = user();
 
-    $user = user();
+        $user->set('roles', ['admin'])->save();
 
-    $user->set('roles', ['admin'])->save();
+        actingAs($user);
 
-    actingAs($user);
+        get(cp_route('itiden.backup.index'))
+            ->assertOk()
+            ->assertViewIs('itiden-backup::backups');
+    });
 
-    get(cp_route('itiden.backup.index'))
-        ->assertOk()
-        ->assertViewIs('itiden-backup::backups');
-});
+    test('user without permission cant get backups from api', function () {
+        $this->withoutVite();
 
-test('user without permission cant get backups from api', function () {
-    $this->withoutVite();
+        $user = user();
 
-    $user = user();
+        actingAs($user);
 
-    actingAs($user);
+        getJson(cp_route('api.itiden.backup.index'))
+            ->assertForbidden();
+    });
 
-    getJson(cp_route('api.itiden.backup.index'))
-        ->assertForbidden();
-});
+    test('user with permission can get backups from api', function () {
+        $this->withoutVite();
+        $this->withoutExceptionHandling();
 
-test('user with permission can get backups from api', function () {
-    $this->withoutVite();
-    $this->withoutExceptionHandling();
+        $user = user();
 
-    $user = user();
+        $user->set('roles', ['admin'])->save();
 
-    $user->set('roles', ['admin'])->save();
+        actingAs($user);
 
-    actingAs($user);
+        $backup = Backuper::backup();
 
-    $backup = Backuper::backup();
-
-    // Set some metadata so we can test it has correct structure
-    $backup->getMetadata()->addDownload($user);
-    $backup->getMetadata()->addRestore($user);
-    $backup->getMetadata()->addSkippedPipe(Users::class, 'Oh no it failed!');
+        // Set some metadata so we can test it has correct structure
+        $backup->getMetadata()->addDownload($user);
+        $backup->getMetadata()->addRestore($user);
+        $backup->getMetadata()->addSkippedPipe(Users::class, 'Oh no it failed!');
 
 
-    getJson(cp_route('api.itiden.backup.index'))
-        ->assertOk()
-        ->assertJsonStructure([
-            'data' => [
-                '*' => [
-                    'name',
-                    'size',
-                    'path',
-                    'created_at',
-                    'timestamp',
-                    'metadata' => [
-                        'created_by',
-                        'downloads',
-                        'restores',
-                        'skipped_pipes',
-                    ]
-                ],
-            ],
-            'meta' => [
-                'columns' => [
+        getJson(cp_route('api.itiden.backup.index'))
+            ->assertOk()
+            ->assertJsonStructure([
+                'data' => [
                     '*' => [
-                        'label',
-                        'field',
-                        'visible',
+                        'name',
+                        'size',
+                        'path',
+                        'created_at',
+                        'timestamp',
+                        'metadata' => [
+                            'created_by',
+                            'downloads',
+                            'restores',
+                            'skipped_pipes',
+                        ]
                     ],
+                ],
+                'meta' => [
+                    'columns' => [
+                        '*' => [
+                            'label',
+                            'field',
+                            'visible',
+                        ],
+                    ]
                 ]
-            ]
-        ]);
-});
+            ]);
+    });
+})->group('view');

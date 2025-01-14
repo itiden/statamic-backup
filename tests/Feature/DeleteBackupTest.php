@@ -6,41 +6,41 @@ use Itiden\Backup\Facades\Backuper;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\deleteJson;
 
-uses()->group('delete backup');
+describe('api:destroy', function () {
+    it('cant be deleted by a guest', function () {
+        $backup = Backuper::backup();
 
-it('cant be deleted by a guest', function () {
-    $backup = Backuper::backup();
+        $res = deleteJson(cp_route('api.itiden.backup.destroy', $backup->timestamp));
 
-    $res = deleteJson(cp_route('api.itiden.backup.destroy', $backup->timestamp));
+        expect($res->status())->toBe(401);
+        expect(app(BackupRepository::class)->all())->toHaveCount(1);
+    });
 
-    expect($res->status())->toBe(401);
-    expect(app(BackupRepository::class)->all())->toHaveCount(1);
-});
+    it('cant be deleted by a user without delete permisson', function () {
+        $backup = Backuper::backup();
 
-it('cant be deleted by a user without delete permisson', function () {
-    $backup = Backuper::backup();
+        actingAs(user());
 
-    actingAs(user());
+        $res = deleteJson(cp_route('api.itiden.backup.destroy', $backup->timestamp));
 
-    $res = deleteJson(cp_route('api.itiden.backup.destroy', $backup->timestamp));
+        expect($res->status())->toBe(403);
+        expect(app(BackupRepository::class)->all())->toHaveCount(1);
+    });
 
-    expect($res->status())->toBe(403);
-    expect(app(BackupRepository::class)->all())->toHaveCount(1);
-});
+    it('can be deleted by a user with delete backups permission', function () {
+        $backup = Backuper::backup();
 
-it('can be deleted by a user with delete backups permission', function () {
-    $backup = Backuper::backup();
+        $user = user();
 
-    $user = user();
+        $user->assignRole('super admin')->save();
 
-    $user->assignRole('super admin')->save();
+        actingAs($user);
 
-    actingAs($user);
+        $response = deleteJson(cp_route('api.itiden.backup.destroy', $backup->timestamp));
 
-    $response = deleteJson(cp_route('api.itiden.backup.destroy', $backup->timestamp));
+        expect($response->status())->toBe(200);
+        expect($response->json('message'))->toBe('Deleted ' . $backup->name);
 
-    expect($response->status())->toBe(200);
-    expect($response->json('message'))->toBe('Deleted ' . $backup->name);
-
-    expect(app(BackupRepository::class)->all())->toHaveCount(0);
-});
+        expect(app(BackupRepository::class)->all())->toHaveCount(0);
+    });
+})->group('delete backup');
