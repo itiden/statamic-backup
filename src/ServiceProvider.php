@@ -14,7 +14,7 @@ use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
 
-class ServiceProvider extends AddonServiceProvider
+final class ServiceProvider extends AddonServiceProvider
 {
     protected $viewNamespace = 'itiden-backup';
 
@@ -58,7 +58,7 @@ class ServiceProvider extends AddonServiceProvider
         ]);
     }
 
-    protected function schedule(Schedule $schedule)
+    public function schedule(Schedule $schedule)
     {
         if (!config('backup.schedule')) {
             return;

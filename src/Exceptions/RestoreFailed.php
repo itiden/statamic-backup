@@ -8,7 +8,7 @@ use Exception;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Throwable;
 
-class RestoreFailedException extends Exception
+final class RestoreFailed extends Exception
 {
     public function __construct(
         public BackupDto $backup,

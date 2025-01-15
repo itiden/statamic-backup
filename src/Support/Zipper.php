@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\File;
 use Symfony\Component\Finder\SplFileInfo;
 use ZipArchive;
 
-class Zipper
+final class Zipper
 {
     private ZipArchive $zip;
     private array $meta = [];

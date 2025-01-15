@@ -7,7 +7,7 @@ namespace Itiden\Backup\Exceptions;
 use Carbon\Carbon;
 use Exception;
 
-class BackupFailedException extends Exception
+final class BackupFailed extends Exception
 {
     public function __construct()
     {

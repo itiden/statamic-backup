@@ -6,10 +6,9 @@ namespace Itiden\Backup\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Controller;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 
-class DestroyBackupController extends Controller
+final readonly class DestroyBackupController
 {
     public function __invoke(string $timestamp, BackupRepository $repo): JsonResponse|RedirectResponse
     {
