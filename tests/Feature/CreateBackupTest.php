@@ -11,6 +11,7 @@ use Itiden\Backup\Tests\SkippingPipe;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\postJson;
+use function Statamic\trans;
 
 describe('api:create', function () {
     it('cant create a backup by a guest', function () {
@@ -122,7 +123,7 @@ describe('api:create', function () {
 
         config()->set('backup.password', null);
 
-        Restorer::restore($backup);
-    })->throws(RestoreFailed::class, 'statamic-backup::backup.restore_failed');
+        expect(fn () => Restorer::restore($backup))->toThrow(RestoreFailed::class, trans('statamic-backup::backup.restore.failed', ['name' => $backup->name]));
+    });
 })
     ->group('create backup');

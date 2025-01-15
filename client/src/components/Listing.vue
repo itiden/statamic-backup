@@ -150,7 +150,7 @@ export default {
           this.$emit("onRestored");
         })
         .catch((error) => {
-          let message = __('statamic-backup::backup.restore_failed');
+          let message = __('statamic-backup::backup.restore.failed');
 
           if (error.response.data.message) {
             message = error.response.data.message;
