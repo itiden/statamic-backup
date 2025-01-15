@@ -15,7 +15,8 @@ use Itiden\Backup\Events\BackupFailed;
 final class Backuper
 {
     public function __construct(
-        protected BackupRepository $repository
+        private BackupRepository $repository,
+        private StateManager $stateManager
     ) {
     }
 
@@ -26,7 +27,16 @@ final class Backuper
      */
     public function backup(): BackupDto
     {
+        $state = $this->stateManager->getState();
+
+        if (in_array($state, [State::BackupInProgress, State::RestoreInProgress])) {
+            throw new Exception("Cannot start backup while in state \"{$this->stateManager->getState()->value}\"");
+        }
+
+
         try {
+            $this->stateManager->setState(State::BackupInProgress);
+
             $temp_zip_path = config('backup.temp_path') . '/temp.zip';
 
             $zipper = Zipper::open($temp_zip_path);
@@ -64,6 +74,8 @@ final class Backuper
 
             $this->enforceMaxBackups();
 
+            $this->stateManager->setState(State::BackupCompleted);
+
             return $backup;
         } catch (Exception $e) {
             report($e);
@@ -71,6 +83,8 @@ final class Backuper
             $exception = new Exceptions\BackupFailed();
 
             event(new BackupFailed($exception));
+
+            $this->stateManager->setState(State::BackupFailed);
 
             throw $exception;
         }

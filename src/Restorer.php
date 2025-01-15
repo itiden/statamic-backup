@@ -19,7 +19,8 @@ use RuntimeException;
 final class Restorer
 {
     public function __construct(
-        protected BackupRepository $repository
+        private BackupRepository $repository,
+        private StateManager $stateManager
     ) {
     }
 
@@ -46,7 +47,15 @@ final class Restorer
      */
     public function restore(BackupDto $backup): void
     {
+        $state = $this->stateManager->getState();
+
+        if (in_array($state, [State::BackupInProgress, State::RestoreInProgress])) {
+            throw new Exception("Cannot start backup while in state \"{$this->stateManager->getState()->value}\"");
+        }
+
         try {
+            $this->stateManager->setState(State::RestoreInProgress);
+
             $path = $this->getLocalBackupPath($backup);
 
             if (!File::exists($path)) {
@@ -79,10 +88,14 @@ final class Restorer
             Artisan::call('statamic:stache:clear', [
                 '--quiet' => true,
             ]);
+
+            $this->stateManager->setState(State::RestoreCompleted);
         } catch (Exception $e) {
             report($e);
 
             $exception = new Exceptions\RestoreFailed($backup, previous: $e);
+
+            $this->stateManager->setState(State::RestoreFailed);
 
             event(new RestoreFailed($exception));
 
