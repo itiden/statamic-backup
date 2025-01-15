@@ -60,7 +60,7 @@ final class Backuper
 
             event(new BackupCreated($backup));
 
-            unlink($temp_zip_path);
+            @unlink($temp_zip_path);
 
             $this->enforceMaxBackups();
 
