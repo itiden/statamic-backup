@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Itiden\Backup\Http\Controllers\Api;
 
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Routing\Controller;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Http\Resources\BackupResource;
 
-class BackupController extends Controller
+final readonly class BackupController
 {
     public function __invoke(BackupRepository $repo): AnonymousResourceCollection
     {

@@ -9,7 +9,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * @mixin \Itiden\Backup\DataTransferObjects\BackupDto
  */
-class BackupResource extends JsonResource
+final class BackupResource extends JsonResource
 {
     public function toArray($request)
     {

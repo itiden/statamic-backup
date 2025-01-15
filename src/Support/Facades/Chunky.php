@@ -16,9 +16,9 @@ use Itiden\Backup\Support\Chunky as ChunkySupport;
  *
  * @see \Itiden\Backup\Support\Chunky
  */
-class Chunky extends Facade
+final class Chunky extends Facade
 {
-    protected static function getFacadeAccessor(): string
+    public static function getFacadeAccessor(): string
     {
         return ChunkySupport::class;
     }

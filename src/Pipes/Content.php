@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\File;
 use Itiden\Backup\Abstracts\BackupPipe;
 use Itiden\Backup\Support\Zipper;
 
-class Content extends BackupPipe
+final class Content extends BackupPipe
 {
     public static function getKey(): string
     {

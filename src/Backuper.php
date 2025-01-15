@@ -11,7 +11,6 @@ use Itiden\Backup\Support\Zipper;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
-use Itiden\Backup\Exceptions\BackupFailedException;
 
 final class Backuper
 {
@@ -23,7 +22,7 @@ final class Backuper
     /**
      * Create a new backup.
      *
-     * @throws BackupFailedException
+     * @throws Exceptions\BackupFailed
      */
     public function backup(): BackupDto
     {
@@ -61,7 +60,7 @@ final class Backuper
 
             event(new BackupCreated($backup));
 
-            unlink($temp_zip_path);
+            @unlink($temp_zip_path);
 
             $this->enforceMaxBackups();
 
@@ -69,7 +68,7 @@ final class Backuper
         } catch (Exception $e) {
             report($e);
 
-            $exception = new BackupFailedException();
+            $exception = new Exceptions\BackupFailed();
 
             event(new BackupFailed($exception));
 

@@ -12,7 +12,7 @@ use function Laravel\Prompts\{info, spin};
 /**
  * Backup site
  */
-class BackupCommand extends Command
+final class BackupCommand extends Command
 {
     protected $signature = 'statamic:backup';
 

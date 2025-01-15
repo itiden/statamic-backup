@@ -13,9 +13,9 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
  *
  * @see \Itiden\Backup\Backuper
  */
-class Backuper extends Facade
+final class Backuper extends Facade
 {
-    protected static function getFacadeAccessor()
+    public static function getFacadeAccessor()
     {
         return BackuperService::class;
     }
