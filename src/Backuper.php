@@ -30,7 +30,7 @@ final class Backuper
         $state = $this->stateManager->getState();
 
         if (in_array($state, [State::BackupInProgress, State::RestoreInProgress])) {
-            throw new Exception("Cannot start backup while in state \"{$this->stateManager->getState()->value}\"");
+            throw new Exception("Cannot start backup while in state \"{$state->value}\"");
         }
 
 
