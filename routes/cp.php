@@ -5,6 +5,7 @@ use Itiden\Backup\Http\Controllers\Api\BackupController;
 use Itiden\Backup\Http\Controllers\Api\DestroyBackupController;
 use Itiden\Backup\Http\Controllers\Api\RestoreController;
 use Itiden\Backup\Http\Controllers\Api\RestoreFromPathController;
+use Itiden\Backup\Http\Controllers\Api\StateController;
 use Itiden\Backup\Http\Controllers\Api\StoreBackupController;
 use Itiden\Backup\Http\Controllers\DownloadBackupController;
 use Itiden\Backup\Http\Controllers\UploadController;
@@ -32,6 +33,9 @@ Route::name('api.itiden.backup.')
     ->middleware('can:manage backups')
     ->prefix('api/backups')
     ->group(function () {
+        Route::get('/state', StateController::class)
+            ->name('state');
+
         Route::get('/', BackupController::class)
             ->name('index');
 
