@@ -4,9 +4,19 @@ jobs:
   pint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: "laravel-pint"
-        uses: aglipanci/laravel-pint-action@2.0.0
+      - name: "checkout"
+        uses: "actions/checkout@v4"
+
+      - name: "installing PHP"
+        uses: "shivammathur/setup-php@v2"
         with:
-          verboseMode: true
-          testMode: true
+          php-version: "8.3"
+
+      - name: "installing dependencies"
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: "formatting"
+        run: php vendor/bin/mago fmt --dry-run
+
+      - name: "linting"
+        run: php vendor/bin/mago lint --reporting-format=github
