@@ -39,7 +39,7 @@ final class Metadata
             'root' => config('backup.metadata_path') . '/.meta',
         ]);
 
-        $yaml = YAML::parse($this->filesystem->get($this->backup->timestamp) ?? "");
+        $yaml = YAML::parse($this->filesystem->get($this->backup->timestamp) ?? '');
 
         $this->createdBy = $yaml['created_by'] ?? null;
         $this->downloads = array_map(UserActionDto::fromArray(...), $yaml['downloads'] ?? []);
@@ -65,20 +65,14 @@ final class Metadata
 
     public function addDownload(Authenticatable $user)
     {
-        $this->downloads[] = new UserActionDto(
-            userId: $user->getAuthIdentifier(),
-            timestamp: now()->toString(),
-        );
+        $this->downloads[] = new UserActionDto(userId: $user->getAuthIdentifier(), timestamp: now()->toString());
 
         $this->save();
     }
 
     public function addRestore(Authenticatable $user)
     {
-        $this->restores[] = new UserActionDto(
-            userId: $user->getAuthIdentifier(),
-            timestamp: now()->toString(),
-        );
+        $this->restores[] = new UserActionDto(userId: $user->getAuthIdentifier(), timestamp: now()->toString());
 
         $this->save();
     }
@@ -106,10 +100,7 @@ final class Metadata
      */
     public function addSkippedPipe(string $pipe, string $reason)
     {
-        $this->skippedPipes[] = new SkippedPipeDto(
-            pipe: $pipe,
-            reason: $reason,
-        );
+        $this->skippedPipes[] = new SkippedPipeDto(pipe: $pipe, reason: $reason);
 
         $this->save();
     }
@@ -119,14 +110,16 @@ final class Metadata
         $this->filesystem->delete($this->backup->timestamp);
     }
 
-
     private function save()
     {
-        $this->filesystem->put($this->backup->timestamp, YAML::dump([
-            'created_by' => $this->createdBy,
-            'downloads' => array_map(fn (UserActionDto $action) => $action->toArray(), $this->downloads),
-            'restores' => array_map(fn (UserActionDto $action) => $action->toArray(), $this->restores),
-            'skipped_pipes' => array_map(fn (SkippedPipeDto $dto) => $dto->toArray(), $this->skippedPipes),
-        ]));
+        $this->filesystem->put(
+            $this->backup->timestamp,
+            YAML::dump([
+                'created_by' => $this->createdBy,
+                'downloads' => array_map(fn(UserActionDto $action) => $action->toArray(), $this->downloads),
+                'restores' => array_map(fn(UserActionDto $action) => $action->toArray(), $this->restores),
+                'skipped_pipes' => array_map(fn(SkippedPipeDto $dto) => $dto->toArray(), $this->skippedPipes),
+            ]),
+        );
     }
 }

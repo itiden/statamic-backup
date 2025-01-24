@@ -31,7 +31,11 @@ final class Content extends BackupPipe
         $contentPath = config('backup.content_path');
 
         if (!File::exists($contentPath)) {
-            return $this->skip(reason: 'Content directory didn\'t exist, is it configured correctly?', next: $next, zip: $zip);
+            return $this->skip(
+                reason: 'Content directory didn\'t exist, is it configured correctly?',
+                next: $next,
+                zip: $zip,
+            );
         }
 
         $zip->addDirectory($contentPath, static::getKey());

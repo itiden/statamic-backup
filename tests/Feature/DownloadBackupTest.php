@@ -8,7 +8,6 @@ use function Pest\Laravel\get;
 use function Pest\Laravel\getJson;
 
 describe('api:download', function () {
-
     it('cant be downloaded by a guest', function () {
         $backup = Backuper::backup();
 
@@ -35,7 +34,9 @@ describe('api:download', function () {
 
         $user = user();
 
-        $user->assignRole('admin')->save();
+        $user
+            ->assignRole('admin')
+            ->save();
 
         actingAs($user);
 
@@ -49,7 +50,9 @@ describe('api:download', function () {
 
         $user = user();
 
-        $user->assignRole('admin')->save();
+        $user
+            ->assignRole('admin')
+            ->save();
 
         actingAs($user);
 

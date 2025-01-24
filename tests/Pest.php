@@ -7,7 +7,7 @@ use Statamic\Facades\Role;
 use Statamic\Facades\User;
 
 uses(TestCase::class)
-    ->afterEach(fn () => app(BackupRepository::class)->empty())
+    ->afterEach(fn() => app(BackupRepository::class)->empty())
     ->in(__DIR__);
 
 function user(): StatamicUser

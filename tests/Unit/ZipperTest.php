@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\File;
 use Itiden\Backup\Support\Zipper;
 
 describe('zipper', function () {
-
     it('can create instance', function () {
         $zip = new Zipper(storage_path('test.zip'));
 
@@ -44,8 +43,7 @@ describe('zipper', function () {
     it('can zip directory', function () {
         $path = storage_path('test.zip');
 
-        Zipper::open($path)
-            ->addDirectory(config('backup.content_path'), 'example');
+        Zipper::open($path)->addDirectory(config('backup.content_path'), 'example');
 
         expect($path)->toBeString();
         expect(file_exists($path))->toBeTrue();
@@ -73,7 +71,9 @@ describe('zipper', function () {
         Zipper::open($target)->addFromString('test.txt', 'test');
 
         $unzip = storage_path('test');
-        Zipper::open($target, true)->extractTo($unzip)->close();
+        Zipper::open($target, true)
+            ->extractTo($unzip)
+            ->close();
 
         expect(file_exists($unzip))->toBeTrue();
         expect(file_exists(storage_path('test') . '/test.txt'))->toBeTrue();
@@ -86,11 +86,12 @@ describe('zipper', function () {
 
         $target = storage_path('test.zip');
 
-        Zipper::open($target)
-            ->addDirectory(config('backup.content_path'), 'example');
+        Zipper::open($target)->addDirectory(config('backup.content_path'), 'example');
 
         $unzip = storage_path('unzipdir');
-        Zipper::open($target, true)->extractTo($unzip)->close();
+        Zipper::open($target, true)
+            ->extractTo($unzip)
+            ->close();
 
         expect(file_exists($unzip))->toBeTrue();
         expect(file_exists(storage_path('unzipdir') . '/example'))->toBeTrue();
@@ -118,7 +119,7 @@ describe('zipper', function () {
             ->extractTo($unzip, $password)
             ->close();
 
-        expect(File::allFiles($unzip)[0]->getRelativePathname())->toBe("test.txt");
+        expect(File::allFiles($unzip)[0]->getRelativePathname())->toBe('test.txt');
         expect(File::get($unzip . '/test.txt'))->toBe('test');
     });
 
@@ -133,7 +134,9 @@ describe('zipper', function () {
         $zip = Zipper::open($target, true);
 
         expect($zip->getMeta())->toHaveKey('test');
-        expect($zip->getMeta())->get('test')->toBe('test');
+        expect($zip->getMeta())
+            ->get('test')
+            ->toBe('test');
 
         $zip->close();
     });

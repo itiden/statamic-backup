@@ -24,7 +24,10 @@ final class Assets extends BackupPipe
             ->filter(static::isLocal(...))
             ->each(function ($container) use ($backupPath) {
                 File::cleanDirectory($container->diskPath());
-                File::copyDirectory("{$this->getDirectoryPath($backupPath)}/{$container->handle()}", $container->diskPath());
+                File::copyDirectory(
+                    "{$this->getDirectoryPath($backupPath)}/{$container->handle()}",
+                    $container->diskPath(),
+                );
             });
 
         return $next($backupPath);

@@ -31,27 +31,35 @@ describe('api:create', function () {
     it('can create a backup by a user with create backups permission', function () {
         $user = user();
 
-        $user->assignRole('admin')->save();
+        $user
+            ->assignRole('admin')
+            ->save();
 
         actingAs($user);
 
         $responseJson = postJson(cp_route('api.itiden.backup.store'));
 
-
         $responseJson->assertJsonStructure([
             'message',
         ]);
 
-        expect(app(BackupRepository::class)->all()->count())->toBe(1);
+        expect(app(BackupRepository::class)
+            ->all()
+            ->count())->toBe(1);
     });
 
     it('can create backup from command', function () {
-        expect(app(BackupRepository::class)->all()->count())->toBe(0);
+        expect(app(BackupRepository::class)
+            ->all()
+            ->count())->toBe(0);
 
-        $this->artisan('statamic:backup')
+        $this
+            ->artisan('statamic:backup')
             ->assertExitCode(0);
 
-        expect(app(BackupRepository::class)->all()->count())->toBe(1);
+        expect(app(BackupRepository::class)
+            ->all()
+            ->count())->toBe(1);
     });
 
     it('dispatches backup created event', function () {
@@ -59,14 +67,21 @@ describe('api:create', function () {
 
         $user = user();
 
-        $user->assignRole('admin')->save();
+        $user
+            ->assignRole('admin')
+            ->save();
 
         actingAs($user);
 
         postJson(cp_route('api.itiden.backup.store'));
 
         Event::assertDispatched(BackupCreated::class, function ($event) {
-            return $event->backup->name === app(BackupRepository::class)->all()->first()->name;
+            return (
+                $event->backup->name ===
+                app(BackupRepository::class)
+                    ->all()
+                    ->first()->name
+            );
         });
     });
 
@@ -78,7 +93,9 @@ describe('api:create', function () {
 
         $user = user();
 
-        $user->assignRole('admin')->save();
+        $user
+            ->assignRole('admin')
+            ->save();
 
         actingAs($user);
 
@@ -90,19 +107,27 @@ describe('api:create', function () {
     it('sets created by metadata when user is authenticated', function () {
         $user = user();
 
-        $user->assignRole('admin')->save();
+        $user
+            ->assignRole('admin')
+            ->save();
 
         actingAs($user);
 
         postJson(cp_route('api.itiden.backup.store'));
 
-        expect(app(BackupRepository::class)->all()->first()->getMetadata()->getCreatedBy())->toBe($user);
+        expect(app(BackupRepository::class)
+            ->all()
+            ->first()
+            ->getMetadata()
+            ->getCreatedBy())->toBe($user);
     });
 
     it('adds skipped pipes to meta', function () {
         $user = user();
 
-        $user->assignRole('admin')->save();
+        $user
+            ->assignRole('admin')
+            ->save();
 
         config()->set('backup.pipeline', [
             ...config('backup.pipeline'),
@@ -113,7 +138,11 @@ describe('api:create', function () {
 
         postJson(cp_route('api.itiden.backup.store'));
 
-        expect(app(BackupRepository::class)->all()->first()->getMetadata()->getSkippedPipes())->toHaveCount(1);
+        expect(app(BackupRepository::class)
+            ->all()
+            ->first()
+            ->getMetadata()
+            ->getSkippedPipes())->toHaveCount(1);
     });
 
     it('can encrypt backup with password', function () {
@@ -123,7 +152,9 @@ describe('api:create', function () {
 
         config()->set('backup.password', null);
 
-        expect(fn () => Restorer::restore($backup))->toThrow(RestoreFailed::class, trans('statamic-backup::backup.restore.failed', ['name' => $backup->name]));
+        expect(fn() => Restorer::restore($backup))->toThrow(
+            RestoreFailed::class,
+            trans('statamic-backup::backup.restore.failed', ['name' => $backup->name]),
+        );
     });
-})
-    ->group('create backup');
+})->group('create backup');

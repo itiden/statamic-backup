@@ -27,7 +27,7 @@ describe('repository:backup', function () {
         expect($backupByTimestamp)->toEqual($backup);
     });
 
-    it("returns null when timestamp doesnt exist", function () {
+    it('returns null when timestamp doesnt exist', function () {
         $backup = app(BackupRepository::class)->find('1234567890');
         expect($backup)->toBeNull();
     });
@@ -37,7 +37,9 @@ describe('repository:backup', function () {
 
         app(BackupRepository::class)->empty();
 
-        expect(app(BackupRepository::class)->all()->count())->toBe(0);
+        expect(app(BackupRepository::class)
+            ->all()
+            ->count())->toBe(0);
     });
 
     it('dispatches backup removed event', function () {
@@ -57,14 +59,14 @@ describe('repository:backup', function () {
         expect(Storage::disk('local')->files(storage_path('statamic-backup/.metadata')))->toBeEmpty();
     });
 
-
     it('can delete backup by timestamp', function () {
         $backup = Backuper::backup();
 
         $backup = app(BackupRepository::class)->remove($backup->timestamp);
 
         expect($backup)->toBeInstanceOf(BackupDto::class);
-        expect(Storage::disk(config('backup.destination.disk'))
-            ->exists(config('backup.destination.path') . "/{$backup->name}.zip"))->toBeFalse();
+        expect(Storage::disk(config('backup.destination.disk'))->exists(
+            config('backup.destination.path') . "/{$backup->name}.zip",
+        ))->toBeFalse();
     });
 })->group('backuprepository');

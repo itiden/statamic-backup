@@ -12,11 +12,11 @@ final class RestoreFailed extends Exception
 {
     public function __construct(
         public BackupDto $backup,
-        ?Throwable $previous = null
+        ?Throwable $previous = null,
     ) {
         parent::__construct(
             message: __('statamic-backup::backup.restore.failed', ['name' => $backup->name]),
-            previous: $previous
+            previous: $previous,
         );
     }
 }

@@ -25,25 +25,28 @@ final class RestoreCommand extends Command
         /* @var BackupDto $backup */
         $backup = match (true) {
             (bool) $this->option('path') => BackupDto::fromAbsolutePath($this->option('path')),
-            default => BackupDto::fromFile(select(
+            default
+                => BackupDto::fromFile(select(
                 label: 'Which backup do you want to restore to?',
                 scroll: 10,
-                options: $repo->all()->flatMap(
-                    fn (BackupDto $backup) => [$backup->path => $backup->path]
-                ),
-                required: true
+                options: $repo
+                    ->all()
+                    ->flatMap(fn(BackupDto $backup) => [$backup->path => $backup->path]),
+                required: true,
             )),
         };
 
         if (
-            $this->option('force')
-            || confirm(
-                label: "Are you sure you want to restore your content?",
-                hint: "This will overwrite your current content with state from {$backup->created_at->format('Y-m-d H:i:s')}",
-                required: true
-            )
+            $this->option('force') ||
+                confirm(
+                    label: 'Are you sure you want to restore your content?',
+                    hint: "This will overwrite your current content with state from {$backup->created_at->format(
+                        'Y-m-d H:i:s',
+                    )}",
+                    required: true,
+                )
         ) {
-            spin(fn () => Restorer::restore($backup), 'Restoring backup');
+            spin(fn() => Restorer::restore($backup), 'Restoring backup');
 
             info('Backup restored!');
         }

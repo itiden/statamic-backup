@@ -28,7 +28,7 @@ final class Zipper
      */
     public static function open(string $path, bool $readOnly = false): self
     {
-        $flags = $readOnly ? ZipArchive::RDONLY : ZipArchive::CREATE | ZipArchive::OVERWRITE;
+        $flags = $readOnly ? ZipArchive::RDONLY : (ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
         return new static($path, $flags);
     }
@@ -48,7 +48,10 @@ final class Zipper
     {
         $this->zip->setPassword($password);
 
-        collect(range(0, $this->zip->numFiles - 1))->each(fn ($file) => $this->zip->setEncryptionIndex($file, ZipArchive::EM_AES_256));
+        collect(range(0, $this->zip->numFiles - 1))->each(fn($file) => $this->zip->setEncryptionIndex(
+            $file,
+            ZipArchive::EM_AES_256,
+        ));
 
         return $this;
     }

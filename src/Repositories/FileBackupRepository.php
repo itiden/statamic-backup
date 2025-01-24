@@ -49,7 +49,7 @@ final class FileBackupRepository implements BackupRepository
         $this->filesystem->putFileAs(
             path: $this->path,
             file: new StreamableFile($path),
-            name: $this->makeFilename($timestamp)
+            name: $this->makeFilename($timestamp),
         );
 
         return $this->find($timestamp);
@@ -83,7 +83,9 @@ final class FileBackupRepository implements BackupRepository
 
     public function empty(): bool
     {
-        $this->all()->each(fn (BackupDto $backup) => $this->remove($backup->timestamp));
+        $this
+            ->all()
+            ->each(fn(BackupDto $backup) => $this->remove($backup->timestamp));
         return Storage::disk(config('backup.destination.disk'))->deleteDirectory(config('backup.destination.path'));
     }
 }

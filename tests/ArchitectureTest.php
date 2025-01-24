@@ -3,10 +3,19 @@
 use Itiden\Backup\Abstracts\BackupPipe;
 
 describe('arch', function () {
-    arch(null)->preset()->strict()->ignoring(BackupPipe::class);
-    arch(null)->preset()->php();
-    arch(null)->preset()->security();
-    arch(null)->preset()->laravel();
+    arch(null)
+        ->preset()
+        ->strict()
+        ->ignoring(BackupPipe::class);
+    arch(null)
+        ->preset()
+        ->php();
+    arch(null)
+        ->preset()
+        ->security();
+    arch(null)
+        ->preset()
+        ->laravel();
 
     test('dtos are readonly')
         ->expect('Itiden\Backup\DataTransferObjects')

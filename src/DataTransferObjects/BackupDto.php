@@ -31,7 +31,10 @@ final readonly class BackupDto
      */
     public static function fromFile(string $path): self
     {
-        $timestamp = str(basename($path))->afterLast('-')->before('.zip')->toString();
+        $timestamp = str(basename($path))
+            ->afterLast('-')
+            ->before('.zip')
+            ->toString();
         $bytes = Storage::disk(config('backup.destination.disk'))->size($path);
 
         return new self(
@@ -48,7 +51,10 @@ final readonly class BackupDto
      */
     public static function fromAbsolutePath(string $path): self
     {
-        $timestamp = str(basename($path))->afterLast('-')->before('.zip')->toString();
+        $timestamp = str(basename($path))
+            ->afterLast('-')
+            ->before('.zip')
+            ->toString();
         $bytes = File::size($path);
 
         return new self(

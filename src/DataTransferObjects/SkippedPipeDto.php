@@ -28,9 +28,6 @@ final readonly class SkippedPipeDto implements Arrayable
 
     public static function fromArray(array $array): self
     {
-        return new self(
-            pipe: $array['pipe'],
-            reason: $array['reason'],
-        );
+        return new self(pipe: $array['pipe'], reason: $array['reason']);
     }
 }

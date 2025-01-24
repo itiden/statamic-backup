@@ -20,7 +20,7 @@ final class BackupCommand extends Command
 
     public function handle()
     {
-        $backup = spin(fn () => Backuper::backup(), 'Backing up...');
+        $backup = spin(fn() => Backuper::backup(), 'Backing up...');
 
         info('Backup saved to ' . $backup->path);
     }

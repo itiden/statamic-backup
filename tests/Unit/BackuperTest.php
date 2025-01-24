@@ -14,26 +14,21 @@ describe('backuper', function () {
 
         expect($backup)->toBeInstanceOf(BackupDto::class);
 
-        expect(Storage::disk(config('backup.destination.disk'))
-            ->exists(config('backup.destination.path') . "/{$backup->name}.zip"))->toBeTrue();
+        expect(Storage::disk(config('backup.destination.disk'))->exists(
+            config('backup.destination.path') . "/{$backup->name}.zip",
+        ))->toBeTrue();
     });
 
     it('backups correct files', function () {
         $backup = Backuper::backup();
 
         $unzipped = config('backup.temp_path') . '/unzipped';
-        Zipper::open(
-            Storage::disk(config('backup.destination.disk'))
-                ->path($backup->path),
-            true
-        )
-            ->extractTo(
-                $unzipped,
-                config('backup.password'),
-            );
+        Zipper::open(Storage::disk(config('backup.destination.disk'))->path($backup->path), true)->extractTo(
+            $unzipped,
+            config('backup.password'),
+        );
 
-        expect(File::allFiles($unzipped)[0]->getRelativePathname())
-            ->toEqual('content/collections/pages/homepage.yaml');
+        expect(File::allFiles($unzipped)[0]->getRelativePathname())->toEqual('content/collections/pages/homepage.yaml');
     });
 
     it('can enforce max backups', function () {
@@ -44,7 +39,9 @@ describe('backuper', function () {
             Carbon::setTestNow(Carbon::now()->addDays($i));
             Backuper::backup();
 
-            expect(app(BackupRepository::class)->all()->count())->toBeLessThanOrEqual(5);
+            expect(app(BackupRepository::class)
+                ->all()
+                ->count())->toBeLessThanOrEqual(5);
         }
     });
 
@@ -55,7 +52,9 @@ describe('backuper', function () {
             Carbon::setTestNow(Carbon::now()->addDays($i));
             Backuper::backup();
 
-            expect(app(BackupRepository::class)->all()->count())->toBe($i + 1);
+            expect(app(BackupRepository::class)
+                ->all()
+                ->count())->toBe($i + 1);
         }
     });
 })->group('backuper');

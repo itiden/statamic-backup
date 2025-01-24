@@ -10,6 +10,8 @@ final class BackupDeletedListener
 {
     public function handle(BackupDeleted $event)
     {
-        $event->backup->getMetadata()->delete();
+        $event->backup
+            ->getMetadata()
+            ->delete();
     }
 }

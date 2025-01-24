@@ -19,7 +19,7 @@ final class BackupResource extends JsonResource
             'path' => $this->path,
             'timestamp' => $this->timestamp,
             'size' => $this->size,
-            'metadata' =>  new MetadataResource(resource: $this->getMetadata()),
+            'metadata' => new MetadataResource(resource: $this->getMetadata()),
         ];
     }
 }

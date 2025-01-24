@@ -17,7 +17,9 @@ describe('api:restore-from-upload', function () {
 
         $user = user();
 
-        $user->assignRole('super admin')->save();
+        $user
+            ->assignRole('super admin')
+            ->save();
 
         actingAs($user);
 
@@ -35,7 +37,9 @@ describe('api:restore-from-upload', function () {
 
         $user = user();
 
-        $user->assignRole('super admin')->save();
+        $user
+            ->assignRole('super admin')
+            ->save();
 
         actingAs($user);
 
@@ -50,7 +54,7 @@ describe('api:restore-from-upload', function () {
         expect(File::exists($path))->toBeFalse();
     });
 
-    it("will not restore empty archives and dispatches failed event", function () {
+    it('will not restore empty archives and dispatches failed event', function () {
         Event::fake();
         $user = user();
 
@@ -62,7 +66,9 @@ describe('api:restore-from-upload', function () {
             ->encrypt('not-the-password-we-decrypt-with')
             ->close();
 
-        $user->assignRole('super admin')->save();
+        $user
+            ->assignRole('super admin')
+            ->save();
 
         actingAs($user);
 
@@ -75,7 +81,8 @@ describe('api:restore-from-upload', function () {
 
         expect($response->status())->toBe(Response::HTTP_INTERNAL_SERVER_ERROR);
     });
-})->group('restore-from-path')
+})
+    ->group('restore-from-path')
     ->afterEach(function () {
         File::cleanDirectory(config('backup.temp_path'));
     });

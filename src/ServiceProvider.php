@@ -37,14 +37,18 @@ final class ServiceProvider extends AddonServiceProvider
 
     public function bootAddon()
     {
-        $this->publishes([
-            __DIR__ . '/../config/backup.php' => config_path('backup.php'),
-        ], 'backup-config');
+        $this->publishes(
+            [
+                __DIR__ . '/../config/backup.php' => config_path('backup.php'),
+            ],
+            'backup-config',
+        );
 
         $this->setUpPermissions();
 
         Nav::extend(function ($nav) {
-            $nav->content('Backups')
+            $nav
+                ->content('Backups')
                 ->can('manage backups')
                 ->section('Tools')
                 ->route('itiden.backup.index')
@@ -66,20 +70,16 @@ final class ServiceProvider extends AddonServiceProvider
 
         $frequency = config('backup.schedule.frequency');
 
-        $schedule->command('statamic:backup')->$frequency(config('backup.schedule.time'));
+        $schedule
+            ->command('statamic:backup')
+            ->$frequency(config('backup.schedule.time'));
     }
 
     public function register()
     {
-        $this->mergeConfigFrom(
-            __DIR__ . '/../config/backup.php',
-            'backup'
-        );
+        $this->mergeConfigFrom(__DIR__ . '/../config/backup.php', 'backup');
 
-        $this->app->bind(
-            BackupRepository::class,
-            config('backup.repository')
-        );
+        $this->app->bind(BackupRepository::class, config('backup.repository'));
     }
 
     private function setUpPermissions()

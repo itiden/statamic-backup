@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Itiden\Backup;
 
 use Exception;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Support\Zipper;
@@ -15,7 +16,7 @@ use Itiden\Backup\Events\BackupFailed;
 final class Backuper
 {
     public function __construct(
-        protected BackupRepository $repository
+        protected BackupRepository $repository,
     ) {
     }
 
@@ -54,13 +55,18 @@ final class Backuper
                 $metadata->setCreatedBy($user);
             }
 
-            $zipMeta->each(fn ($meta, $key) => match ($key) {
-                'skipped' => $meta->each(fn (string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason)),
-            });
+            $zipMeta->each(
+                fn($meta, $key) => match ($key) {
+                    'skipped' => $meta->each(fn(string $reason, string $pipe) => $metadata->addSkippedPipe(
+                        $pipe,
+                        $reason,
+                    )),
+                },
+            );
 
             event(new BackupCreated($backup));
 
-            @unlink($temp_zip_path);
+            unlink($temp_zip_path);
 
             $this->enforceMaxBackups();
 
@@ -76,17 +82,22 @@ final class Backuper
         }
     }
 
-    private function resolveMetaFromZip(Zipper $zip)
+    /**
+     * @return Collection<string, Collection<string|int, mixed>>
+     */
+    private function resolveMetaFromZip(Zipper $zip): Collection
     {
-        $metadata = collect([
-            'skipped' => collect(),
-        ]);
+        $metadata = collect(['skipped' => collect()]);
 
-        $zip->getMeta()->each(function ($meta, $key) use ($metadata) {
-            if (isset($meta['skipped'])) {
-                $metadata->get('skipped')->put($key, $meta['skipped']);
-            }
-        });
+        $zip
+            ->getMeta()
+            ->each(function ($meta, $key) use ($metadata): void {
+                if (isset($meta['skipped'])) {
+                    $metadata
+                        ->get('skipped')
+                        ->put($key, $meta['skipped']);
+                }
+            });
 
         return $metadata;
     }
@@ -96,16 +107,16 @@ final class Backuper
      */
     private function enforceMaxBackups(): void
     {
-        if (!$max_backups = config('backup.max_backups', false)) {
+        if (!($max_backups = config('backup.max_backups', false))) {
             return;
         }
 
         $backups = $this->repository->all();
 
         if ($backups->count() > $max_backups) {
-            $backups->slice($max_backups)->each(function ($backup) {
-                $this->repository->remove($backup->timestamp);
-            });
+            $backups
+                ->slice($max_backups)
+                ->each(fn($backup) => $this->repository->remove($backup->timestamp));
         }
     }
 }

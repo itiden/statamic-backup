@@ -9,7 +9,8 @@ use function Pest\Laravel\getJson;
 
 describe('api:view', function () {
     test('guest cant view backups', function () {
-        $this->get(cp_route('itiden.backup.index'))
+        $this
+            ->get(cp_route('itiden.backup.index'))
             ->assertRedirect(cp_route('login'));
     });
 
@@ -18,8 +19,7 @@ describe('api:view', function () {
 
         actingAs(user());
 
-        get(cp_route('itiden.backup.index'))
-            ->assertRedirect();
+        get(cp_route('itiden.backup.index'))->assertRedirect();
     });
 
     test('user with permission can view backups', function () {
@@ -27,7 +27,9 @@ describe('api:view', function () {
 
         $user = user();
 
-        $user->set('roles', ['admin'])->save();
+        $user
+            ->set('roles', ['admin'])
+            ->save();
 
         actingAs($user);
 
@@ -43,8 +45,7 @@ describe('api:view', function () {
 
         actingAs($user);
 
-        getJson(cp_route('api.itiden.backup.index'))
-            ->assertForbidden();
+        getJson(cp_route('api.itiden.backup.index'))->assertForbidden();
     });
 
     test('user with permission can get backups from api', function () {
@@ -53,45 +54,46 @@ describe('api:view', function () {
 
         $user = user();
 
-        $user->set('roles', ['admin'])->save();
+        $user
+            ->set('roles', ['admin'])
+            ->save();
 
         actingAs($user);
 
         $backup = Backuper::backup();
 
         // Set some metadata so we can test it has correct structure
-        $backup->getMetadata()->addDownload($user);
-        $backup->getMetadata()->addRestore($user);
-        $backup->getMetadata()->addSkippedPipe(Users::class, 'Oh no it failed!');
-
+        $backup
+            ->getMetadata()
+            ->addDownload($user);
+        $backup
+            ->getMetadata()
+            ->addRestore($user);
+        $backup
+            ->getMetadata()
+            ->addSkippedPipe(Users::class, 'Oh no it failed!');
 
         getJson(cp_route('api.itiden.backup.index'))
             ->assertOk()
             ->assertJsonStructure([
-                'data' => [
-                    '*' => [
-                        'name',
-                        'size',
-                        'path',
-                        'created_at',
-                        'timestamp',
-                        'metadata' => [
-                            'created_by',
-                            'downloads',
-                            'restores',
-                            'skipped_pipes',
-                        ]
+                'data' => ['*' => [
+                    'name',
+                    'size',
+                    'path',
+                    'created_at',
+                    'timestamp',
+                    'metadata' => [
+                        'created_by',
+                        'downloads',
+                        'restores',
+                        'skipped_pipes',
                     ],
-                ],
-                'meta' => [
-                    'columns' => [
-                        '*' => [
-                            'label',
-                            'field',
-                            'visible',
-                        ],
-                    ]
-                ]
+                ]],
+                'meta' => ['columns' => ['*' => [
+                    'label',
+                    'field',
+                    'visible',
+                ]]],
             ]);
     });
 })->group('view');

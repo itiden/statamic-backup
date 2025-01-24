@@ -28,7 +28,9 @@ describe('api:restore', function () {
     it('returns error if backup is not found', function () {
         $user = user();
 
-        $user->assignRole('super admin')->save();
+        $user
+            ->assignRole('super admin')
+            ->save();
 
         actingAs($user);
 
@@ -42,7 +44,9 @@ describe('api:restore', function () {
 
         $user = user();
 
-        $user->assignRole('super admin')->save();
+        $user
+            ->assignRole('super admin')
+            ->save();
 
         actingAs($user);
 
@@ -57,7 +61,9 @@ describe('api:restore', function () {
 
         $user = user();
 
-        $user->assignRole('super admin')->save();
+        $user
+            ->assignRole('super admin')
+            ->save();
 
         actingAs($user);
 
@@ -74,19 +80,22 @@ describe('api:restore', function () {
 
         File::cleanDirectory(config('backup.content_path'));
 
-        $this->artisan('statamic:backup:restore', ['--path' => Storage::path($backup->path)])
+        $this
+            ->artisan('statamic:backup:restore', ['--path' => Storage::path($backup->path)])
             ->expectsConfirmation('Are you sure you want to restore your content?', 'no');
 
         expect(File::isEmptyDirectory(config('backup.content_path')))->toBeTrue();
 
-        $this->artisan('statamic:backup:restore', ['--path' => Storage::path($backup->path), '--force' => true])
+        $this
+            ->artisan('statamic:backup:restore', ['--path' => Storage::path($backup->path), '--force' => true])
             ->assertExitCode(0);
     });
 
     it('can restore from path command', function () {
         $backup = Backuper::backup();
 
-        $this->artisan('statamic:backup:restore', ['--path' => Storage::path($backup->path), '--force' => true])
+        $this
+            ->artisan('statamic:backup:restore', ['--path' => Storage::path($backup->path), '--force' => true])
             ->assertExitCode(0);
 
         expect(File::isEmptyDirectory(config('backup.content_path')))->toBeFalse();
@@ -97,14 +106,22 @@ describe('api:restore', function () {
 
         $user = user();
 
-        $user->assignRole('super admin')->save();
+        $user
+            ->assignRole('super admin')
+            ->save();
 
         actingAs($user);
 
         $response = postJson(cp_route('api.itiden.backup.restore', $backup->timestamp));
 
         expect($response->status())->toBe(Response::HTTP_OK);
-        expect($backup->getMetadata()->getRestores())->toHaveCount(1);
-        expect($backup->getMetadata()->getRestores()[0]->userId)->toBe($user->id);
+        expect($backup
+            ->getMetadata()
+            ->getRestores())->toHaveCount(1);
+        expect(
+            $backup
+                ->getMetadata()
+                ->getRestores()[0]->userId,
+        )->toBe($user->id);
     });
 })->group('restore backup');

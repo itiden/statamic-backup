@@ -9,7 +9,6 @@ use Itiden\Backup\Pipes\Users as UserPipe;
 use Statamic\Yaml\Yaml;
 
 describe('metadata', function () {
-
     it('can generate a metadata file for a backup', function () {
         $backup = Backuper::backup();
 
@@ -59,9 +58,18 @@ describe('metadata', function () {
         $metadata->addDownload($user);
 
         expect($metadata->getDownloads())->toHaveCount(1);
-        expect($metadata->getDownloads()->first())->toBeInstanceOf(UserActionDto::class);
-        expect($metadata->getDownloads()->first()->getUser()->getAuthIdentifier())->toBe($user->getAuthIdentifier());
-        expect($metadata->getDownloads()->first()->getTimestamp())->toEqual(Carbon::now());
+        expect($metadata
+            ->getDownloads()
+            ->first())->toBeInstanceOf(UserActionDto::class);
+        expect($metadata
+            ->getDownloads()
+            ->first()
+            ->getUser()
+            ->getAuthIdentifier())->toBe($user->getAuthIdentifier());
+        expect($metadata
+            ->getDownloads()
+            ->first()
+            ->getTimestamp())->toEqual(Carbon::now());
     });
 
     it('can get the restores for a backup', function () {
@@ -77,9 +85,18 @@ describe('metadata', function () {
         $metadata->addRestore($user);
 
         expect($metadata->getRestores())->toHaveCount(1);
-        expect($metadata->getRestores()->first())->toBeInstanceOf(UserActionDto::class);
-        expect($metadata->getRestores()->first()->getUser()->getAuthIdentifier())->toBe($user->getAuthIdentifier());
-        expect($metadata->getRestores()->first()->getTimestamp())->toEqual(Carbon::now());
+        expect($metadata
+            ->getRestores()
+            ->first())->toBeInstanceOf(UserActionDto::class);
+        expect($metadata
+            ->getRestores()
+            ->first()
+            ->getUser()
+            ->getAuthIdentifier())->toBe($user->getAuthIdentifier());
+        expect($metadata
+            ->getRestores()
+            ->first()
+            ->getTimestamp())->toEqual(Carbon::now());
     });
 
     it('can get the skipped pipes for a backup', function () {
@@ -92,8 +109,16 @@ describe('metadata', function () {
         $metadata->addSkippedPipe(pipe: UserPipe::class, reason: 'Some reason');
 
         expect($metadata->getSkippedPipes())->toHaveCount(1);
-        expect($metadata->getSkippedPipes()->first()->pipe)->toBe(UserPipe::class);
-        expect($metadata->getSkippedPipes()->first()->reason)->toBe('Some reason');
+        expect(
+            $metadata
+                ->getSkippedPipes()
+                ->first()->pipe,
+        )->toBe(UserPipe::class);
+        expect(
+            $metadata
+                ->getSkippedPipes()
+                ->first()->reason,
+        )->toBe('Some reason');
     });
 
     it('stores metadata files in the correct directory', function () {

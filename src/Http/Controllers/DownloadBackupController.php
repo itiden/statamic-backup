@@ -17,7 +17,9 @@ final readonly class DownloadBackupController
     {
         $backup = $repo->find($timestamp);
 
-        $backup->getMetadata()->addDownload(auth()->user());
+        $backup
+            ->getMetadata()
+            ->addDownload(auth()->user());
 
         return Storage::disk(config('backup.destination.disk'))->download($backup->path);
     }
