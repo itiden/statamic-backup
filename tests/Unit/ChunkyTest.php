@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
 use Itiden\Backup\Support\Facades\Chunky;
 
-describe('chunky', function () {
-    it('can upload chunk', function () {
+use function Itiden\Backup\Tests\chunk_file;
+
+describe('chunky', function (): void {
+    it('can upload chunk', function (): void {
         $file = UploadedFile::fake()->create('test', 1000);
 
         $dto = new ChunkyUploadDto('dir/test', 'name', 1, 1, 1000, $file->hashName(), $file);
@@ -18,8 +22,8 @@ describe('chunky', function () {
         expect(Chunky::path() . '/dir/test/' . $dto->filename . '.part1')->toBeFile();
     });
 
-    it('can assemble file', function () {
-        $chunks = chunkFile(
+    it('can assemble file', function (): void {
+        $chunks = chunk_file(
             __DIR__ . '/../__fixtures__/content/collections/pages/homepage.yaml',
             config('backup.temp_path') . '/chunks/',
             10,

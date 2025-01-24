@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 use Carbon\Carbon;
 use Itiden\Backup\Facades\Backuper;
 
-describe('dto:backup', function () {
+describe('dto:backup', function (): void {
     it('will resolve valid timestamp when app name has many dashes', function () {
         config(['app.name' => 'app-with-many-dashes']);
 

@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Facades\Backuper;
 
 use function Pest\Laravel\artisan;
 
-describe('command:restore', function () {
-    it('shows all available backups', function () {
+describe('command:restore', function (): void {
+    it('shows all available backups', function (): void {
         app(BackupRepository::class)->empty();
 
         Backuper::backup();
@@ -20,7 +22,7 @@ describe('command:restore', function () {
             ->assertFailed();
     });
 
-    it('can restore from a specific path', function () {
+    it('can restore from a specific path', function (): void {
         app(BackupRepository::class)->empty();
 
         $backup = Backuper::backup();

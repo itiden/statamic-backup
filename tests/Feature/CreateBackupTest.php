@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\Event;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Events\BackupCreated;
@@ -79,8 +81,8 @@ describe('api:create', function () {
             return (
                 $event->backup->name ===
                 app(BackupRepository::class)
-                    ->all()
-                    ->first()->name
+                ->all()
+                ->first()->name
             );
         });
     });

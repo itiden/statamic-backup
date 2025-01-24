@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Facades\Backuper;
@@ -8,8 +10,8 @@ use Itiden\Backup\DataTransferObjects\UserActionDto;
 use Itiden\Backup\Pipes\Users as UserPipe;
 use Statamic\Yaml\Yaml;
 
-describe('metadata', function () {
-    it('can generate a metadata file for a backup', function () {
+describe('metadata', function (): void {
+    it('can generate a metadata file for a backup', function (): void {
         $backup = Backuper::backup();
 
         $metadata = $backup->getMetadata();
@@ -17,7 +19,7 @@ describe('metadata', function () {
         expect($metadata)->toBeInstanceOf(Metadata::class);
     });
 
-    it('creates a file if its missing', function () {
+    it('creates a file if its missing', function (): void {
         $backup = Backuper::backup();
 
         $metadata = $backup->getMetadata();
@@ -31,7 +33,7 @@ describe('metadata', function () {
         expect($metadata)->toBeInstanceOf(Metadata::class);
     });
 
-    it('can get the user that created the backup', function () {
+    it('can get the user that created the backup', function (): void {
         $backup = Backuper::backup();
 
         $metadata = $backup->getMetadata();
@@ -45,7 +47,7 @@ describe('metadata', function () {
         expect($metadata->getCreatedBy())->toBe($user);
     });
 
-    it('can get the downloads for a backup', function () {
+    it('can get the downloads for a backup', function (): void {
         Carbon::setTestNow('2021-01-01 00:00:00');
         $backup = Backuper::backup();
 
@@ -72,7 +74,7 @@ describe('metadata', function () {
             ->getTimestamp())->toEqual(Carbon::now());
     });
 
-    it('can get the restores for a backup', function () {
+    it('can get the restores for a backup', function (): void {
         Carbon::setTestNow('2021-01-01 00:00:00');
         $backup = Backuper::backup();
 
@@ -99,7 +101,7 @@ describe('metadata', function () {
             ->getTimestamp())->toEqual(Carbon::now());
     });
 
-    it('can get the skipped pipes for a backup', function () {
+    it('can get the skipped pipes for a backup', function (): void {
         $backup = Backuper::backup();
 
         $metadata = $backup->getMetadata();
@@ -121,7 +123,7 @@ describe('metadata', function () {
         )->toBe('Some reason');
     });
 
-    it('stores metadata files in the correct directory', function () {
+    it('stores metadata files in the correct directory', function (): void {
         $backup = Backuper::backup();
 
         $metadata = $backup->getMetadata();

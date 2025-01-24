@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Tests\TestCase;
 use Statamic\Auth\User as StatamicUser;

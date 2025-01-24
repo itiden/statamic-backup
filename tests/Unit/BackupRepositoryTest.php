@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
@@ -8,8 +10,8 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Events\BackupDeleted;
 use Itiden\Backup\Facades\Backuper;
 
-describe('repository:backup', function () {
-    it('can get backups', function () {
+describe('repository:backup', function (): void {
+    it('can get backups', function (): void {
         Backuper::backup();
         $backups = app(BackupRepository::class)->all();
 
@@ -18,7 +20,7 @@ describe('repository:backup', function () {
         expect($backups->first())->toBeInstanceOf(BackupDto::class);
     });
 
-    it('can get backup by timestamp', function () {
+    it('can get backup by timestamp', function (): void {
         $backup = Backuper::backup();
         $backupByTimestamp = app(BackupRepository::class)->find($backup->timestamp);
 
@@ -27,12 +29,12 @@ describe('repository:backup', function () {
         expect($backupByTimestamp)->toEqual($backup);
     });
 
-    it('returns null when timestamp doesnt exist', function () {
+    it('returns null when timestamp doesnt exist', function (): void {
         $backup = app(BackupRepository::class)->find('1234567890');
         expect($backup)->toBeNull();
     });
 
-    it('can remove all backups', function () {
+    it('can remove all backups', function (): void {
         Backuper::backup();
 
         app(BackupRepository::class)->empty();
@@ -42,7 +44,7 @@ describe('repository:backup', function () {
             ->count())->toBe(0);
     });
 
-    it('dispatches backup removed event', function () {
+    it('dispatches backup removed event', function (): void {
         Event::fake();
 
         $backup = Backuper::backup();
@@ -51,7 +53,7 @@ describe('repository:backup', function () {
         Event::assertDispatched(BackupDeleted::class);
     });
 
-    it('removes all metadata files when removing all backups', function () {
+    it('removes all metadata files when removing all backups', function (): void {
         Backuper::backup();
 
         app(BackupRepository::class)->empty();
@@ -59,7 +61,7 @@ describe('repository:backup', function () {
         expect(Storage::disk('local')->files(storage_path('statamic-backup/.metadata')))->toBeEmpty();
     });
 
-    it('can delete backup by timestamp', function () {
+    it('can delete backup by timestamp', function (): void {
         $backup = Backuper::backup();
 
         $backup = app(BackupRepository::class)->remove($backup->timestamp);

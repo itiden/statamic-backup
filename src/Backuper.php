@@ -17,8 +17,7 @@ final class Backuper
 {
     public function __construct(
         protected BackupRepository $repository,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new backup.
@@ -58,8 +57,8 @@ final class Backuper
             $zipMeta->each(
                 fn($meta, $key) => match ($key) {
                     'skipped' => $meta->each(fn(string $reason, string $pipe) => $metadata->addSkippedPipe(
-                        $pipe,
-                        $reason,
+                        pipe: $pipe,
+                        reason: $reason,
                     )),
                 },
             );

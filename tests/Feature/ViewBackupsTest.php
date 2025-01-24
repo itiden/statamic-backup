@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Pipes\Users;
 
@@ -7,14 +9,14 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Laravel\getJson;
 
-describe('api:view', function () {
-    test('guest cant view backups', function () {
+describe('api:view', function (): void {
+    test('guest cant view backups', function (): void {
         $this
             ->get(cp_route('itiden.backup.index'))
             ->assertRedirect(cp_route('login'));
     });
 
-    test('user without permission cant view backups', function () {
+    test('user without permission cant view backups', function (): void {
         $this->withoutVite();
 
         actingAs(user());
@@ -22,7 +24,7 @@ describe('api:view', function () {
         get(cp_route('itiden.backup.index'))->assertRedirect();
     });
 
-    test('user with permission can view backups', function () {
+    test('user with permission can view backups', function (): void {
         $this->withoutVite();
 
         $user = user();
@@ -38,7 +40,7 @@ describe('api:view', function () {
             ->assertViewIs('itiden-backup::backups');
     });
 
-    test('user without permission cant get backups from api', function () {
+    test('user without permission cant get backups from api', function (): void {
         $this->withoutVite();
 
         $user = user();
@@ -48,7 +50,7 @@ describe('api:view', function () {
         getJson(cp_route('api.itiden.backup.index'))->assertForbidden();
     });
 
-    test('user with permission can get backups from api', function () {
+    test('user with permission can get backups from api', function (): void {
         $this->withoutVite();
         $this->withoutExceptionHandling();
 

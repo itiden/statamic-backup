@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
@@ -10,14 +12,14 @@ use Itiden\Backup\Events\BackupRestored;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\postJson;
 
-describe('api:restore', function () {
-    it('cant restore by timestamp by a guest', function () {
+describe('api:restore', function (): void {
+    it('cant restore by timestamp by a guest', function (): void {
         $response = postJson(cp_route('api.itiden.backup.restore', 'timestamp'));
 
         expect($response->status())->toBe(Response::HTTP_UNAUTHORIZED);
     });
 
-    it('cant restore by timestamp by a user without permissons a backup', function () {
+    it('cant restore by timestamp by a user without permissons a backup', function (): void {
         actingAs(user());
 
         $response = postJson(cp_route('api.itiden.backup.restore', 'timestamp'));
@@ -25,7 +27,7 @@ describe('api:restore', function () {
         expect($response->status())->toBe(Response::HTTP_FORBIDDEN);
     });
 
-    it('returns error if backup is not found', function () {
+    it('returns error if backup is not found', function (): void {
         $user = user();
 
         $user
@@ -39,7 +41,7 @@ describe('api:restore', function () {
         expect($response->status())->toBe(Response::HTTP_INTERNAL_SERVER_ERROR);
     });
 
-    it('can restore by timestamp', function () {
+    it('can restore by timestamp', function (): void {
         $backup = Backuper::backup();
 
         $user = user();
@@ -55,7 +57,7 @@ describe('api:restore', function () {
         expect($response->status())->toBe(Response::HTTP_OK);
     });
 
-    it('dispatches backup restored event', function () {
+    it('dispatches backup restored event', function (): void {
         Event::fake();
         $backup = Backuper::backup();
 
@@ -75,7 +77,7 @@ describe('api:restore', function () {
         expect($response->status())->toBe(Response::HTTP_OK);
     });
 
-    it('will not restore from command if you say no', function () {
+    it('will not restore from command if you say no', function (): void {
         $backup = Backuper::backup();
 
         File::cleanDirectory(config('backup.content_path'));
@@ -91,7 +93,7 @@ describe('api:restore', function () {
             ->assertExitCode(0);
     });
 
-    it('can restore from path command', function () {
+    it('can restore from path command', function (): void {
         $backup = Backuper::backup();
 
         $this
@@ -101,7 +103,7 @@ describe('api:restore', function () {
         expect(File::isEmptyDirectory(config('backup.content_path')))->toBeFalse();
     });
 
-    it('will add an restore entry to metadata', function () {
+    it('will add an restore entry to metadata', function (): void {
         $backup = Backuper::backup();
 
         $user = user();

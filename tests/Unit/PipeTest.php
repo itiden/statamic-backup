@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
@@ -9,7 +11,7 @@ use Itiden\Backup\Pipes\Users;
 use Itiden\Backup\Support\Zipper;
 use Statamic\Facades\Stache;
 
-describe('pipes', function () {
+describe('pipes', function (): void {
     test('backup pipes can pass zipper instance', function (string $pipe) {
         $temp_zip = config('backup.temp_path') . '/backup.zip';
 
@@ -46,7 +48,7 @@ describe('pipes', function () {
         Assets::class,
     ]);
 
-    test('can skip a pipe with users', function () {
+    test('can skip a pipe with users', function (): void {
         /** @var Users::class $pipe */
         $pipe = app()->make(Users::class);
 
@@ -66,7 +68,7 @@ describe('pipes', function () {
         $zipper->close();
     });
 
-    test('can skip a pipe with content', function () {
+    test('can skip a pipe with content', function (): void {
         /** @var Users::class $pipe */
         $pipe = app()->make(Content::class);
 

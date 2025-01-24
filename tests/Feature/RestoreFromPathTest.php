@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
@@ -11,8 +13,8 @@ use Itiden\Backup\Support\Zipper;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\postJson;
 
-describe('api:restore-from-upload', function () {
-    it('can restore from path', function () {
+describe('api:restore-from-upload', function (): void {
+    it('can restore from path', function (): void {
         $backup = Backuper::backup();
 
         $user = user();
@@ -32,7 +34,7 @@ describe('api:restore-from-upload', function () {
         expect($response->status())->toBe(Response::HTTP_OK);
     });
 
-    it('can restore from path and delete after', function () {
+    it('can restore from path and delete after', function (): void {
         $backup = Backuper::backup();
 
         $user = user();
@@ -54,7 +56,7 @@ describe('api:restore-from-upload', function () {
         expect(File::exists($path))->toBeFalse();
     });
 
-    it('will not restore empty archives and dispatches failed event', function () {
+    it('will not restore empty archives and dispatches failed event', function (): void {
         Event::fake();
         $user = user();
 
@@ -83,6 +85,6 @@ describe('api:restore-from-upload', function () {
     });
 })
     ->group('restore-from-path')
-    ->afterEach(function () {
+    ->afterEach(function (): void {
         File::cleanDirectory(config('backup.temp_path'));
     });

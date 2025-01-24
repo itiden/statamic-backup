@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Facades\Backuper;
 

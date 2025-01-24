@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 use Itiden\Backup\Abstracts\BackupPipe;
 
-describe('arch', function () {
-    arch(null)
+describe('arch', function (): void {
+    arch()
         ->preset()
         ->strict()
         ->ignoring(BackupPipe::class);
-    arch(null)
+    arch()
         ->preset()
         ->php();
-    arch(null)
+    arch()
         ->preset()
         ->security();
-    arch(null)
+    arch()
         ->preset()
         ->laravel();
 
