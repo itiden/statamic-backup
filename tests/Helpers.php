@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-
 namespace Itiden\Backup\Tests {
-
     use Illuminate\Support\Facades\File;
 
     /**

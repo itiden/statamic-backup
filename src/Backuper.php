@@ -17,7 +17,8 @@ final class Backuper
 {
     public function __construct(
         protected BackupRepository $repository,
-    ) {}
+    ) {
+    }
 
     /**
      * Create a new backup.

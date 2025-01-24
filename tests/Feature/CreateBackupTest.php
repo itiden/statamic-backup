@@ -81,8 +81,8 @@ describe('api:create', function () {
             return (
                 $event->backup->name ===
                 app(BackupRepository::class)
-                ->all()
-                ->first()->name
+                    ->all()
+                    ->first()->name
             );
         });
     });
