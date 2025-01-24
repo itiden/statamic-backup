@@ -82,9 +82,9 @@ describe('zipper', function (): void {
     });
 
     it('can unzip directory', function (): void {
-        $files = collect(File::allFiles(config('backup.content_path')))->map(function (SplFileInfo $file) {
-            return $file->getPathname();
-        });
+        $files = collect(File::allFiles(config('backup.content_path')))->map(
+            fn(SplFileInfo $file): string => $file->getPathname(),
+        );
 
         $target = storage_path('test.zip');
 
@@ -98,7 +98,7 @@ describe('zipper', function (): void {
         expect(file_exists($unzip))->toBeTrue();
         expect(file_exists(storage_path('unzipdir') . '/example'))->toBeTrue();
 
-        $files->each(function ($file) {
+        $files->each(function (string $file): void {
             expect(file_exists($file))->toBeTrue();
         });
     });

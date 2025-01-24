@@ -9,7 +9,7 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Laravel\getJson;
 
-describe('api:download', function () {
+describe('api:download', function (): void {
     it('cant be downloaded by a guest', function (): void {
         $backup = Backuper::backup();
 

@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\DataTransferObjects\ChunkyTestDto;
 use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
+use SplFileInfo;
 
 final class Chunky
 {
@@ -41,7 +42,7 @@ final class Chunky
         }
 
         $chunksOnDiskSize = collect($this->disk->allFiles($dto->path))->reduce(
-            fn($carry, $item) => $carry + $this->disk->size($item),
+            fn(int $carry, string $item): int => $carry + $this->disk->size($item),
             0,
         );
 

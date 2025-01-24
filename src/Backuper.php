@@ -6,6 +6,7 @@ namespace Itiden\Backup;
 
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Support\Zipper;
@@ -56,17 +57,16 @@ final class Backuper
             }
 
             $zipMeta->each(
-                fn($meta, $key) => match ($key) {
-                    'skipped' => $meta->each(fn(string $reason, string $pipe) => $metadata->addSkippedPipe(
-                        pipe: $pipe,
-                        reason: $reason,
-                    )),
+                fn(Collection $meta, string $key): mixed => match ($key) {
+                    'skipped' => $meta->each(function (string $reason, string $pipe) use ($metadata): void {
+                        $metadata->addSkippedPipe(pipe: $pipe, reason: $reason);
+                    }),
                 },
             );
 
             event(new BackupCreated($backup));
 
-            unlink($temp_zip_path);
+            File::delete($temp_zip_path);
 
             $this->enforceMaxBackups();
 
@@ -91,8 +91,8 @@ final class Backuper
 
         $zip
             ->getMeta()
-            ->each(function ($meta, $key) use ($metadata): void {
-                if (isset($meta['skipped'])) {
+            ->each(function (array|string $meta, string $key) use ($metadata): void {
+                if (is_array($meta) && isset($meta['skipped'])) {
                     $metadata
                         ->get('skipped')
                         ->put($key, $meta['skipped']);
@@ -116,7 +116,7 @@ final class Backuper
         if ($backups->count() > $max_backups) {
             $backups
                 ->slice($max_backups)
-                ->each(fn($backup) => $this->repository->remove($backup->timestamp));
+                ->each(fn(BackupDto $backup): ?BackupDto => $this->repository->remove($backup->timestamp));
         }
     }
 }

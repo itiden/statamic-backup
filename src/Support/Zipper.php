@@ -48,7 +48,7 @@ final class Zipper
     {
         $this->zip->setPassword($password);
 
-        collect(range(0, $this->zip->numFiles - 1))->each(fn($file) => $this->zip->setEncryptionIndex(
+        collect(range(0, $this->zip->numFiles - 1))->each(fn(int $file): bool => $this->zip->setEncryptionIndex(
             $file,
             ZipArchive::EM_AES_256,
         ));
@@ -81,7 +81,7 @@ final class Zipper
      */
     public function addDirectory(string $path, string $prefix = null): self
     {
-        collect(File::allFiles($path))->each(function (SplFileInfo $file) use ($prefix) {
+        collect(File::allFiles($path))->each(function (SplFileInfo $file) use ($prefix): void {
             $this->addFile($file->getPathname(), $prefix . '/' . $file->getRelativePathname());
         });
 

@@ -8,7 +8,7 @@ use Itiden\Backup\Events\BackupDeleted;
 
 final class BackupDeletedListener
 {
-    public function handle(BackupDeleted $event)
+    public function handle(BackupDeleted $event): void
     {
         $event->backup
             ->getMetadata()

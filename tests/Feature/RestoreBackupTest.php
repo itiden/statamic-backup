@@ -71,7 +71,7 @@ describe('api:restore', function (): void {
 
         $response = postJson(cp_route('api.itiden.backup.restore', $backup->timestamp));
 
-        Event::assertDispatched(BackupRestored::class, function ($event) use ($backup) {
+        Event::assertDispatched(BackupRestored::class, function (BackupRestored $event) use ($backup): bool {
             return $event->backup->timestamp === $backup->timestamp;
         });
         expect($response->status())->toBe(Response::HTTP_OK);

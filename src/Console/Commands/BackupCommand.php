@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Itiden\Backup\Console\Commands;
 
 use Illuminate\Console\Command;
+use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Backuper;
 
 use function Laravel\Prompts\{info, spin};
@@ -18,9 +19,9 @@ final class BackupCommand extends Command
 
     protected $description = 'Run the backup pipeline';
 
-    public function handle()
+    public function handle(): void
     {
-        $backup = spin(fn() => Backuper::backup(), 'Backing up...');
+        $backup = spin(fn(): BackupDto => Backuper::backup(), 'Backing up...');
 
         info('Backup saved to ' . $backup->path);
     }

@@ -12,13 +12,13 @@ use Itiden\Backup\Support\Zipper;
 use Statamic\Facades\Stache;
 
 describe('pipes', function (): void {
-    test('backup pipes can pass zipper instance', function (string $pipe) {
+    test('backup pipes can pass zipper instance', function (string $pipe): void {
         $temp_zip = config('backup.temp_path') . '/backup.zip';
 
         $zipper = Zipper::open($temp_zip);
         expect(app()
             ->make($pipe)
-            ->backup($zipper, fn($z) => $z))->toBeInstanceOf(Zipper::class);
+            ->backup($zipper, fn(Zipper $z): Zipper => $z))->toBeInstanceOf(Zipper::class);
 
         $zipper->close();
 
@@ -29,7 +29,7 @@ describe('pipes', function (): void {
         Assets::class,
     ]);
 
-    test('restore pipes can pass closure', function (string $pipe) {
+    test('restore pipes can pass closure', function (string $pipe): void {
         app(BackupRepository::class)->empty();
         $fixtues_path = __DIR__ . '/../__fixtures__';
         $fixtures_backup_path = Storage::path(config('backup.destination.path'));
@@ -38,7 +38,7 @@ describe('pipes', function (): void {
         $path = config('backup.temp_path') . '/backup';
         expect(app()
             ->make($pipe)
-            ->restore($path, fn($z) => $z))->toBe($path);
+            ->restore($path, fn(string $z): string => $z))->toBe($path);
 
         File::deleteDirectory($fixtues_path);
         File::copyDirectory($fixtures_backup_path, $fixtues_path);
@@ -52,7 +52,7 @@ describe('pipes', function (): void {
         /** @var Users::class $pipe */
         $pipe = app()->make(Users::class);
 
-        $callable = function ($z) {
+        $callable = function (Zipper $z): Zipper {
             return $z;
         };
 
@@ -72,7 +72,7 @@ describe('pipes', function (): void {
         /** @var Users::class $pipe */
         $pipe = app()->make(Content::class);
 
-        $callable = function ($z) {
+        $callable = function (Zipper $z): Zipper {
             return $z;
         };
 

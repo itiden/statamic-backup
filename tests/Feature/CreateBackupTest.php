@@ -15,14 +15,14 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\postJson;
 use function Statamic\trans;
 
-describe('api:create', function () {
-    it('cant create a backup by a guest', function () {
+describe('api:create', function (): void {
+    it('cant create a backup by a guest', function (): void {
         $responseJson = postJson(cp_route('api.itiden.backup.store'));
 
         expect($responseJson->status())->toBe(401);
     });
 
-    it('cant create a backup by a user without permissons a backup', function () {
+    it('cant create a backup by a user without permissons a backup', function (): void {
         actingAs(user());
 
         $responseJson = postJson(cp_route('api.itiden.backup.store'));
@@ -30,7 +30,7 @@ describe('api:create', function () {
         expect($responseJson->status())->toBe(403);
     });
 
-    it('can create a backup by a user with create backups permission', function () {
+    it('can create a backup by a user with create backups permission', function (): void {
         $user = user();
 
         $user
@@ -50,7 +50,7 @@ describe('api:create', function () {
             ->count())->toBe(1);
     });
 
-    it('can create backup from command', function () {
+    it('can create backup from command', function (): void {
         expect(app(BackupRepository::class)
             ->all()
             ->count())->toBe(0);
@@ -64,7 +64,7 @@ describe('api:create', function () {
             ->count())->toBe(1);
     });
 
-    it('dispatches backup created event', function () {
+    it('dispatches backup created event', function (): void {
         Event::fake();
 
         $user = user();
@@ -77,7 +77,7 @@ describe('api:create', function () {
 
         postJson(cp_route('api.itiden.backup.store'));
 
-        Event::assertDispatched(BackupCreated::class, function ($event) {
+        Event::assertDispatched(BackupCreated::class, function (BackupCreated $event): bool {
             return (
                 $event->backup->name ===
                 app(BackupRepository::class)
@@ -87,7 +87,7 @@ describe('api:create', function () {
         });
     });
 
-    it('dispatches failed event when error occurs', function () {
+    it('dispatches failed event when error occurs', function (): void {
         Event::fake();
 
         // Set invalid pipeline to force an error
@@ -106,7 +106,7 @@ describe('api:create', function () {
         Event::assertDispatched(BackupFailed::class);
     });
 
-    it('sets created by metadata when user is authenticated', function () {
+    it('sets created by metadata when user is authenticated', function (): void {
         $user = user();
 
         $user
@@ -124,7 +124,7 @@ describe('api:create', function () {
             ->getCreatedBy())->toBe($user);
     });
 
-    it('adds skipped pipes to meta', function () {
+    it('adds skipped pipes to meta', function (): void {
         $user = user();
 
         $user
@@ -147,7 +147,7 @@ describe('api:create', function () {
             ->getSkippedPipes())->toHaveCount(1);
     });
 
-    it('can encrypt backup with password', function () {
+    it('can encrypt backup with password', function (): void {
         config()->set('backup.password', 'password');
 
         $backup = Backuper::backup();

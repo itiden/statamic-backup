@@ -19,12 +19,12 @@ abstract class BackupPipe
      *
      * @param string $path The path to the root of the backup file.
      */
-    abstract public function restore(string $path, Closure $next);
+    abstract public function restore(string $path, Closure $next): string;
 
     /**
      * Run the backup process.
      */
-    abstract public function backup(Zipper $zip, Closure $next);
+    abstract public function backup(Zipper $zip, Closure $next): Zipper;
 
     /**
      * Get the directory path for the current pipe.
@@ -37,7 +37,7 @@ abstract class BackupPipe
     /**
      * Mark pipe as skipped.
      */
-    protected function skip(string $reason, Closure $next, Zipper $zip)
+    protected function skip(string $reason, Closure $next, Zipper $zip): Zipper
     {
         $zip->addMeta(static::class, ['skipped' => $reason]);
         return $next($zip);

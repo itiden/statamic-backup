@@ -17,7 +17,7 @@ final class Users extends BackupPipe
         return 'users';
     }
 
-    public function restore(string $restoringFromPath, Closure $next)
+    public function restore(string $restoringFromPath, Closure $next): string
     {
         $destination = Stache::store('users')?->directory();
         $users = $this->getDirectoryPath($restoringFromPath);
@@ -27,7 +27,7 @@ final class Users extends BackupPipe
         return $next($restoringFromPath);
     }
 
-    public function backup(Zipper $zip, Closure $next)
+    public function backup(Zipper $zip, Closure $next): Zipper
     {
         $usersDir = Stache::store('users')?->directory();
 

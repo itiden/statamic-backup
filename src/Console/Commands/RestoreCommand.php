@@ -20,7 +20,7 @@ final class RestoreCommand extends Command
 
     protected $description = 'Reset or restore content from a directory / backup';
 
-    public function handle(BackupRepository $repo)
+    public function handle(BackupRepository $repo): void
     {
         /* @var BackupDto $backup */
         $backup = match (true) {
@@ -31,7 +31,7 @@ final class RestoreCommand extends Command
                 scroll: 10,
                 options: $repo
                     ->all()
-                    ->flatMap(fn(BackupDto $backup) => [$backup->path => $backup->path]),
+                    ->flatMap(fn(BackupDto $backup): array => [$backup->path => $backup->path]),
                 required: true,
             )),
         };

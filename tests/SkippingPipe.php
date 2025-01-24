@@ -15,12 +15,12 @@ final class SkippingPipe extends BackupPipe
         return 'skipping';
     }
 
-    public function restore(string $path, Closure $next)
+    public function restore(string $path, Closure $next): string
     {
         return $next($path);
     }
 
-    public function backup(Zipper $zip, Closure $next)
+    public function backup(Zipper $zip, Closure $next): Zipper
     {
         return $this->skip(reason: 'This pipe is skipped', next: $next, zip: $zip);
     }

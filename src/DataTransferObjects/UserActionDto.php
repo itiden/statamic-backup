@@ -35,8 +35,8 @@ final readonly class UserActionDto implements Arrayable
         ];
     }
 
-    public static function fromArray(array $data): self
+    public static function fromArray(array $data): static
     {
-        return new self(userId: $data['user_id'], timestamp: $data['timestamp']);
+        return new static(userId: $data['user_id'], timestamp: $data['timestamp']);
     }
 }

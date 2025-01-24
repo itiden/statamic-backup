@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
@@ -29,21 +30,23 @@ describe('chunky', function (): void {
             10,
         );
 
+        $totalSize = File::size(__DIR__ . '/../__fixtures__/content/collections/pages/homepage.yaml');
+
         $dtos = $chunks->map(
-            fn($chunk, $index) => new ChunkyUploadDto(
-                'dir/test',
-                'homepage.yaml',
-                $chunks->count(),
-                $index + 1,
-                File::size(__DIR__ . '/../__fixtures__/content/collections/pages/homepage.yaml'),
-                basename($chunk),
-                new UploadedFile($chunk, basename($chunk)),
+            fn(string $chunk, int $index): ChunkyUploadDto => new ChunkyUploadDto(
+                path: 'dir/test',
+                filename: 'homepage.yaml',
+                totalChunks: $chunks->count(),
+                currentChunk: $index + 1,
+                totalSize: $totalSize,
+                identifier: basename($chunk),
+                file: new UploadedFile($chunk, basename($chunk)),
             ),
         );
 
-        $responses = $dtos->map(fn($dto) => Chunky::put($dto));
+        $responses = $dtos->map(Chunky::put(...));
 
-        expect($responses->every(fn($res) => $res->getStatusCode() === 201))->toBeTrue();
+        expect($responses->every(fn(JsonResponse $res): bool => $res->getStatusCode() === 201))->toBeTrue();
         expect($responses
             ->last()
             ->getData(true))->toHaveKey('file');

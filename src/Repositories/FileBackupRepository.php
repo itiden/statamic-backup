@@ -85,7 +85,7 @@ final class FileBackupRepository implements BackupRepository
     {
         $this
             ->all()
-            ->each(fn(BackupDto $backup) => $this->remove($backup->timestamp));
+            ->each(fn(BackupDto $backup): ?BackupDto => $this->remove($backup->timestamp));
         return Storage::disk(config('backup.destination.disk'))->deleteDirectory(config('backup.destination.path'));
     }
 }

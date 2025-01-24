@@ -19,8 +19,7 @@ final class Metadata
 {
     private Filesystem $filesystem;
 
-    /** @var int|string|null */
-    private $createdBy = null;
+    private string|int|null $createdBy = null;
 
     /** @var UserActionDto[] */
     private array $downloads;
@@ -56,21 +55,21 @@ final class Metadata
         return User::find($this->createdBy);
     }
 
-    public function setCreatedBy(Authenticatable $user)
+    public function setCreatedBy(Authenticatable $user): void
     {
         $this->createdBy = $user->getAuthIdentifier();
 
         $this->save();
     }
 
-    public function addDownload(Authenticatable $user)
+    public function addDownload(Authenticatable $user): void
     {
         $this->downloads[] = new UserActionDto(userId: $user->getAuthIdentifier(), timestamp: now()->toString());
 
         $this->save();
     }
 
-    public function addRestore(Authenticatable $user)
+    public function addRestore(Authenticatable $user): void
     {
         $this->restores[] = new UserActionDto(userId: $user->getAuthIdentifier(), timestamp: now()->toString());
 
@@ -98,27 +97,27 @@ final class Metadata
      * @param class-string<BackupPipe> $pipe The pipe that was skipped.
      * @param string $reason The reason why the pipe was skipped.
      */
-    public function addSkippedPipe(string $pipe, string $reason)
+    public function addSkippedPipe(string $pipe, string $reason): void
     {
         $this->skippedPipes[] = new SkippedPipeDto(pipe: $pipe, reason: $reason);
 
         $this->save();
     }
 
-    public function delete()
+    public function delete(): void
     {
         $this->filesystem->delete($this->backup->timestamp);
     }
 
-    private function save()
+    private function save(): void
     {
         $this->filesystem->put(
             $this->backup->timestamp,
             YAML::dump([
                 'created_by' => $this->createdBy,
-                'downloads' => array_map(fn(UserActionDto $action) => $action->toArray(), $this->downloads),
-                'restores' => array_map(fn(UserActionDto $action) => $action->toArray(), $this->restores),
-                'skipped_pipes' => array_map(fn(SkippedPipeDto $dto) => $dto->toArray(), $this->skippedPipes),
+                'downloads' => array_map(fn(UserActionDto $action): array => $action->toArray(), $this->downloads),
+                'restores' => array_map(fn(UserActionDto $action): array => $action->toArray(), $this->restores),
+                'skipped_pipes' => array_map(fn(SkippedPipeDto $dto): array => $dto->toArray(), $this->skippedPipes),
             ]),
         );
     }
