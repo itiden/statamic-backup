@@ -23,7 +23,13 @@ describe('restorer', function (): void {
 
     it('throws an exception if the backup path does not exist', function (): void {
         Restorer::restore(
-            new BackupDto(name: 'test', created_at: now(), size: '0', path: 'test/path', timestamp: now()->timestamp),
+            new BackupDto(
+                name: 'test',
+                created_at: now(),
+                size: '0',
+                path: 'test/path',
+                timestamp: (string) now()->timestamp,
+            ),
         );
     })->throws(RestoreFailed::class);
 })->group('restorer');
