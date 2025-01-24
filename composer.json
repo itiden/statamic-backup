@@ -17,7 +17,8 @@
     "laravel/pint": "^1.13",
     "orchestra/testbench": "^9.0",
     "pestphp/pest": "^3.0",
-    "pestphp/pest-plugin-laravel": "^3.0"
+    "pestphp/pest-plugin-laravel": "^3.0",
+    "carthage-software/mago": "^0.4.0"
   },
   "autoload": {
     "psr-4": {
@@ -76,7 +77,8 @@
   "config": {
     "allow-plugins": {
       "pixelfear/composer-dist-plugin": true,
-      "pestphp/pest-plugin": true
+      "pestphp/pest-plugin": true,
+      "carthage-software/mago": true
     }
   }
 }

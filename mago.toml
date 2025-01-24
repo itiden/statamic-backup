@@ -1,0 +1,7 @@
+[source]
+paths = ["src", "tests"]
+includes = ["vendor"]
+
+[format]
+method_chain_break_threshold = 2
+null_type_hint = "question"
