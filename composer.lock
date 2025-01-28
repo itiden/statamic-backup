@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "231f3bb6a23133ea56eaf393ccc68f53",
+    "content-hash": "8259b88ded2e67162404f150dc347dd9",
     "packages": [
         {
             "name": "ajthinking/archetype",
@@ -7794,21 +7794,21 @@
         },
         {
             "name": "carthage-software/mago",
-            "version": "0.4.0",
+            "version": "0.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/carthage-software/mago.git",
-                "reference": "53c7f14728a3040ebec3d84e5e76a72fa0d30da2"
+                "reference": "f487ca915735412c85778917041c305e6650fcc9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/carthage-software/mago/zipball/53c7f14728a3040ebec3d84e5e76a72fa0d30da2",
-                "reference": "53c7f14728a3040ebec3d84e5e76a72fa0d30da2",
+                "url": "https://api.github.com/repos/carthage-software/mago/zipball/f487ca915735412c85778917041c305e6650fcc9",
+                "reference": "f487ca915735412c85778917041c305e6650fcc9",
                 "shasum": ""
             },
             "require": {
                 "composer-plugin-api": "^2.6",
-                "php": "~8.3 || ~8.4"
+                "php": "~8.1 || ~8.2 || ~8.3 || ~8.4"
             },
             "require-dev": {
                 "composer/composer": "^2.8"
@@ -7835,7 +7835,7 @@
             ],
             "support": {
                 "issues": "https://github.com/carthage-software/mago/issues",
-                "source": "https://github.com/carthage-software/mago/tree/0.4.0"
+                "source": "https://github.com/carthage-software/mago/tree/0.5.1"
             },
             "funding": [
                 {
@@ -7843,7 +7843,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-01-24T01:38:54+00:00"
+            "time": "2025-01-28T01:33:29+00:00"
         },
         {
             "name": "doctrine/deprecations",
