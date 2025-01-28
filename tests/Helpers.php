@@ -2,33 +2,38 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\File;
+namespace Itiden\Backup\Tests {
+    use Illuminate\Support\Collection;
+    use Illuminate\Support\Facades\File;
 
-/**
- * Split a file into chunks
- */
-function chunkFile(string $file, string $path, int $buffer = 1024)
-{
-    File::ensureDirectoryExists($path);
+    /**
+     * Split a file into chunks
+     *
+     * @return Collection<string>
+     */
+    function chunk_file(string $file, string $path, int $buffer = 1024): Collection
+    {
+        File::ensureDirectoryExists($path);
 
-    $fileHandle = fopen($file, 'r');
-    $fileSize = File::size($file);
-    $totalChunks = ceil($fileSize / $buffer);
+        $fileHandle = fopen($file, 'r');
+        $fileSize = File::size($file);
+        $totalChunks = ceil($fileSize / $buffer);
 
-    $chunks = collect();
+        $chunks = collect();
 
-    $fileName = basename($file);
+        $fileName = basename($file);
 
-    for ($i = 1; $i <= $totalChunks; $i++) {
-        $chunk = fread($fileHandle, $buffer);
+        for ($i = 1; $i <= $totalChunks; $i++) {
+            $chunk = fread($fileHandle, $buffer);
 
-        $chunkPath = $path . $fileName . ".part$i";
+            $chunkPath = $path . $fileName . ".part$i";
 
-        File::put($chunkPath, $chunk);
+            File::put($chunkPath, $chunk);
 
-        $chunks->push($chunkPath);
+            $chunks->push($chunkPath);
+        }
+        fclose($fileHandle);
+
+        return $chunks;
     }
-    fclose($fileHandle);
-
-    return $chunks;
 }

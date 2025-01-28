@@ -14,28 +14,27 @@ final readonly class BackupController
     {
         $backups = $repo->all();
 
-        return BackupResource::collection($backups)
-            ->additional(['meta' => [
-                // Required by statamic to render the table
-                'columns' => [
-                    [
-                        'label' => 'Name',
-                        'field' => 'name',
-                        'visible' => true,
-                    ],
-                    [
-                        'label' => 'Created at',
-                        'field' => 'created_at',
-                        'visible' => true,
-                        'sortable' => true,
-                    ],
-                    [
-                        'label' => 'Size',
-                        'field' => 'size',
-                        'visible' => true,
-                        'sortable' => true,
-                    ]
-                ]
-            ]]);
+        return BackupResource::collection($backups)->additional(['meta' => [
+            // Required by statamic to render the table
+            'columns' => [
+                [
+                    'label' => 'Name',
+                    'field' => 'name',
+                    'visible' => true,
+                ],
+                [
+                    'label' => 'Created at',
+                    'field' => 'created_at',
+                    'visible' => true,
+                    'sortable' => true,
+                ],
+                [
+                    'label' => 'Size',
+                    'field' => 'size',
+                    'visible' => true,
+                    'sortable' => true,
+                ],
+            ],
+        ]]);
     }
 }

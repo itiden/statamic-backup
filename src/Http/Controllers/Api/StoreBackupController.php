@@ -13,8 +13,6 @@ final readonly class StoreBackupController
     {
         $backup = Backuper::backup();
 
-        return response()->json([
-            'message' => __('statamic-backup::backup.created', ['name' => $backup->name]),
-        ]);
+        return response()->json(['message' => __('statamic-backup::backup.created', ['name' => $backup->name])]);
     }
 }

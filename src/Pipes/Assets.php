@@ -18,23 +18,26 @@ final class Assets extends BackupPipe
         return 'assets';
     }
 
-    public function restore(string $backupPath, Closure $next)
+    public function restore(string $backupPath, Closure $next): string
     {
         AssetContainer::all()
             ->filter(static::isLocal(...))
-            ->each(function ($container) use ($backupPath) {
+            ->each(function (Container $container) use ($backupPath): void {
                 File::cleanDirectory($container->diskPath());
-                File::copyDirectory("{$this->getDirectoryPath($backupPath)}/{$container->handle()}", $container->diskPath());
+                File::copyDirectory(
+                    "{$this->getDirectoryPath($backupPath)}/{$container->handle()}",
+                    $container->diskPath(),
+                );
             });
 
         return $next($backupPath);
     }
 
-    public function backup(Zipper $zip, Closure $next)
+    public function backup(Zipper $zip, Closure $next): Zipper
     {
         AssetContainer::all()
             ->filter(static::isLocal(...))
-            ->each(function ($container) use ($zip) {
+            ->each(function (Container $container) use ($zip): void {
                 $zip->addDirectory($container->diskPath(), static::getKey() . '/' . $container->handle());
             });
 

@@ -3,7 +3,6 @@
 name: Deploy VitePress site to Pages
 
 on:
-  # TODO: Change to tag?
   push:
     tags:
       - "v*"

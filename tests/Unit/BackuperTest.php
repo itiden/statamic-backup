@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -8,35 +10,30 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Support\Zipper;
 
-describe('backuper', function () {
-    it('can backup', function () {
+describe('backuper', function (): void {
+    it('can backup', function (): void {
         $backup = Backuper::backup();
 
         expect($backup)->toBeInstanceOf(BackupDto::class);
 
-        expect(Storage::disk(config('backup.destination.disk'))
-            ->exists(config('backup.destination.path') . "/{$backup->name}.zip"))->toBeTrue();
+        expect(Storage::disk(config('backup.destination.disk'))->exists(
+            config('backup.destination.path') . "/{$backup->name}.zip",
+        ))->toBeTrue();
     });
 
-    it('backups correct files', function () {
+    it('backups correct files', function (): void {
         $backup = Backuper::backup();
 
         $unzipped = config('backup.temp_path') . '/unzipped';
-        Zipper::open(
-            Storage::disk(config('backup.destination.disk'))
-                ->path($backup->path),
-            true
-        )
-            ->extractTo(
-                $unzipped,
-                config('backup.password'),
-            );
+        Zipper::open(Storage::disk(config('backup.destination.disk'))->path($backup->path), true)->extractTo(
+            $unzipped,
+            config('backup.password'),
+        );
 
-        expect(File::allFiles($unzipped)[0]->getRelativePathname())
-            ->toEqual('content/collections/pages/homepage.yaml');
+        expect(File::allFiles($unzipped)[0]->getRelativePathname())->toEqual('content/collections/pages/homepage.yaml');
     });
 
-    it('can enforce max backups', function () {
+    it('can enforce max backups', function (): void {
         config()->set('backup.max_backups', 5);
 
         for ($i = 0; $i < 10; $i++) {
@@ -44,18 +41,22 @@ describe('backuper', function () {
             Carbon::setTestNow(Carbon::now()->addDays($i));
             Backuper::backup();
 
-            expect(app(BackupRepository::class)->all()->count())->toBeLessThanOrEqual(5);
+            expect(app(BackupRepository::class)
+                ->all()
+                ->count())->toBeLessThanOrEqual(5);
         }
     });
 
-    it('doesnt enforce max backups when it is disabled', function () {
+    it('doesnt enforce max backups when it is disabled', function (): void {
         config()->set('backup.max_backups', false);
 
         for ($i = 0; $i < 10; $i++) {
             Carbon::setTestNow(Carbon::now()->addDays($i));
             Backuper::backup();
 
-            expect(app(BackupRepository::class)->all()->count())->toBe($i + 1);
+            expect(app(BackupRepository::class)
+                ->all()
+                ->count())->toBe($i + 1);
         }
     });
 })->group('backuper');

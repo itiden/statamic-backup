@@ -11,7 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 final class BackupResource extends JsonResource
 {
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
             'name' => $this->name,
@@ -19,7 +19,7 @@ final class BackupResource extends JsonResource
             'path' => $this->path,
             'timestamp' => $this->timestamp,
             'size' => $this->size,
-            'metadata' =>  new MetadataResource(resource: $this->getMetadata()),
+            'metadata' => new MetadataResource(resource: $this->getMetadata()),
         ];
     }
 }

@@ -9,7 +9,7 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 final readonly class BackupRestored
 {
     public function __construct(
-        public BackupDto $backup
+        public BackupDto $backup,
     ) {
     }
 }

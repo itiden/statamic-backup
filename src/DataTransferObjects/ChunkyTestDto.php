@@ -18,9 +18,9 @@ final readonly class ChunkyTestDto
     /**
      * Create a new ChunkyTestDto from a request
      */
-    public static function fromRequest(Request $request)
+    public static function fromRequest(Request $request): static
     {
-        return new self(
+        return new static(
             path: 'temp/' . $request->input('resumableIdentifier'),
             filename: $request->input('resumableFilename'),
             currentChunk: (int) $request->input('resumableChunkNumber'),

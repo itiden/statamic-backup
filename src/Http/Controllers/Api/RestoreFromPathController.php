@@ -20,8 +20,6 @@ final readonly class RestoreFromPathController
             File::delete($request->validated('path'));
         }
 
-        return response()->json([
-            'message' => __('statamic-backup::backup.restore.success'),
-        ]);
+        return response()->json(['message' => __('statamic-backup::backup.restore.success')]);
     }
 }

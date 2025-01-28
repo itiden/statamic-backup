@@ -13,8 +13,6 @@ final readonly class RestoreController
     {
         Restorer::restoreFromTimestamp($timestamp);
 
-        return response()->json([
-            'message' => __('statamic-backup::backup.restore.success'),
-        ]);
+        return response()->json(['message' => __('statamic-backup::backup.restore.success')]);
     }
 }

@@ -20,8 +20,6 @@ final readonly class UploadController
 
     public function test(Request $request): JsonResponse
     {
-        return Chunky::exists(
-            ChunkyTestDto::fromRequest($request)
-        );
+        return Chunky::exists(ChunkyTestDto::fromRequest($request));
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Itiden\Backup\Tests;
 
 use Illuminate\Support\Facades\File;
@@ -13,7 +15,7 @@ class TestCase extends AddonTestCase
 
     protected string $addonServiceProvider = ServiceProvider::class;
 
-    protected function resolveApplicationConfiguration($app)
+    protected function resolveApplicationConfiguration($app): void
     {
         parent::resolveApplicationConfiguration($app);
 
