@@ -64,7 +64,8 @@ final class Restorer
 
             event(new BackupRestored($backup));
 
-            if ($user = auth()->user()) {
+            $user = auth()->user();
+            if ($user) {
                 $backup
                     ->getMetadata()
                     ->addRestore($user);

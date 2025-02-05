@@ -134,7 +134,9 @@ final class Zipper
      */
     public function getMeta(): Collection
     {
-        if ($comment = $this->zip->getArchiveComment()) {
+        $comment = $this->zip->getArchiveComment();
+
+        if ($comment) {
             $this->meta = json_decode($comment, true);
         }
 

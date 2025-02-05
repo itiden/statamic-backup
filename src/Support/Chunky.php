@@ -53,7 +53,8 @@ final class Chunky
             );
         }
 
-        if ($completeFile = $this->mergeChunksIntoFile($dto->path, $dto->filename, $dto->totalChunks)) {
+        $completeFile = $this->mergeChunksIntoFile($dto->path, $dto->filename, $dto->totalChunks);
+        if ($completeFile) {
             return response()->json(
                 ['message' => 'File successfully uploaded', 'file' => $completeFile],
                 Response::HTTP_CREATED,
@@ -69,9 +70,9 @@ final class Chunky
     public function mergeChunksIntoFile(string $path, string $filename, int $totalChunks): string
     {
         $fullPath = $this->path($path . '/' . $filename);
-
+        $file = fopen($fullPath, 'w');
         // create the complete file
-        if (($file = fopen($fullPath, 'w')) !== false) {
+        if ($file !== false) {
             for ($i = 1; $i <= $totalChunks; $i++) {
                 fwrite($file, file_get_contents($fullPath . '.part' . $i));
                 info('writing chunk ' . $i);

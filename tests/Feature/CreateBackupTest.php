@@ -154,7 +154,7 @@ describe('api:create', function (): void {
 
         config()->set('backup.password', null);
 
-        expect(fn() => Restorer::restore($backup))->toThrow(
+        expect(static fn() => Restorer::restore($backup))->toThrow(
             RestoreFailed::class,
             trans('statamic-backup::backup.restore.failed', ['name' => $backup->name]),
         );

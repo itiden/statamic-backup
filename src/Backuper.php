@@ -38,7 +38,9 @@ final class Backuper
                 ->through(config('backup.pipeline'))
                 ->thenReturn();
 
-            if ($password = config('backup.password')) {
+            $password = config('backup.password');
+
+            if ($password) {
                 $zipper->encrypt($password);
             }
 
@@ -52,7 +54,9 @@ final class Backuper
 
             $metadata = $backup->getMetadata();
 
-            if ($user = auth()->user()) {
+            $user = auth()->user();
+
+            if ($user) {
                 $metadata->setCreatedBy($user);
             }
 
@@ -107,15 +111,16 @@ final class Backuper
      */
     private function enforceMaxBackups(): void
     {
-        if (!($max_backups = config('backup.max_backups', false))) {
+        $maxBackups = config('backup.max_backups', false);
+        if (!$maxBackups) {
             return;
         }
 
         $backups = $this->repository->all();
 
-        if ($backups->count() > $max_backups) {
+        if ($backups->count() > $maxBackups) {
             $backups
-                ->slice($max_backups)
+                ->slice($maxBackups)
                 ->each(fn(BackupDto $backup): ?BackupDto => $this->repository->remove($backup->timestamp));
         }
     }

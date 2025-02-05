@@ -17,7 +17,7 @@
     "orchestra/testbench": "^9.0",
     "pestphp/pest": "^3.0",
     "pestphp/pest-plugin-laravel": "^3.0",
-    "carthage-software/mago": "^0.5.1"
+    "carthage-software/mago": "^0.8.1"
   },
   "autoload": {
     "psr-4": {
