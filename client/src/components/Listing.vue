@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div v-if="initializing" class="loading">
+    <div v-if="initializing || status === 'initializing'" class="loading">
       <loading-graphic />
     </div>
     <data-list
+      v-else-if="items.length"
       :visible-columns="columns"
       :columns="columns"
       :rows="items"
-      v-show="items.length"
     >
       <div
         class="card overflow-hidden p-0 relative"
@@ -61,6 +61,9 @@
         </data-list-table>
       </div>
     </data-list>
+    <div v-else>
+      <p class="text-center mt-16">{{ __("statamic-backup::backup.no_backups") }}</p>
+    </div>
 
     <confirmation-modal
       v-if="confirmingRestore"
