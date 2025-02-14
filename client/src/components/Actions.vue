@@ -1,17 +1,11 @@
 <template>
   <div class="flex flex-col items-end w-full">
-    <div v-if="status === 'backup_in_progress' || status === 'restore_in_progress'">
-      <p>{{ status === 'backup_in_progress' ? "Backing up" : "Restoring" }}</p>
-    </div>
-    <div v-else-if="status === 'backup_failed' || status === 'restore_failed'">
-      <p>{{ status === 'backup_failed' ? "Backup failed" : "Restore failed" }}</p>
-    </div>
-    <div class="flex justify-end" v-else>
+    <div class="flex justify-end">
       <upload :files="files" />
 
       <button
-        v-if="canCreateBackups"
-        :disabled="loading"
+        v-if="canCreateBackups.isPermitted"
+        :disabled="loading || !canCreateBackups.isPossible"
         class="btn-primary"
         :class="{ 'btn-disabled': loading }"
         @click="backup()"

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="canCreateBackups && canUpload" ref="dropzone" class="btn mr-3">
+  <div v-if="canCreateBackups.isPermitted && canUpload.isPermitted && canUpload.isPossible" ref="dropzone" class="btn mr-3">
     <svg-icon name="upload" class="h-4 w-4 mr-2 text-current" />
     <span>{{ __("statamic-backup::backup.upload.label") }}</span>
   </div>

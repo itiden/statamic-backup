@@ -11,51 +11,40 @@ export const store = {
     timeout: null,
   }),
   getters: {
-    canBackup: (state) => {
-      if (INPROGRESS_STATES.includes(state.status)) return false;
-
-      return (
-        Statamic.$store.state.statamic.config.user.super ??
-        Statamic.$store.state.statamic.config.user.permissions.includes(
-          "create backups"
-        )
-      );
-    },
-    canDownload: (state) => {
-      if (INPROGRESS_STATES.includes(state.status)) return false;
-      return (
-        Statamic.$store.state.statamic.config.user.super ??
-        Statamic.$store.state.statamic.config.user.permissions.includes(
-          "download backups"
-        )
-      );
-    },
-    canRestore: (state) => {
-      if (INPROGRESS_STATES.includes(state.status)) return false;
-
-      return (
-        Statamic.$store.state.statamic.config.user.super ??
-        Statamic.$store.state.statamic.config.user.permissions.includes(
-          "restore backups"
-        )
-      );
-    },
-    canDestroy: (state) => {
-      if (INPROGRESS_STATES.includes(state.status)) return false;
-
-      return (
-        Statamic.$store.state.statamic.config.user.super ??
-        Statamic.$store.state.statamic.config.user.permissions.includes(
-          "delete backups"
-        )
-      );
-    },
-    abilities: function (state, getters) {
+    abilities: function (state) {
       return {
-        backup: getters.canBackup,
-        download: getters.canDownload,
-        restore: getters.canRestore,
-        destroy: getters.canDestroy,
+        backup: {
+          isPossible: !INPROGRESS_STATES.includes(state.status),
+          isPermitted:
+            Statamic.$store.state.statamic.config.user.super ??
+            Statamic.$store.state.statamic.config.user.permissions.includes(
+              "download backups"
+            ),
+        },
+        download: {
+          isPossible: !INPROGRESS_STATES.includes(state.status),
+          isPermitted:
+            Statamic.$store.state.statamic.config.user.super ??
+            Statamic.$store.state.statamic.config.user.permissions.includes(
+              "restore backups"
+            ),
+        },
+        restore: {
+          isPossible: !INPROGRESS_STATES.includes(state.status),
+          isPermitted:
+            Statamic.$store.state.statamic.config.user.super ??
+            Statamic.$store.state.statamic.config.user.permissions.includes(
+              "restore backups"
+            ),
+        },
+        destroy: {
+          isPossible: !INPROGRESS_STATES.includes(state.status),
+          isPermitted:
+            Statamic.$store.state.statamic.config.user.super ??
+            Statamic.$store.state.statamic.config.user.permissions.includes(
+              "delete backups"
+            ),
+        },
       };
     },
   },

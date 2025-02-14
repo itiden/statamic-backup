@@ -35,18 +35,20 @@
           >
             <dropdown-list>
               <dropdown-item
-                v-if="canDownload"
+                v-if="canDownload.isPermitted"
+                :disabled="!canDownload.isPossible"
                 :text="__('statamic-backup::backup.download.label')"
                 :redirect="download_url(backup.timestamp)"
               />
-              <span v-if="canRestore">
+              <span v-if="canRestore.isPermitted && canRestore.isPossible">
                 <hr class="divider" />
                 <dropdown-item
+                  :disabled="!canRestore.isPossible"
                   :text="__('statamic-backup::backup.restore.label')"
                   @click="initiateRestore(backup.timestamp, backup.name)"
                 />
               </span>
-              <span v-if="canDestroy">
+              <span v-if="canDestroy.isPermitted && canDestroy.isPossible">
                 <hr class="divider" />
                 <dropdown-item
                   :text="__('statamic-backup::backup.destroy.label')"
@@ -91,7 +93,6 @@ export default {
   },
   watch: {
     status(newStatus, oldStatus) {
-      console.log({newStatus, oldStatus});
       if (newStatus === oldStatus || oldStatus === 'initializing') return;
 
       const completed = ["backup_completed", "restore_completed"];
@@ -126,7 +127,7 @@ export default {
       return this.$store.getters['backup-provider/abilities'].destroy;
     },
     showActions() {
-      return this.canDownload || this.canRestore || this.canDestroy;
+      return this.canDownload.isPermitted || this.canRestore.isPermitted || this.canDestroy.isPermitted;
     },
   },
   methods: {
@@ -152,7 +153,7 @@ export default {
     restore() {
       this.confirmingRestore = false;
 
-      if (!this.canRestore) return console.warn("Cannot restore backups.");
+      if (!this.canRestore.isPossible) return console.warn("Cannot restore backups.");
 
       this.$toast.info(__('statamic-backup::backup.restore.started_name', {name:this.activeName}));
       this.$store.dispatch('backup-provider/setStatus', 'restore_in_progress');
@@ -176,7 +177,7 @@ export default {
         });
     },
     destroy() {
-      if (!this.canDestroy) return console.warn("Cannot destroy backups.");
+      if (!this.canDestroy.isPossible) return console.warn("Cannot destroy backups.");
 
       this.confirmingDestroy = false;
       this.$axios
