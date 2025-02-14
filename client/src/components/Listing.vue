@@ -92,7 +92,7 @@ export default {
   watch: {
     status(newStatus, oldStatus) {
       console.log({newStatus, oldStatus});
-      if (newStatus === oldStatus) return;
+      if (newStatus === oldStatus || oldStatus === 'initializing') return;
 
       const completed = ["backup_completed", "restore_completed"];
 
