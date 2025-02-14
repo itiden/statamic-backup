@@ -68,13 +68,11 @@ export default {
       this.loading = true;
       this.confirming = false;
 
-      this.$toast.info(__("statamic-backup::backup.backup_started"));
       this.$store.dispatch('backup-provider/setStatus', 'backup_in_progress');
       this.$axios
         .post(cp_url("api/backups"), { comment: this.value })
         .then(({ data }) => {
-          this.$toast.success(__(data.message));
-          this.$root.$emit("onBackedup");
+          this.$toast.info(__(data.message));
         })
         .catch((error) => {
           let message = "Something went wrong.";

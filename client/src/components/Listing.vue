@@ -87,8 +87,20 @@ export default {
   mixins: [Listing],
 
   mounted() {
-    this.$root.$on("onBackedup", this.request);
     this.$on("onDestroyed", this.request);
+  },
+  watch: {
+    status(newStatus, oldStatus) {
+      console.log({newStatus, oldStatus});
+      if (newStatus === oldStatus) return;
+
+      const completed = ["backup_completed", "restore_completed"];
+
+      if (completed.includes(newStatus)) {
+        this.request();
+        this.$toast.success(__(`statamic-backup::backup.success`));
+      }
+    }
   },
   data() {
     return {
@@ -101,6 +113,9 @@ export default {
     };
   },
   computed: {
+    status() {
+      return this.$store.state['backup-provider'].status;
+    },
     canDownload() {
       return this.$store.getters['backup-provider/abilities'].download;
     },
