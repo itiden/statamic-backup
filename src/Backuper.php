@@ -12,6 +12,7 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Enums\State;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
+use Throwable;
 
 final class Backuper
 {
@@ -88,10 +89,10 @@ final class Backuper
             $this->stateManager->setState(State::BackupCompleted);
 
             return $backup;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             report($e);
 
-            $exception = new Exceptions\BackupFailed();
+            $exception = new Exceptions\BackupFailed(previous: $e);
 
             event(new BackupFailed($exception));
 

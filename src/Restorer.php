@@ -16,6 +16,7 @@ use Itiden\Backup\Events\BackupRestored;
 use Itiden\Backup\Events\RestoreFailed;
 use Itiden\Backup\Support\Zipper;
 use RuntimeException;
+use Throwable;
 
 final class Restorer
 {
@@ -98,7 +99,7 @@ final class Restorer
             ]);
 
             $this->stateManager->setState(State::RestoreCompleted);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             report($e);
 
             $exception = new Exceptions\RestoreFailed($backup, previous: $e);
