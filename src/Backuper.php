@@ -17,7 +17,16 @@ final class Backuper
     public function __construct(
         private BackupRepository $repository,
         private StateManager $stateManager
-    ) {
+    ) {}
+
+    public function canBackup(): bool
+    {
+        $state = $this->stateManager->getState();
+
+        return in_array(
+            needle: $state,
+            haystack: [State::BackupInProgress, State::RestoreInProgress]
+        );
     }
 
     /**
@@ -29,7 +38,7 @@ final class Backuper
     {
         $state = $this->stateManager->getState();
 
-        if (in_array($state, [State::BackupInProgress, State::RestoreInProgress])) {
+        if (!$this->canBackup()) {
             throw new Exception("Cannot start backup while in state \"{$state->value}\"");
         }
 
@@ -64,8 +73,8 @@ final class Backuper
                 $metadata->setCreatedBy($user);
             }
 
-            $zipMeta->each(fn ($meta, $key) => match ($key) {
-                'skipped' => $meta->each(fn (string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason)),
+            $zipMeta->each(fn($meta, $key) => match ($key) {
+                'skipped' => $meta->each(fn(string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason)),
             });
 
             event(new BackupCreated($backup));

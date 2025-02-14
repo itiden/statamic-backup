@@ -21,7 +21,13 @@ final class Restorer
     public function __construct(
         private BackupRepository $repository,
         private StateManager $stateManager
-    ) {
+    ) {}
+
+    public function canRestore(): bool
+    {
+        $state = $this->stateManager->getState();
+
+        return in_array($state, [State::BackupInProgress, State::RestoreInProgress]);
     }
 
     /**
@@ -49,8 +55,8 @@ final class Restorer
     {
         $state = $this->stateManager->getState();
 
-        if (in_array($state, [State::BackupInProgress, State::RestoreInProgress])) {
-            throw new Exception("Cannot start backup while in state \"{$state->value}\"");
+        if (!$this->canRestore()) {
+            throw new Exception("Cannot start restore while in state \"{$state->value}\"");
         }
 
         try {
