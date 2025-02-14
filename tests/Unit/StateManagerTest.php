@@ -13,4 +13,13 @@ describe('statemanager', function () {
 
         expect(app(StateManager::class)->getState())->toBe(State::Idle);
     });
+
+    it('resolves to idle when the state file is empty', function () {
+        Storage::build([
+            'driver' => 'local',
+            'root' => config('backup.metadata_path'),
+        ])->put('state', '');
+
+        expect(app(StateManager::class)->getState())->toBe(State::Idle);
+    });
 })->group('statemanager');

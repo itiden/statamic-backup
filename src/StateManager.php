@@ -25,7 +25,7 @@ final readonly class StateManager
             return State::Idle;
         }
 
-        return State::from($this->filesystem->get('state'));
+        return State::tryFrom($this->filesystem->get('state')) ?? State::Idle;
     }
 
     public function setState(State $state): void
