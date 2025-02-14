@@ -6,6 +6,7 @@ namespace Itiden\Backup;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
+use Itiden\Backup\Enums\State;
 
 final readonly class StateManager
 {

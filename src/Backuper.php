@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Support\Zipper;
 use Itiden\Backup\DataTransferObjects\BackupDto;
+use Itiden\Backup\Enums\State;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
 

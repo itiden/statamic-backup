@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Backuper;
-use Itiden\Backup\State;
+use Itiden\Backup\Enums\State;
 use Itiden\Backup\StateManager;
 use Itiden\Backup\Support\Zipper;
 

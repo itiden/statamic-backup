@@ -1,7 +1,7 @@
 <?php
 
 use Itiden\Backup\Http\Controllers\Api\StateController;
-use Itiden\Backup\State;
+use Itiden\Backup\Enums\State;
 use Itiden\Backup\StateManager;
 
 use function Pest\Laravel\actingAs;

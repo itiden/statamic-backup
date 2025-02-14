@@ -5,7 +5,7 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Exceptions\RestoreFailed;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Facades\Restorer;
-use Itiden\Backup\State;
+use Itiden\Backup\Enums\State;
 use Itiden\Backup\StateManager;
 
 describe('restorer', function () {

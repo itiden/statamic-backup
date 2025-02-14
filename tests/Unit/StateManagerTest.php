@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Storage;
-use Itiden\Backup\State;
+use Itiden\Backup\Enums\State;
 use Itiden\Backup\StateManager;
 
 describe('statemanager', function () {
