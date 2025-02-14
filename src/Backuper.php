@@ -23,7 +23,7 @@ final class Backuper
     {
         $state = $this->stateManager->getState();
 
-        return in_array(
+        return !in_array(
             needle: $state,
             haystack: [State::BackupInProgress, State::RestoreInProgress]
         );

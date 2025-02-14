@@ -27,7 +27,7 @@ final class Restorer
     {
         $state = $this->stateManager->getState();
 
-        return in_array($state, [State::BackupInProgress, State::RestoreInProgress]);
+        return !in_array($state, [State::BackupInProgress, State::RestoreInProgress]);
     }
 
     /**
