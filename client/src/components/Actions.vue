@@ -85,15 +85,15 @@ export default {
       this.confirming = false;
       file.status = "restoring";
 
-      this.$toast.info(__("statamic-backup::backup.restore.started"));
       this.$store.dispatch('backup-provider/setStatus','restore_in_progress');
+
       this.$axios
         .post(cp_url("api/backups/restore-from-path"), {
           path: file.path,
           destroyAfterRestore: true,
         })
         .then(({ data }) => {
-          this.$toast.success(__(data.message));
+          this.$toast.info(__(data.message));
         })
         .catch((error) => {
           let message = __("statamic-backup::backup.restore.failed");

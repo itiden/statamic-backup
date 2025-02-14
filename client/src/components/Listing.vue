@@ -100,9 +100,14 @@ export default {
 
       const completed = ["backup_completed", "restore_completed"];
 
-      if (completed.includes(newStatus)) {
-        this.request();
+      if (!completed.includes(newStatus)) return;
+
+      this.request();
+
+      if (newStatus === "backup_completed") {
         this.$toast.success(__(`statamic-backup::backup.success`));
+      } else if (newStatus === "restore_completed") {
+        this.$toast.success(__(`statamic-backup::backup.restore.success`));
       }
     }
   },
@@ -158,12 +163,11 @@ export default {
 
       if (!this.canRestore.isPossible) return console.warn("Cannot restore backups.");
 
-      this.$toast.info(__('statamic-backup::backup.restore.started_name', {name:this.activeName}));
       this.$store.dispatch('backup-provider/setStatus', 'restore_in_progress');
       this.$axios
         .post(this.restore_url(this.activeTimestamp))
         .then(({ data }) => {
-          this.$toast.success(__(data.message));
+          this.$toast.info(__(data.message));
           this.$emit("onRestored");
         })
         .catch((error) => {
