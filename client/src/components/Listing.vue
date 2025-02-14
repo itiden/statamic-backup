@@ -98,24 +98,18 @@ export default {
       confirmingDestroy: false,
       activeTimestamp: null,
       activeName: null,
-      canDownload:
-        this.$store.state.statamic.config.user.super ??
-        this.$store.state.statamic.config.user.permissions.includes(
-          "download backups"
-        ),
-      canRestore:
-        this.$store.state.statamic.config.user.super ??
-        this.$store.state.statamic.config.user.permissions.includes(
-          "restore backups"
-        ),
-      canDestroy:
-        this.$store.state.statamic.config.user.super ??
-        this.$store.state.statamic.config.user.permissions.includes(
-          "delete backups"
-        ),
     };
   },
   computed: {
+    canDownload() {
+      return this.$store.getters['backup-provider/abilities'].download;
+    },
+    canRestore() {
+      return this.$store.getters['backup-provider/abilities'].restore;
+    },
+    canDestroy() {
+      return this.$store.getters['backup-provider/abilities'].destroy;
+    },
     showActions() {
       return this.canDownload || this.canRestore || this.canDestroy;
     },
@@ -142,7 +136,11 @@ export default {
     },
     restore() {
       this.confirmingRestore = false;
+
+      if (!this.canRestore) return console.warn("Cannot restore backups.");
+
       this.$toast.info(__('statamic-backup::backup.restore.started_name', {name:this.activeName}));
+      this.$store.dispatch('backup-provider/setStatus', 'restore_in_progress');
       this.$axios
         .post(this.restore_url(this.activeTimestamp))
         .then(({ data }) => {
@@ -163,6 +161,8 @@ export default {
         });
     },
     destroy() {
+      if (!this.canDestroy) return console.warn("Cannot destroy backups.");
+
       this.confirmingDestroy = false;
       this.$axios
         .delete(this.destroy_url(this.activeTimestamp))

@@ -19,17 +19,15 @@ export default {
       resumable: null,
       confirming: false,
       loading: false,
-      canCreateBackups:
-        this.$store.state.statamic.config.user.super ??
-        this.$store.state.statamic.config.user.permissions.includes(
-          "create backups"
-        ),
-      canUpload:
-        this.$store.state.statamic.config.user.super ??
-        this.$store.state.statamic.config.user.permissions.includes(
-          "restore backups"
-        ),
     };
+  },
+  computed: {
+    canCreateBackups() {
+      return this.$store.getters['backup-provider/abilities'].backup;
+    },
+    canUpload() {
+      return this.$store.getters['backup-provider/abilities'].restore;
+    },
   },
   methods: {
     // finds the file in the local files array
@@ -51,7 +49,7 @@ export default {
       headers: {
         Accept: "application/json",
         "X-CSRF-TOKEN":
-          window.document.querySelector("input[name=_token]").value,
+          document.querySelector("input[name=_token]").value,
       },
       maxChunkRetries: 1,
       maxFiles: 1,
@@ -64,8 +62,10 @@ export default {
         "Your browser doesn't support chunked uploads. Get a better browser."
       );
 
-    this.resumable.assignBrowse(this.$refs.dropzone);
-    this.resumable.assignDrop(this.$refs.dropzone);
+    if (this.$refs.dropzone) {
+      this.resumable.assignBrowse(this.$refs.dropzone);
+      this.resumable.assignDrop(this.$refs.dropzone);
+    }
 
     // set up event listeners to feed into vues reactivity
     this.resumable.on("fileAdded", (file, event) => {

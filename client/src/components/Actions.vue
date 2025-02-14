@@ -1,6 +1,12 @@
 <template>
   <div class="flex flex-col items-end w-full">
-    <div class="flex justify-end">
+    <div v-if="status === 'backup_in_progress' || status === 'restore_in_progress'">
+      <p>{{ status === 'backup_in_progress' ? "Backing up" : "Restoring" }}</p>
+    </div>
+    <div v-else-if="status === 'backup_failed' || status === 'restore_failed'">
+      <p>{{ status === 'backup_failed' ? "Backup failed" : "Restore failed" }}</p>
+    </div>
+    <div class="flex justify-end" v-else>
       <upload :files="files" />
 
       <button
@@ -44,17 +50,18 @@ export default {
       files: [],
       confirming: false,
       loading: false,
-      canCreateBackups:
-        this.$store.state.statamic.config.user.super ??
-        this.$store.state.statamic.config.user.permissions.includes(
-          "create backups"
-        ),
-      canUpload:
-        this.$store.state.statamic.config.user.super ??
-        this.$store.state.statamic.config.user.permissions.includes(
-          "restore backups"
-        ),
     };
+  },
+  computed: {
+    status() {
+      return this.$store.state['backup-provider'].status;
+    },
+    canCreateBackups() {
+      return this.$store.getters['backup-provider/abilities'].backup;
+    },
+    canUpload() {
+      return this.$store.getters['backup-provider/abilities'].restore;
+    },
   },
   methods: {
     backup() {
@@ -62,6 +69,7 @@ export default {
       this.confirming = false;
 
       this.$toast.info(__("statamic-backup::backup.backup_started"));
+      this.$store.dispatch('backup-provider/setStatus', 'backup_in_progress');
       this.$axios
         .post(cp_url("api/backups"), { comment: this.value })
         .then(({ data }) => {
@@ -86,6 +94,7 @@ export default {
       file.status = "restoring";
 
       this.$toast.info(__("statamic-backup::backup.restore.started"));
+      this.$store.dispatch('backup-provider/setStatus','restore_in_progress');
       this.$axios
         .post(cp_url("api/backups/restore-from-path"), {
           path: file.path,
