@@ -38,8 +38,8 @@ describe('api:create', function () {
         $responseJson = postJson(cp_route('api.itiden.backup.store'));
 
 
-        $responseJson->assertJsonStructure([
-            'message',
+        $responseJson->assertExactJson([
+            'message' => __('statamic-backup::backup.backup_started'),
         ]);
 
         expect(app(BackupRepository::class)->all()->count())->toBe(1);
