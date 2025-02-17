@@ -60,7 +60,7 @@ export const store = {
   mutations: {
     setStatus(state, payload) {
       state.status = payload;
-      console.log("Server state:", state.status);
+      // console.log("Server state:", state.status);
     },
     cancelPoll(state) {
       clearTimeout(state.timeout);
@@ -87,7 +87,7 @@ export const store = {
           console.error("Error fetching server state:", error);
         } finally {
           const pollDelay = calculatePollDelay(state);
-          console.log("Polling delay:", pollDelay);
+          // console.log("Polling delay:", pollDelay);
           commit("timeout", setTimeout(pollServerState, pollDelay));
         }
       };
