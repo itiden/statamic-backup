@@ -18,7 +18,8 @@ final readonly class ChunkyUploadDto
         public int $totalSize,
         public string $identifier,
         public UploadedFile $file,
-    ) {}
+    ) {
+    }
 
     /**
      * Create a new ChunkyUploadDto from a request
