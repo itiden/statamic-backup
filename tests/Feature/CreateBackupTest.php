@@ -29,8 +29,6 @@ describe('api:create', function () {
     });
 
     it('can create a backup by a user with create backups permission', function () {
-        $this->withoutDefer();
-
         $user = user();
 
         $user->assignRole('admin')->save();
@@ -58,7 +56,6 @@ describe('api:create', function () {
     });
 
     it('dispatches backup created event', function () {
-        $this->withoutDefer();
         Event::fake();
 
         $user = user();
@@ -75,7 +72,6 @@ describe('api:create', function () {
     });
 
     it('dispatches failed event when error occurs', function () {
-        $this->withoutDefer();
         Event::fake();
 
         // Set invalid pipeline to force an error
@@ -93,7 +89,6 @@ describe('api:create', function () {
     });
 
     it('sets created by metadata when user is authenticated', function () {
-        $this->withoutDefer();
         $user = user();
 
         $user->assignRole('admin')->save();
@@ -106,7 +101,6 @@ describe('api:create', function () {
     });
 
     it('adds skipped pipes to meta', function () {
-        $this->withoutDefer();
         $user = user();
 
         $user->assignRole('admin')->save();
@@ -124,7 +118,6 @@ describe('api:create', function () {
     });
 
     it('can encrypt backup with password', function () {
-        $this->withoutDefer();
         config()->set('backup.password', 'password');
 
         $backup = Backuper::backup();
