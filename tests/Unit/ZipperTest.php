@@ -105,6 +105,7 @@ describe('zipper', function (): void {
 
     it('can encrypt when zipping', function (): void {
         $target = storage_path('test.zip');
+        // @mago-ignore security/no-literal-password
         $password = 'password';
 
         Zipper::open($target)

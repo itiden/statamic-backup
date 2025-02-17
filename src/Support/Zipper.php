@@ -59,7 +59,7 @@ final class Zipper
     /**
      * Add a file to the archive.
      */
-    public function addFile(string $path, string $name = null): self
+    public function addFile(string $path, ?string $name = null): self
     {
         $this->zip->addFile($path, $name ?? basename($path));
 
@@ -79,7 +79,7 @@ final class Zipper
     /**
      * Add a directory to the archive.
      */
-    public function addDirectory(string $path, string $prefix = null): self
+    public function addDirectory(string $path, ?string $prefix = null): self
     {
         collect(File::allFiles($path))->each(function (SplFileInfo $file) use ($prefix): void {
             $this->addFile($file->getPathname(), $prefix . '/' . $file->getRelativePathname());

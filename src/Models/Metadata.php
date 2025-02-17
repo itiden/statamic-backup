@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\DataTransferObjects\SkippedPipeDto;
 use Itiden\Backup\DataTransferObjects\UserActionDto;
 
+// @mago-ignore maintainability/too-many-methods
 final class Metadata
 {
     private Filesystem $filesystem;
