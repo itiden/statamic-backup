@@ -14,8 +14,8 @@ final readonly class DestroyBackupController
     {
         $backup = $repo->remove($timestamp);
 
-        return response()->json([
-            'message' => __('statamic-backup::backup.destroy.success', ['name' => $backup->name])
-        ]);
+        return response()->json(['message' => __('statamic-backup::backup.destroy.success', [
+            'name' => $backup->name,
+        ])]);
     }
 }

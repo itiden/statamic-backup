@@ -1,23 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Support\Zipper;
 
-describe('zipper', function () {
-
-    it('can create instance', function () {
+describe('zipper', function (): void {
+    it('can create instance', function (): void {
         $zip = new Zipper(storage_path('test.zip'));
 
         expect($zip)->toBeInstanceOf(Zipper::class);
     });
 
-    it('can get the zipArchive instance', function () {
+    it('can get the zipArchive instance', function (): void {
         $zip = new Zipper(storage_path('test.zip'));
 
         expect($zip->getArchive())->toBeInstanceOf(ZipArchive::class);
     });
 
-    it('can zip file from string', function () {
+    it('can zip file from string', function (): void {
         $target = storage_path('test.zip');
 
         Zipper::open($target)
@@ -29,7 +30,7 @@ describe('zipper', function () {
         expect(File::mimeType($target))->toBe('application/zip');
     });
 
-    it('can zip file from path', function () {
+    it('can zip file from path', function (): void {
         $target = storage_path('test.zip');
 
         Zipper::open($target)
@@ -41,17 +42,16 @@ describe('zipper', function () {
         expect(File::mimeType($target))->toBe('application/zip');
     });
 
-    it('can zip directory', function () {
+    it('can zip directory', function (): void {
         $path = storage_path('test.zip');
 
-        Zipper::open($path)
-            ->addDirectory(config('backup.content_path'), 'example');
+        Zipper::open($path)->addDirectory(config('backup.content_path'), 'example');
 
         expect($path)->toBeString();
         expect(file_exists($path))->toBeTrue();
     });
 
-    it('can unzip file', function () {
+    it('can unzip file', function (): void {
         $target = storage_path('test.zip');
 
         Zipper::open($target)
@@ -67,41 +67,45 @@ describe('zipper', function () {
         expect(file_exists($unzip))->toBeTrue();
     });
 
-    it('can unzip file to directory', function () {
+    it('can unzip file to directory', function (): void {
         $target = storage_path('test.zip');
 
         Zipper::open($target)->addFromString('test.txt', 'test');
 
         $unzip = storage_path('test');
-        Zipper::open($target, true)->extractTo($unzip)->close();
+        Zipper::open($target, true)
+            ->extractTo($unzip)
+            ->close();
 
         expect(file_exists($unzip))->toBeTrue();
         expect(file_exists(storage_path('test') . '/test.txt'))->toBeTrue();
     });
 
-    it('can unzip directory', function () {
-        $files = collect(File::allFiles(config('backup.content_path')))->map(function (SplFileInfo $file) {
-            return $file->getPathname();
-        });
+    it('can unzip directory', function (): void {
+        $files = collect(File::allFiles(config('backup.content_path')))->map(
+            fn(SplFileInfo $file): string => $file->getPathname(),
+        );
 
         $target = storage_path('test.zip');
 
-        Zipper::open($target)
-            ->addDirectory(config('backup.content_path'), 'example');
+        Zipper::open($target)->addDirectory(config('backup.content_path'), 'example');
 
         $unzip = storage_path('unzipdir');
-        Zipper::open($target, true)->extractTo($unzip)->close();
+        Zipper::open($target, true)
+            ->extractTo($unzip)
+            ->close();
 
         expect(file_exists($unzip))->toBeTrue();
         expect(file_exists(storage_path('unzipdir') . '/example'))->toBeTrue();
 
-        $files->each(function ($file) {
+        $files->each(function (string $file): void {
             expect(file_exists($file))->toBeTrue();
         });
     });
 
-    it('can encrypt when zipping', function () {
+    it('can encrypt when zipping', function (): void {
         $target = storage_path('test.zip');
+        // @mago-ignore security/no-literal-password
         $password = 'password';
 
         Zipper::open($target)
@@ -118,11 +122,11 @@ describe('zipper', function () {
             ->extractTo($unzip, $password)
             ->close();
 
-        expect(File::allFiles($unzip)[0]->getRelativePathname())->toBe("test.txt");
+        expect(File::allFiles($unzip)[0]->getRelativePathname())->toBe('test.txt');
         expect(File::get($unzip . '/test.txt'))->toBe('test');
     });
 
-    it('can write meta to zip', function () {
+    it('can write meta to zip', function (): void {
         $target = storage_path('test.zip');
 
         Zipper::open($target)
@@ -133,7 +137,9 @@ describe('zipper', function () {
         $zip = Zipper::open($target, true);
 
         expect($zip->getMeta())->toHaveKey('test');
-        expect($zip->getMeta())->get('test')->toBe('test');
+        expect($zip->getMeta())
+            ->get('test')
+            ->toBe('test');
 
         $zip->close();
     });

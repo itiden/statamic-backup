@@ -15,7 +15,7 @@ use Itiden\Backup\Restorer as RestorerService;
  */
 final class Restorer extends Facade
 {
-    public static function getFacadeAccessor()
+    public static function getFacadeAccessor(): string
     {
         return RestorerService::class;
     }

@@ -28,7 +28,7 @@ final class Zipper
      */
     public static function open(string $path, bool $readOnly = false): self
     {
-        $flags = $readOnly ? ZipArchive::RDONLY : ZipArchive::CREATE | ZipArchive::OVERWRITE;
+        $flags = $readOnly ? ZipArchive::RDONLY : (ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
         return new static($path, $flags);
     }
@@ -48,7 +48,10 @@ final class Zipper
     {
         $this->zip->setPassword($password);
 
-        collect(range(0, $this->zip->numFiles - 1))->each(fn ($file) => $this->zip->setEncryptionIndex($file, ZipArchive::EM_AES_256));
+        collect(range(0, $this->zip->numFiles - 1))->each(fn(int $file): bool => $this->zip->setEncryptionIndex(
+            $file,
+            ZipArchive::EM_AES_256,
+        ));
 
         return $this;
     }
@@ -56,7 +59,7 @@ final class Zipper
     /**
      * Add a file to the archive.
      */
-    public function addFile(string $path, string $name = null): self
+    public function addFile(string $path, ?string $name = null): self
     {
         $this->zip->addFile($path, $name ?? basename($path));
 
@@ -76,9 +79,9 @@ final class Zipper
     /**
      * Add a directory to the archive.
      */
-    public function addDirectory(string $path, string $prefix = null): self
+    public function addDirectory(string $path, ?string $prefix = null): self
     {
-        collect(File::allFiles($path))->each(function (SplFileInfo $file) use ($prefix) {
+        collect(File::allFiles($path))->each(function (SplFileInfo $file) use ($prefix): void {
             $this->addFile($file->getPathname(), $prefix . '/' . $file->getRelativePathname());
         });
 
@@ -131,7 +134,9 @@ final class Zipper
      */
     public function getMeta(): Collection
     {
-        if ($comment = $this->zip->getArchiveComment()) {
+        $comment = $this->zip->getArchiveComment();
+
+        if ($comment) {
             $this->meta = json_decode($comment, true);
         }
 

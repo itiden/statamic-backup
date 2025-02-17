@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
@@ -9,12 +11,14 @@ use Itiden\Backup\Pipes\Users;
 use Itiden\Backup\Support\Zipper;
 use Statamic\Facades\Stache;
 
-describe('pipes', function () {
-    test('backup pipes can pass zipper instance', function (string $pipe) {
+describe('pipes', function (): void {
+    test('backup pipes can pass zipper instance', function (string $pipe): void {
         $temp_zip = config('backup.temp_path') . '/backup.zip';
 
         $zipper = Zipper::open($temp_zip);
-        expect(app()->make($pipe)->backup($zipper, fn ($z) => $z))->toBeInstanceOf(Zipper::class);
+        expect(app()
+            ->make($pipe)
+            ->backup($zipper, fn(Zipper $z): Zipper => $z))->toBeInstanceOf(Zipper::class);
 
         $zipper->close();
 
@@ -25,14 +29,16 @@ describe('pipes', function () {
         Assets::class,
     ]);
 
-    test('restore pipes can pass closure', function (string $pipe) {
+    test('restore pipes can pass closure', function (string $pipe): void {
         app(BackupRepository::class)->empty();
         $fixtues_path = __DIR__ . '/../__fixtures__';
         $fixtures_backup_path = Storage::path(config('backup.destination.path'));
         File::copyDirectory($fixtues_path, $fixtures_backup_path);
 
         $path = config('backup.temp_path') . '/backup';
-        expect(app()->make($pipe)->restore($path, fn ($z) => $z))->toBe($path);
+        expect(app()
+            ->make($pipe)
+            ->restore($path, fn(string $z): string => $z))->toBe($path);
 
         File::deleteDirectory($fixtues_path);
         File::copyDirectory($fixtures_backup_path, $fixtues_path);
@@ -42,11 +48,11 @@ describe('pipes', function () {
         Assets::class,
     ]);
 
-    test('can skip a pipe with users', function () {
+    test('can skip a pipe with users', function (): void {
         /** @var Users::class $pipe */
         $pipe = app()->make(Users::class);
 
-        $callable = function ($z) {
+        $callable = function (Zipper $z): Zipper {
             return $z;
         };
 
@@ -56,18 +62,17 @@ describe('pipes', function () {
 
         $pipe->backup(zip: $zipper, next: $callable);
 
-
         expect($zipper->getMeta())->toHaveKey(Users::class);
         expect($zipper->getMeta()[Users::class])->toHaveKey('skipped', 'No users found.');
 
         $zipper->close();
     });
 
-    test('can skip a pipe with content', function () {
+    test('can skip a pipe with content', function (): void {
         /** @var Users::class $pipe */
         $pipe = app()->make(Content::class);
 
-        $callable = function ($z) {
+        $callable = function (Zipper $z): Zipper {
             return $z;
         };
 
@@ -78,9 +83,11 @@ describe('pipes', function () {
 
         $pipe->backup(zip: $zipper, next: $callable);
 
-
         expect($zipper->getMeta())->toHaveKey(Content::class);
-        expect($zipper->getMeta()[Content::class])->toHaveKey('skipped', 'Content directory didn\'t exist, is it configured correctly?');
+        expect($zipper->getMeta()[Content::class])->toHaveKey(
+            'skipped',
+            'Content directory didn\'t exist, is it configured correctly?',
+        );
 
         $zipper->close();
 

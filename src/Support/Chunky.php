@@ -10,6 +10,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\DataTransferObjects\ChunkyTestDto;
 use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
+use SplFileInfo;
 
 final class Chunky
 {
@@ -40,14 +41,24 @@ final class Chunky
             return response()->json(['message' => 'Error saving chunk'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $chunksOnDiskSize = collect($this->disk->allFiles($dto->path))->reduce(fn ($carry, $item) => $carry + $this->disk->size($item), 0);
+        $chunksOnDiskSize = collect($this->disk->allFiles($dto->path))->reduce(
+            fn(int $carry, string $item): int => $carry + $this->disk->size($item),
+            0,
+        );
 
         if ($chunksOnDiskSize < $dto->totalSize) {
-            return response()->json(['message' => 'uploaded ' . $dto->currentChunk . ' of ' . $dto->totalChunks], Response::HTTP_CREATED);
+            return response()->json(
+                ['message' => 'uploaded ' . $dto->currentChunk . ' of ' . $dto->totalChunks],
+                Response::HTTP_CREATED,
+            );
         }
 
-        if ($completeFile = $this->mergeChunksIntoFile($dto->path, $dto->filename, $dto->totalChunks)) {
-            return response()->json(['message' => 'File successfully uploaded', 'file' => $completeFile], Response::HTTP_CREATED);
+        $completeFile = $this->mergeChunksIntoFile($dto->path, $dto->filename, $dto->totalChunks);
+        if ($completeFile) {
+            return response()->json(
+                ['message' => 'File successfully uploaded', 'file' => $completeFile],
+                Response::HTTP_CREATED,
+            );
         }
 
         return response()->json(['message' => 'Error restoring file'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -59,9 +70,9 @@ final class Chunky
     public function mergeChunksIntoFile(string $path, string $filename, int $totalChunks): string
     {
         $fullPath = $this->path($path . '/' . $filename);
-
+        $file = fopen($fullPath, 'w');
         // create the complete file
-        if (($file = fopen($fullPath, 'w')) !== false) {
+        if ($file !== false) {
             for ($i = 1; $i <= $totalChunks; $i++) {
                 fwrite($file, file_get_contents($fullPath . '.part' . $i));
                 info('writing chunk ' . $i);
