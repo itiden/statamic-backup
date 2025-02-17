@@ -62,10 +62,12 @@ export default {
         "Your browser doesn't support chunked uploads. Get a better browser."
       );
 
-    if (this.$refs.dropzone) {
-      this.resumable.assignBrowse(this.$refs.dropzone);
-      this.resumable.assignDrop(this.$refs.dropzone);
-    }
+      this.$watch(() => {
+        if (this.$refs.dropzone) {
+          this.resumable.assignBrowse(this.$refs.dropzone);
+          this.resumable.assignDrop(this.$refs.dropzone);
+        }
+      });
 
     // set up event listeners to feed into vues reactivity
     this.resumable.on("fileAdded", (file, event) => {
