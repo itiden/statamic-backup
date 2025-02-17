@@ -5,6 +5,14 @@ const INPROGRESS_STATES = [
   "restore_in_progress",
 ];
 
+const calculatePollDelay = (state) => {
+  if (INPROGRESS_STATES.includes(state)) {
+    return 2000;
+  }
+
+  return 5000;
+};
+
 export const store = {
   namespaced: true,
   state: () => ({
@@ -68,15 +76,19 @@ export const store = {
     },
     pollEndpoint: ({ commit }) => {
       const pollServerState = async () => {
+        let state;
         try {
           const response = await Statamic.$axios.get(
             cp_url("api/backups/state")
           );
+          state = response.data.state;
           commit("setStatus", response.data.state);
         } catch (error) {
           console.error("Error fetching server state:", error);
         } finally {
-          commit("timeout", setTimeout(pollServerState, 5000));
+          const pollDelay = calculatePollDelay(state);
+          console.log("Polling delay:", pollDelay);
+          commit("timeout", setTimeout(pollServerState, pollDelay));
         }
       };
 
