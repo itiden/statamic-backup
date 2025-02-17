@@ -31,7 +31,7 @@ final class RestoreCommand extends Command
                 scroll: 10,
                 options: $repo
                     ->all()
-                    ->flatMap(fn(BackupDto $backup): array => [$backup->path => $backup->path]),
+                    ->flatMap(static fn(BackupDto $backup): array => [$backup->path => $backup->path]),
                 required: true,
             )),
         };
@@ -46,7 +46,7 @@ final class RestoreCommand extends Command
                     required: true,
                 )
         ) {
-            spin(fn() => Restorer::restore($backup), 'Restoring backup');
+            spin(static fn() => Restorer::restore($backup), 'Restoring backup');
 
             info('Backup restored!');
         }

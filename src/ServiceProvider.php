@@ -10,6 +10,7 @@ use Itiden\Backup\Console\Commands\ClearFilesCommand;
 use Itiden\Backup\Console\Commands\RestoreCommand;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Events\BackupDeleted;
+use Statamic\Auth\Permissions as PermissionContract;
 use Statamic\CP\Navigation\Nav as Navigation;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
@@ -45,22 +46,9 @@ final class ServiceProvider extends AddonServiceProvider
             'backup-config',
         );
 
-        $this->setUpPermissions();
-
-        Nav::extend(function (Navigation $nav): void {
-            $nav
-                ->content('Backups')
-                ->can('manage backups')
-                ->section('Tools')
-                ->route('itiden.backup.index')
-                ->icon('table');
-        });
-
-        $this->commands([
-            RestoreCommand::class,
-            BackupCommand::class,
-            ClearFilesCommand::class,
-        ]);
+        $this->configurePermissions();
+        $this->configureNavigation();
+        $this->configureCommands();
     }
 
     public function schedule(Schedule $schedule): void
@@ -83,19 +71,47 @@ final class ServiceProvider extends AddonServiceProvider
         $this->app->bind(BackupRepository::class, config('backup.repository'));
     }
 
-    private function setUpPermissions(): void
+    private function configureCommands(): void
     {
-        Permission::extend(function (): void {
-            Permission::group('itiden-backup', 'Backup', function (): void {
-                Permission::register('manage backups')
-                    ->label('Manage Backups')
-                    ->children([
-                        Permission::make('create backups')->label('Create Backups'),
-                        Permission::make('restore backups')->label('Restore From Backups'),
-                        Permission::make('download backups')->label('Download Backups'),
-                        Permission::make('delete backups')->label('Delete Backups'),
-                    ]);
-            });
+        $this->commands([
+            RestoreCommand::class,
+            BackupCommand::class,
+            ClearFilesCommand::class,
+        ]);
+    }
+
+    private function configureNavigation(): void
+    {
+        Nav::extend(static function (Navigation $nav): void {
+            $nav
+                ->content('Backups')
+                ->can('manage backups')
+                ->section('Tools')
+                ->route('itiden.backup.index')
+                ->icon('table');
+        });
+    }
+
+    private function configurePermissions(): void
+    {
+        Permission::extend(static function (PermissionContract $permission): void {
+            $permission->group('itiden-backup', 'Backup', static fn() => $permission
+                ->register('manage backups')
+                ->label('Manage Backups')
+                ->children([
+                    $permission
+                        ->make('create backups')
+                        ->label('Create Backups'),
+                    $permission
+                        ->make('restore backups')
+                        ->label('Restore From Backups'),
+                    $permission
+                        ->make('download backups')
+                        ->label('Download Backups'),
+                    $permission
+                        ->make('delete backups')
+                        ->label('Delete Backups'),
+                ]));
         });
     }
 }

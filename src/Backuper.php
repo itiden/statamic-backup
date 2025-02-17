@@ -61,7 +61,7 @@ final class Backuper
             }
 
             $zipMeta->each(
-                fn(Collection $meta, string $key): mixed => match ($key) {
+                static fn(Collection $meta, string $key): mixed => match ($key) {
                     'skipped' => $meta->each(function (string $reason, string $pipe) use ($metadata): void {
                         $metadata->addSkippedPipe(pipe: $pipe, reason: $reason);
                     }),
@@ -95,7 +95,7 @@ final class Backuper
 
         $zip
             ->getMeta()
-            ->each(function (array|string $meta, string $key) use ($metadata): void {
+            ->each(static function (array|string $meta, string $key) use ($metadata): void {
                 if (is_array($meta) && isset($meta['skipped'])) {
                     $metadata
                         ->get('skipped')

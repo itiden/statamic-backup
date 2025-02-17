@@ -20,7 +20,7 @@ final class MetadataResource extends JsonResource
             'restores' => $this->getRestores(),
             'skipped_pipes' => $this
                 ->getSkippedPipes()
-                ->map(fn(SkippedPipeDto $pipe): array => [
+                ->map(static fn(SkippedPipeDto $pipe): array => [
                     'pipe' => $pipe->pipe::getKey(),
                     'reason' => $pipe->reason,
                 ]),
