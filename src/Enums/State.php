@@ -7,6 +7,7 @@ namespace Itiden\Backup\Enums;
 enum State: string
 {
     case Idle = 'idle';
+    case Queued = 'queued';
 
     case BackupInProgress = 'backup_in_progress';
     case RestoreInProgress = 'restore_in_progress';

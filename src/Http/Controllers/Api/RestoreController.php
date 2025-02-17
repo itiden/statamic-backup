@@ -4,17 +4,26 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Http\Controllers\Api;
 
+use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Http\JsonResponse;
-use Itiden\Backup\Facades\Restorer;
+use Itiden\Backup\Exceptions\ActionAlreadyInProgress;
+use Itiden\Backup\Jobs\RestoreFromTimestampJob;
+use Itiden\Backup\StateManager;
 
 final readonly class RestoreController
 {
-    public function __invoke(string $timestamp): JsonResponse
+    public function __invoke(string $timestamp, Repository $cache): JsonResponse
     {
-        Restorer::restoreFromTimestamp($timestamp);
+        if ($cache->has(StateManager::JOB_QUEUED_KEY)) {
+            throw new ActionAlreadyInProgress();
+        }
+
+        $cache->put(StateManager::JOB_QUEUED_KEY, true);
+
+        dispatch(new RestoreFromTimestampJob(timestamp: $timestamp));
 
         return response()->json([
-            'message' => __('statamic-backup::backup.restore.success'),
+            'message' => __('statamic-backup::backup.restore.started'),
         ]);
     }
 }

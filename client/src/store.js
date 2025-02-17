@@ -1,5 +1,6 @@
 const INPROGRESS_STATES = [
   "initializing",
+  "queued",
   "backup_in_progress",
   "restore_in_progress",
 ];

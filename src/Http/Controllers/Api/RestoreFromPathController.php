@@ -4,24 +4,30 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Http\Controllers\Api;
 
+use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\File;
-use Itiden\Backup\DataTransferObjects\BackupDto;
-use Itiden\Backup\Facades\Restorer;
+use Itiden\Backup\Exceptions\ActionAlreadyInProgress;
 use Itiden\Backup\Http\Requests\RestoreFromPathRequest;
+use Itiden\Backup\Jobs\RestoreFromPathJob;
+use Itiden\Backup\StateManager;
 
 final readonly class RestoreFromPathController
 {
-    public function __invoke(RestoreFromPathRequest $request): JsonResponse
+    public function __invoke(RestoreFromPathRequest $request, Repository $cache): JsonResponse
     {
-        Restorer::restore(BackupDto::fromAbsolutePath($request->validated('path')));
-
-        if ($request->input('destroyAfterRestore', false)) {
-            File::delete($request->validated('path'));
+        if ($cache->has(StateManager::JOB_QUEUED_KEY)) {
+            throw new ActionAlreadyInProgress();
         }
 
+        $cache->put(StateManager::JOB_QUEUED_KEY, true);
+
+        dispatch(new RestoreFromPathJob(
+            path: $request->validated('path'),
+            deleteAfter: $request->input('destroyAfterRestore', false)
+        ));
+
         return response()->json([
-            'message' => __('statamic-backup::backup.restore.success'),
+            'message' => __('statamic-backup::backup.restore.started'),
         ]);
     }
 }
