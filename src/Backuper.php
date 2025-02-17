@@ -19,7 +19,8 @@ final class Backuper
     public function __construct(
         private BackupRepository $repository,
         private StateManager $stateManager
-    ) {}
+    ) {
+    }
 
     public function canBackup(): bool
     {
@@ -75,8 +76,8 @@ final class Backuper
                 $metadata->setCreatedBy($user);
             }
 
-            $zipMeta->each(fn($meta, $key) => match ($key) {
-                'skipped' => $meta->each(fn(string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason)),
+            $zipMeta->each(fn ($meta, $key) => match ($key) {
+                'skipped' => $meta->each(fn (string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason)),
             });
 
             event(new BackupCreated($backup));

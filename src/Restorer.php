@@ -24,7 +24,8 @@ final class Restorer
     public function __construct(
         private BackupRepository $repository,
         private StateManager $stateManager
-    ) {}
+    ) {
+    }
 
     public function canRestore(): bool
     {
