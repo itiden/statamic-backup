@@ -14,6 +14,7 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Enums\State;
 use Itiden\Backup\Events\BackupRestored;
 use Itiden\Backup\Events\RestoreFailed;
+use Itiden\Backup\Exceptions\ActionAlreadyInProgress;
 use Itiden\Backup\Support\Zipper;
 use RuntimeException;
 use Throwable;
@@ -23,8 +24,7 @@ final class Restorer
     public function __construct(
         private BackupRepository $repository,
         private StateManager $stateManager
-    ) {
-    }
+    ) {}
 
     public function canRestore(): bool
     {
@@ -59,7 +59,7 @@ final class Restorer
         $state = $this->stateManager->getState();
 
         if (!$this->canRestore()) {
-            throw new Exception("Cannot start restore while in state \"{$state->value}\"");
+            throw ActionAlreadyInProgress::fromInvalidState($state);
         }
 
         try {

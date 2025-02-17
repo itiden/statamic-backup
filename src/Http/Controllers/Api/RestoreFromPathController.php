@@ -16,7 +16,7 @@ final readonly class RestoreFromPathController
     public function __invoke(RestoreFromPathRequest $request, Repository $cache): JsonResponse
     {
         if ($cache->has(StateManager::JOB_QUEUED_KEY)) {
-            throw new ActionAlreadyInProgress();
+            throw ActionAlreadyInProgress::fromInQueue();
         }
 
         $cache->put(StateManager::JOB_QUEUED_KEY, true);

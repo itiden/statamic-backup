@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Itiden\Backup;
 
-use Exception;
 use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Support\Zipper;
@@ -12,6 +11,7 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Enums\State;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
+use Itiden\Backup\Exceptions\ActionAlreadyInProgress;
 use Throwable;
 
 final class Backuper
@@ -19,8 +19,7 @@ final class Backuper
     public function __construct(
         private BackupRepository $repository,
         private StateManager $stateManager
-    ) {
-    }
+    ) {}
 
     public function canBackup(): bool
     {
@@ -42,7 +41,7 @@ final class Backuper
         $state = $this->stateManager->getState();
 
         if (!$this->canBackup()) {
-            throw new Exception("Cannot start backup while in state \"{$state->value}\"");
+            throw ActionAlreadyInProgress::fromInvalidState($state);
         }
 
 
@@ -76,8 +75,8 @@ final class Backuper
                 $metadata->setCreatedBy($user);
             }
 
-            $zipMeta->each(fn ($meta, $key) => match ($key) {
-                'skipped' => $meta->each(fn (string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason)),
+            $zipMeta->each(fn($meta, $key) => match ($key) {
+                'skipped' => $meta->each(fn(string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason)),
             });
 
             event(new BackupCreated($backup));
