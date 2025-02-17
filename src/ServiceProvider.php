@@ -10,6 +10,8 @@ use Itiden\Backup\Console\Commands\ClearFilesCommand;
 use Itiden\Backup\Console\Commands\RestoreCommand;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Events\BackupDeleted;
+use Statamic\Auth\Permissions as PermissionContract;
+use Statamic\CP\Navigation\Nav as Navigation;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
@@ -35,30 +37,21 @@ final class ServiceProvider extends AddonServiceProvider
         ],
     ];
 
-    public function bootAddon()
+    public function bootAddon(): void
     {
-        $this->publishes([
-            __DIR__ . '/../config/backup.php' => config_path('backup.php'),
-        ], 'backup-config');
+        $this->publishes(
+            [
+                __DIR__ . '/../config/backup.php' => config_path('backup.php'),
+            ],
+            'backup-config',
+        );
 
-        $this->setUpPermissions();
-
-        Nav::extend(function ($nav) {
-            $nav->content('Backups')
-                ->can('manage backups')
-                ->section('Tools')
-                ->route('itiden.backup.index')
-                ->icon('table');
-        });
-
-        $this->commands([
-            RestoreCommand::class,
-            BackupCommand::class,
-            ClearFilesCommand::class,
-        ]);
+        $this->configurePermissions();
+        $this->configureNavigation();
+        $this->configureCommands();
     }
 
-    public function schedule(Schedule $schedule)
+    public function schedule(Schedule $schedule): void
     {
         if (!config('backup.schedule')) {
             return;
@@ -66,35 +59,59 @@ final class ServiceProvider extends AddonServiceProvider
 
         $frequency = config('backup.schedule.frequency');
 
-        $schedule->command('statamic:backup')->$frequency(config('backup.schedule.time'));
+        $schedule
+            ->command('statamic:backup')
+            ->$frequency(config('backup.schedule.time'));
     }
 
-    public function register()
+    public function register(): void
     {
-        $this->mergeConfigFrom(
-            __DIR__ . '/../config/backup.php',
-            'backup'
-        );
+        $this->mergeConfigFrom(__DIR__ . '/../config/backup.php', 'backup');
 
-        $this->app->bind(
-            BackupRepository::class,
-            config('backup.repository')
-        );
+        $this->app->bind(BackupRepository::class, config('backup.repository'));
     }
 
-    private function setUpPermissions()
+    private function configureCommands(): void
     {
-        Permission::extend(function () {
-            Permission::group('itiden-backup', 'Backup', function () {
-                Permission::register('manage backups')
-                    ->label('Manage Backups')
-                    ->children([
-                        Permission::make('create backups')->label('Create Backups'),
-                        Permission::make('restore backups')->label('Restore From Backups'),
-                        Permission::make('download backups')->label('Download Backups'),
-                        Permission::make('delete backups')->label('Delete Backups'),
-                    ]);
-            });
+        $this->commands([
+            RestoreCommand::class,
+            BackupCommand::class,
+            ClearFilesCommand::class,
+        ]);
+    }
+
+    private function configureNavigation(): void
+    {
+        Nav::extend(static function (Navigation $nav): void {
+            $nav
+                ->content('Backups')
+                ->can('manage backups')
+                ->section('Tools')
+                ->route('itiden.backup.index')
+                ->icon('table');
+        });
+    }
+
+    private function configurePermissions(): void
+    {
+        Permission::extend(static function (PermissionContract $permission): void {
+            $permission->group('itiden-backup', 'Backup', static fn() => $permission
+                ->register('manage backups')
+                ->label('Manage Backups')
+                ->children([
+                    $permission
+                        ->make('create backups')
+                        ->label('Create Backups'),
+                    $permission
+                        ->make('restore backups')
+                        ->label('Restore From Backups'),
+                    $permission
+                        ->make('download backups')
+                        ->label('Download Backups'),
+                    $permission
+                        ->make('delete backups')
+                        ->label('Delete Backups'),
+                ]));
         });
     }
 }

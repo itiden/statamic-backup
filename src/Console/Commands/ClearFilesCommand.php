@@ -18,7 +18,7 @@ final class ClearFilesCommand extends Command
 
     protected $description = 'Clear the backup temp directory';
 
-    public function handle()
+    public function handle(): void
     {
         if (!File::exists(config('backup.temp_path'))) {
             info('Backup temp directory does not exist, no need to clear it.');

@@ -16,8 +16,10 @@ final class RestoreFromTimestampJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private string $timestamp, private User $user)
-    {
+    public function __construct(
+        private string $timestamp,
+        private User $user,
+    ) {
     }
 
     /**

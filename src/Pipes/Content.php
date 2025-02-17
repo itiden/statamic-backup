@@ -16,7 +16,7 @@ final class Content extends BackupPipe
         return 'content';
     }
 
-    public function restore(string $restoringFromPath, Closure $next)
+    public function restore(string $restoringFromPath, Closure $next): string
     {
         $destination = config('backup.content_path');
 
@@ -26,12 +26,16 @@ final class Content extends BackupPipe
         return $next($restoringFromPath);
     }
 
-    public function backup(Zipper $zip, Closure $next)
+    public function backup(Zipper $zip, Closure $next): Zipper
     {
         $contentPath = config('backup.content_path');
 
         if (!File::exists($contentPath)) {
-            return $this->skip(reason: 'Content directory didn\'t exist, is it configured correctly?', next: $next, zip: $zip);
+            return $this->skip(
+                reason: 'Content directory didn\'t exist, is it configured correctly?',
+                next: $next,
+                zip: $zip,
+            );
         }
 
         $zip->addDirectory($contentPath, static::getKey());

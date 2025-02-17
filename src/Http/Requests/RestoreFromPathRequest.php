@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 final class RestoreFromPathRequest extends FormRequest
 {
-    public function rules()
+    public function rules(): array
     {
         return [
             'path' => 'required|string',

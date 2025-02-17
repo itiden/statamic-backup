@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+namespace Itiden\Backup\Tests;
+
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Statamic\Auth\User as StatamicUser;
 use Statamic\Facades\Role;
@@ -9,8 +12,10 @@ use Statamic\Facades\User;
 
 /**
  * Split a file into chunks
+ *
+ * @return Collection<string>
  */
-function chunkFile(string $file, string $path, int $buffer = 1024)
+function chunk_file(string $file, string $path, int $buffer = 1024): Collection
 {
     File::ensureDirectoryExists($path);
 

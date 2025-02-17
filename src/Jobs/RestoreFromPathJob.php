@@ -19,8 +19,10 @@ final class RestoreFromPathJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(private string $path, private bool $deleteAfter)
-    {
+    public function __construct(
+        private string $path,
+        private bool $deleteAfter,
+    ) {
     }
 
     /**

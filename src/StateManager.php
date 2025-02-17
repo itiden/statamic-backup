@@ -29,7 +29,10 @@ final readonly class StateManager
     {
         $state = State::tryFrom($this->filesystem->get(self::STATE_FILE) ?? '') ?? State::Idle;
 
-        if (! in_array($state, [State::BackupInProgress, State::RestoreInProgress]) && $this->cache->has(self::JOB_QUEUED_KEY)) {
+        if (
+            !in_array($state, [State::BackupInProgress, State::RestoreInProgress]) &&
+                $this->cache->has(self::JOB_QUEUED_KEY)
+        ) {
             $state = State::Queued;
         }
 

@@ -22,13 +22,8 @@ final readonly class RestoreController
 
         $cache->put(StateManager::JOB_QUEUED_KEY, true);
 
-        dispatch(new RestoreFromTimestampJob(
-            timestamp: $timestamp,
-            user: $user
-        ));
+        dispatch(new RestoreFromTimestampJob(timestamp: $timestamp, user: $user));
 
-        return response()->json([
-            'message' => __('statamic-backup::backup.restore.started'),
-        ]);
+        return response()->json(['message' => __('statamic-backup::backup.restore.started')]);
     }
 }

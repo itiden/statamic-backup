@@ -21,13 +21,13 @@ final readonly class RestoreFromPathController
 
         $cache->put(StateManager::JOB_QUEUED_KEY, true);
 
-        dispatch(new RestoreFromPathJob(
-            path: $request->validated('path'),
-            deleteAfter: $request->input('destroyAfterRestore', false)
-        ));
+        dispatch(
+            new RestoreFromPathJob(
+                path: $request->validated('path'),
+                deleteAfter: $request->input('destroyAfterRestore', false),
+            ),
+        );
 
-        return response()->json([
-            'message' => __('statamic-backup::backup.restore.started'),
-        ]);
+        return response()->json(['message' => __('statamic-backup::backup.restore.started')]);
     }
 }

@@ -24,8 +24,6 @@ final readonly class StoreBackupController
 
         dispatch(new BackupJob($user));
 
-        return response()->json([
-            'message' => __('statamic-backup::backup.backup_started'),
-        ]);
+        return response()->json(['message' => __('statamic-backup::backup.backup_started')]);
     }
 }

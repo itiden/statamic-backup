@@ -12,16 +12,18 @@ use Itiden\Backup\DataTransferObjects\SkippedPipeDto;
  */
 final class MetadataResource extends JsonResource
 {
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
             'created_by' => $this->getCreatedBy(),
             'downloads' => $this->getDownloads(),
             'restores' => $this->getRestores(),
-            'skipped_pipes' => $this->getSkippedPipes()->map(fn (SkippedPipeDto $pipe) => [
-                'pipe' => $pipe->pipe::getKey(),
-                'reason' => $pipe->reason,
-            ]),
+            'skipped_pipes' => $this
+                ->getSkippedPipes()
+                ->map(static fn(SkippedPipeDto $pipe): array => [
+                    'pipe' => $pipe->pipe::getKey(),
+                    'reason' => $pipe->reason,
+                ]),
         ];
     }
 }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Itiden\Backup;
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Support\Zipper;
@@ -18,7 +20,7 @@ final class Backuper
 {
     public function __construct(
         private BackupRepository $repository,
-        private StateManager $stateManager
+        private StateManager $stateManager,
     ) {
     }
 
@@ -26,10 +28,7 @@ final class Backuper
     {
         $state = $this->stateManager->getState();
 
-        return !in_array(
-            needle: $state,
-            haystack: [State::BackupInProgress, State::RestoreInProgress]
-        );
+        return !in_array(needle: $state, haystack: [State::BackupInProgress, State::RestoreInProgress]);
     }
 
     /**
@@ -45,7 +44,6 @@ final class Backuper
             throw ActionAlreadyInProgress::fromInvalidState($state);
         }
 
-
         try {
             $this->stateManager->setState(State::BackupInProgress);
 
@@ -58,7 +56,9 @@ final class Backuper
                 ->through(config('backup.pipeline'))
                 ->thenReturn();
 
-            if ($password = config('backup.password')) {
+            $password = config('backup.password');
+
+            if ($password) {
                 $zipper->encrypt($password);
             }
 
@@ -72,17 +72,23 @@ final class Backuper
 
             $metadata = $backup->getMetadata();
 
-            if ($user = auth()->user()) {
+            $user = auth()->user();
+
+            if ($user) {
                 $metadata->setCreatedBy($user);
             }
 
-            $zipMeta->each(fn ($meta, $key) => match ($key) {
-                'skipped' => $meta->each(fn (string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason)),
-            });
+            $zipMeta->each(
+                static fn(Collection $meta, string $key): mixed => match ($key) {
+                    'skipped' => $meta->each(function (string $reason, string $pipe) use ($metadata): void {
+                        $metadata->addSkippedPipe(pipe: $pipe, reason: $reason);
+                    }),
+                },
+            );
 
             event(new BackupCreated($backup));
 
-            @unlink($temp_zip_path);
+            File::delete($temp_zip_path);
 
             $this->enforceMaxBackups();
 
@@ -102,17 +108,22 @@ final class Backuper
         }
     }
 
-    private function resolveMetaFromZip(Zipper $zip)
+    /**
+     * @return Collection<string, Collection<string|int, mixed>>
+     */
+    private function resolveMetaFromZip(Zipper $zip): Collection
     {
-        $metadata = collect([
-            'skipped' => collect(),
-        ]);
+        $metadata = collect(['skipped' => collect()]);
 
-        $zip->getMeta()->each(function ($meta, $key) use ($metadata) {
-            if (isset($meta['skipped'])) {
-                $metadata->get('skipped')->put($key, $meta['skipped']);
-            }
-        });
+        $zip
+            ->getMeta()
+            ->each(static function (array|string $meta, string $key) use ($metadata): void {
+                if (is_array($meta) && isset($meta['skipped'])) {
+                    $metadata
+                        ->get('skipped')
+                        ->put($key, $meta['skipped']);
+                }
+            });
 
         return $metadata;
     }
@@ -122,16 +133,17 @@ final class Backuper
      */
     private function enforceMaxBackups(): void
     {
-        if (!$max_backups = config('backup.max_backups', false)) {
+        $maxBackups = config('backup.max_backups', false);
+        if (!$maxBackups) {
             return;
         }
 
         $backups = $this->repository->all();
 
-        if ($backups->count() > $max_backups) {
-            $backups->slice($max_backups)->each(function ($backup) {
-                $this->repository->remove($backup->timestamp);
-            });
+        if ($backups->count() > $maxBackups) {
+            $backups
+                ->slice($maxBackups)
+                ->each(fn(BackupDto $backup): ?BackupDto => $this->repository->remove($backup->timestamp));
         }
     }
 }

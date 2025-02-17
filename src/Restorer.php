@@ -23,7 +23,7 @@ final class Restorer
 {
     public function __construct(
         private BackupRepository $repository,
-        private StateManager $stateManager
+        private StateManager $stateManager,
     ) {
     }
 
@@ -83,8 +83,11 @@ final class Restorer
 
             event(new BackupRestored($backup));
 
-            if ($user = auth()->user()) {
-                $backup->getMetadata()->addRestore($user);
+            $user = auth()->user();
+            if ($user) {
+                $backup
+                    ->getMetadata()
+                    ->addRestore($user);
             }
 
             File::cleanDirectory(config('backup.temp_path'));
@@ -149,10 +152,12 @@ final class Restorer
     {
         $target = config('backup.temp_path') . DIRECTORY_SEPARATOR . 'unzipping';
 
-        Zipper::open($path, true)->extractTo($target, config('backup.password'))->close();
+        Zipper::open($path, true)
+            ->extractTo($target, config('backup.password'))
+            ->close();
 
         if (!collect(File::allFiles($target))->count()) {
-            throw new Exception("This backup is empty, perhaps you used the wrong password?");
+            throw new Exception('This backup is empty, perhaps you used the wrong password?');
         }
 
         return $target;

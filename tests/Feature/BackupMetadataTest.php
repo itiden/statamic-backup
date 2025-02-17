@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Facades\Backuper;
@@ -8,9 +10,10 @@ use Itiden\Backup\DataTransferObjects\UserActionDto;
 use Itiden\Backup\Pipes\Users as UserPipe;
 use Statamic\Yaml\Yaml;
 
-describe('metadata', function () {
+use function Itiden\Backup\Tests\user;
 
-    it('can generate a metadata file for a backup', function () {
+describe('metadata', function (): void {
+    it('can generate a metadata file for a backup', function (): void {
         $backup = Backuper::backup();
 
         $metadata = $backup->getMetadata();
@@ -18,7 +21,7 @@ describe('metadata', function () {
         expect($metadata)->toBeInstanceOf(Metadata::class);
     });
 
-    it('creates a file if its missing', function () {
+    it('creates a file if its missing', function (): void {
         $backup = Backuper::backup();
 
         $metadata = $backup->getMetadata();
@@ -32,7 +35,7 @@ describe('metadata', function () {
         expect($metadata)->toBeInstanceOf(Metadata::class);
     });
 
-    it('can get the user that created the backup', function () {
+    it('can get the user that created the backup', function (): void {
         $backup = Backuper::backup();
 
         $metadata = $backup->getMetadata();
@@ -46,7 +49,7 @@ describe('metadata', function () {
         expect($metadata->getCreatedBy())->toBe($user);
     });
 
-    it('can get the downloads for a backup', function () {
+    it('can get the downloads for a backup', function (): void {
         Carbon::setTestNow('2021-01-01 00:00:00');
         $backup = Backuper::backup();
 
@@ -59,12 +62,21 @@ describe('metadata', function () {
         $metadata->addDownload($user);
 
         expect($metadata->getDownloads())->toHaveCount(1);
-        expect($metadata->getDownloads()->first())->toBeInstanceOf(UserActionDto::class);
-        expect($metadata->getDownloads()->first()->getUser()->getAuthIdentifier())->toBe($user->getAuthIdentifier());
-        expect($metadata->getDownloads()->first()->getTimestamp())->toEqual(Carbon::now());
+        expect($metadata
+            ->getDownloads()
+            ->first())->toBeInstanceOf(UserActionDto::class);
+        expect($metadata
+            ->getDownloads()
+            ->first()
+            ->getUser()
+            ->getAuthIdentifier())->toBe($user->getAuthIdentifier());
+        expect($metadata
+            ->getDownloads()
+            ->first()
+            ->getTimestamp())->toEqual(Carbon::now());
     });
 
-    it('can get the restores for a backup', function () {
+    it('can get the restores for a backup', function (): void {
         Carbon::setTestNow('2021-01-01 00:00:00');
         $backup = Backuper::backup();
 
@@ -77,12 +89,21 @@ describe('metadata', function () {
         $metadata->addRestore($user);
 
         expect($metadata->getRestores())->toHaveCount(1);
-        expect($metadata->getRestores()->first())->toBeInstanceOf(UserActionDto::class);
-        expect($metadata->getRestores()->first()->getUser()->getAuthIdentifier())->toBe($user->getAuthIdentifier());
-        expect($metadata->getRestores()->first()->getTimestamp())->toEqual(Carbon::now());
+        expect($metadata
+            ->getRestores()
+            ->first())->toBeInstanceOf(UserActionDto::class);
+        expect($metadata
+            ->getRestores()
+            ->first()
+            ->getUser()
+            ->getAuthIdentifier())->toBe($user->getAuthIdentifier());
+        expect($metadata
+            ->getRestores()
+            ->first()
+            ->getTimestamp())->toEqual(Carbon::now());
     });
 
-    it('can get the skipped pipes for a backup', function () {
+    it('can get the skipped pipes for a backup', function (): void {
         $backup = Backuper::backup();
 
         $metadata = $backup->getMetadata();
@@ -92,11 +113,19 @@ describe('metadata', function () {
         $metadata->addSkippedPipe(pipe: UserPipe::class, reason: 'Some reason');
 
         expect($metadata->getSkippedPipes())->toHaveCount(1);
-        expect($metadata->getSkippedPipes()->first()->pipe)->toBe(UserPipe::class);
-        expect($metadata->getSkippedPipes()->first()->reason)->toBe('Some reason');
+        expect(
+            $metadata
+                ->getSkippedPipes()
+                ->first()->pipe,
+        )->toBe(UserPipe::class);
+        expect(
+            $metadata
+                ->getSkippedPipes()
+                ->first()->reason,
+        )->toBe('Some reason');
     });
 
-    it('stores metadata files in the correct directory', function () {
+    it('stores metadata files in the correct directory', function (): void {
         $backup = Backuper::backup();
 
         $metadata = $backup->getMetadata();
