@@ -57,17 +57,22 @@ export default {
     });
 
     // Resumable.js isn't supported, fall back on a different method
-    if (!this.resumable.support)
-      return alert(
-        "Your browser doesn't support chunked uploads. Get a better browser."
-      );
+    if (!this.resumable.support) return alert("Your browser doesn't support chunked uploads. Get a better browser.");
 
-      this.$watch(() => {
-        if (this.$refs.dropzone) {
-          this.resumable.assignBrowse(this.$refs.dropzone);
-          this.resumable.assignDrop(this.$refs.dropzone);
+
+    this.$watch(
+      (state) => {
+        return state.canCreateBackups.isPermitted && state.canUpload.isPermitted && state.canUpload.isPossible
+      },
+      (newValue) => {
+        if (newValue) {
+          if (this.$refs.dropzone) {
+            this.resumable.assignBrowse(this.$refs.dropzone);
+            this.resumable.assignDrop(this.$refs.dropzone);
+          }
         }
-      });
+      }
+    );
 
     // set up event listeners to feed into vues reactivity
     this.resumable.on("fileAdded", (file, event) => {
