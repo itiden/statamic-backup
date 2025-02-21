@@ -5,29 +5,31 @@ declare(strict_types=1);
 namespace Itiden\Backup;
 
 use Illuminate\Contracts\Cache\Repository;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Filesystem\Filesystem;
 use Itiden\Backup\Enums\State;
+
+use function Illuminate\Filesystem\join_paths;
 
 final readonly class StateManager
 {
     public const STATE_FILE = 'state';
     public const JOB_QUEUED_KEY = 'backup-job-queued';
 
-    private Filesystem $filesystem;
-
     public function __construct(
         private Repository $cache,
+        private Filesystem $filesystem,
     ) {
-        $this->filesystem = Storage::build([
-            'driver' => 'local',
-            'root' => config('backup.metadata_path'),
-        ]);
     }
 
     public function getState(): State
     {
-        $state = State::tryFrom($this->filesystem->get(self::STATE_FILE) ?? '') ?? State::Idle;
+        $path = join_paths(config('backup.metadata_path'), self::STATE_FILE);
+
+        if (!$this->filesystem->exists($path)) {
+            return State::Idle;
+        }
+
+        $state = State::tryFrom($this->filesystem->get($path)) ?? State::Idle;
 
         if (
             !in_array($state, [State::BackupInProgress, State::RestoreInProgress]) &&
@@ -41,6 +43,6 @@ final readonly class StateManager
 
     public function setState(State $state): void
     {
-        $this->filesystem->put(self::STATE_FILE, $state->value);
+        $this->filesystem->put(join_paths(config('backup.metadata_path'), self::STATE_FILE), $state->value, lock: true);
     }
 }

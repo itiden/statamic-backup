@@ -3,25 +3,22 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Enums\State;
 use Itiden\Backup\StateManager;
 
+use function Illuminate\Filesystem\join_paths;
+
 describe('statemanager', function (): void {
     it('resolves the state correctly when there is no state file', function (): void {
-        Storage::build([
-            'driver' => 'local',
-            'root' => config('backup.metadata_path'),
-        ])->delete(StateManager::STATE_FILE);
+        File::delete(join_paths(config('backup.metadata_path'), StateManager::STATE_FILE));
 
         expect(app(StateManager::class)->getState())->toBe(State::Idle);
     });
 
     it('resolves to idle when the state file is empty', function (): void {
-        Storage::build([
-            'driver' => 'local',
-            'root' => config('backup.metadata_path'),
-        ])->put('state', '');
+        File::put(join_paths(config('backup.metadata_path'), StateManager::STATE_FILE), '');
 
         expect(app(StateManager::class)->getState())->toBe(State::Idle);
     });
