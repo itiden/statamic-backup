@@ -43,6 +43,7 @@ final readonly class StateManager
 
     public function setState(State $state): void
     {
+        $this->filesystem->ensureDirectoryExists(config('backup.metadata_path'));
         $this->filesystem->put(join_paths(config('backup.metadata_path'), self::STATE_FILE), $state->value, lock: true);
     }
 }

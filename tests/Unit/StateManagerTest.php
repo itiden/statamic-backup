@@ -12,12 +12,14 @@ use function Illuminate\Filesystem\join_paths;
 
 describe('statemanager', function (): void {
     it('resolves the state correctly when there is no state file', function (): void {
+        File::ensureDirectoryExists(config('backup.metadata_path'));
         File::delete(join_paths(config('backup.metadata_path'), StateManager::STATE_FILE));
 
         expect(app(StateManager::class)->getState())->toBe(State::Idle);
     });
 
     it('resolves to idle when the state file is empty', function (): void {
+        File::ensureDirectoryExists(config('backup.metadata_path'));
         File::put(join_paths(config('backup.metadata_path'), StateManager::STATE_FILE), '');
 
         expect(app(StateManager::class)->getState())->toBe(State::Idle);
