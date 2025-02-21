@@ -6,6 +6,7 @@ namespace Itiden\Backup;
 
 use Exception;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Support\Facades\Storage;
@@ -57,10 +58,10 @@ final class Restorer
      */
     public function restore(BackupDto $backup): void
     {
-        $state = $this->stateManager->getState();
+        $lock = Cache::lock(name: StateManager::LOCK);
 
-        if (!$this->canRestore()) {
-            throw ActionAlreadyInProgress::fromInvalidState($state);
+        if (!$lock->get() || !$this->canRestore()) {
+            throw ActionAlreadyInProgress::fromInvalidState($this->stateManager->getState());
         }
 
         try {
@@ -113,6 +114,8 @@ final class Restorer
             event(new RestoreFailed($exception));
 
             throw $exception;
+        } finally {
+            $lock->release();
         }
     }
 

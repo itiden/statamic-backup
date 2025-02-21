@@ -12,6 +12,7 @@ use function Illuminate\Filesystem\join_paths;
 
 final readonly class StateManager
 {
+    public const LOCK = 'backup';
     public const STATE_FILE = 'state';
     public const JOB_QUEUED_KEY = 'backup-job-queued';
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Itiden\Backup;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
@@ -38,10 +39,10 @@ final class Backuper
      */
     public function backup(): BackupDto
     {
-        $state = $this->stateManager->getState();
+        $lock = Cache::lock(name: StateManager::LOCK);
 
-        if (!$this->canBackup()) {
-            throw ActionAlreadyInProgress::fromInvalidState($state);
+        if (!$lock->get() || !$this->canBackup()) {
+            throw ActionAlreadyInProgress::fromInvalidState($this->stateManager->getState());
         }
 
         try {
@@ -105,6 +106,8 @@ final class Backuper
             $this->stateManager->setState(State::BackupFailed);
 
             throw $exception;
+        } finally {
+            $lock->release();
         }
     }
 
