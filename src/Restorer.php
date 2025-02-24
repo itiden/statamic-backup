@@ -23,7 +23,8 @@ final class Restorer
     public function __construct(
         private BackupRepository $repository,
         private StateManager $stateManager,
-    ) {}
+    ) {
+    }
 
     /**
      * Restore from a backup with a given timestamp.

@@ -14,15 +14,9 @@ use Statamic\Contracts\Auth\User;
 
 final readonly class RestoreController
 {
-    public function __invoke(string $timestamp, Repository $cache, #[Authenticated] User $user): JsonResponse
+    public function __invoke(string $timestamp, StateManager $stateManager, #[Authenticated] User $user): JsonResponse
     {
-        if ($cache->has(StateManager::JOB_QUEUED_KEY)) {
-            throw ActionAlreadyInProgress::fromInQueue();
-        }
-
-        $cache->put(StateManager::JOB_QUEUED_KEY, true);
-
-        dispatch(new RestoreFromTimestampJob(timestamp: $timestamp, user: $user));
+        $stateManager->dispatch(new RestoreFromTimestampJob($timestamp, $user));
 
         return response()->json(['message' => __('statamic-backup::backup.restore.started')]);
     }

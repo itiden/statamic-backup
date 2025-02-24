@@ -13,15 +13,9 @@ use Itiden\Backup\StateManager;
 
 final readonly class RestoreFromPathController
 {
-    public function __invoke(RestoreFromPathRequest $request, Repository $cache): JsonResponse
+    public function __invoke(RestoreFromPathRequest $request, StateManager $stateManager): JsonResponse
     {
-        if ($cache->has(StateManager::JOB_QUEUED_KEY)) {
-            throw ActionAlreadyInProgress::fromInQueue();
-        }
-
-        $cache->put(StateManager::JOB_QUEUED_KEY, true);
-
-        dispatch(
+        $stateManager->dispatch(
             new RestoreFromPathJob(
                 path: $request->validated('path'),
                 deleteAfter: $request->input('destroyAfterRestore', false),
