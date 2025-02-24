@@ -6,7 +6,6 @@ namespace Itiden\Backup;
 
 use Exception;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +14,6 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Enums\State;
 use Itiden\Backup\Events\BackupRestored;
 use Itiden\Backup\Events\RestoreFailed;
-use Itiden\Backup\Exceptions\ActionAlreadyInProgress;
 use Itiden\Backup\Support\Zipper;
 use RuntimeException;
 use Throwable;
@@ -25,15 +23,7 @@ final class Restorer
     public function __construct(
         private BackupRepository $repository,
         private StateManager $stateManager,
-    ) {
-    }
-
-    public function canRestore(): bool
-    {
-        $state = $this->stateManager->getState();
-
-        return !in_array($state, [State::BackupInProgress, State::RestoreInProgress]);
-    }
+    ) {}
 
     /**
      * Restore from a backup with a given timestamp.
@@ -58,11 +48,7 @@ final class Restorer
      */
     public function restore(BackupDto $backup): void
     {
-        $lock = Cache::lock(name: StateManager::LOCK);
-
-        if (!$lock->get() || !$this->canRestore()) {
-            throw ActionAlreadyInProgress::fromInvalidState($this->stateManager->getState());
-        }
+        $lock = $this->stateManager->getLock();
 
         try {
             $this->stateManager->setState(State::RestoreInProgress);

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Itiden\Backup;
 
+use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Cache;
 use Itiden\Backup\Enums\State;
+use Itiden\Backup\Exceptions\ActionAlreadyInProgress;
 
 use function Illuminate\Filesystem\join_paths;
 
@@ -19,8 +22,7 @@ final readonly class StateManager
     public function __construct(
         private Repository $cache,
         private Filesystem $filesystem,
-    ) {
-    }
+    ) {}
 
     public function getState(): State
     {
@@ -34,7 +36,7 @@ final readonly class StateManager
 
         if (
             !in_array($state, [State::BackupInProgress, State::RestoreInProgress]) &&
-                $this->cache->has(self::JOB_QUEUED_KEY)
+            $this->cache->has(self::JOB_QUEUED_KEY)
         ) {
             $state = State::Queued;
         }
@@ -44,7 +46,26 @@ final readonly class StateManager
 
     public function setState(State $state): void
     {
-        $this->filesystem->ensureDirectoryExists(config('backup.metadata_path'));
-        $this->filesystem->put(join_paths(config('backup.metadata_path'), self::STATE_FILE), $state->value, lock: true);
+        $this->filesystem->ensureDirectoryExists(path: config('backup.metadata_path'));
+        $this->filesystem->put(
+            path: join_paths(config('backup.metadata_path'), self::STATE_FILE),
+            contents: $state->value,
+            lock: true,
+        );
+    }
+
+    /**
+     * Get the lock for the backup process.
+     */
+    public function getLock(): Lock
+    {
+        $lock = Cache::lock(name: StateManager::LOCK);
+        $state = $this->getState();
+
+        if (!$lock->get() || in_array(needle: $state, haystack: [State::BackupInProgress, State::RestoreInProgress])) {
+            throw ActionAlreadyInProgress::fromInvalidState($state);
+        }
+
+        return $lock;
     }
 }

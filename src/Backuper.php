@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Itiden\Backup;
 
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
@@ -14,7 +13,6 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Enums\State;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
-use Itiden\Backup\Exceptions\ActionAlreadyInProgress;
 use Throwable;
 
 final class Backuper
@@ -22,15 +20,7 @@ final class Backuper
     public function __construct(
         private BackupRepository $repository,
         private StateManager $stateManager,
-    ) {
-    }
-
-    public function canBackup(): bool
-    {
-        $state = $this->stateManager->getState();
-
-        return !in_array(needle: $state, haystack: [State::BackupInProgress, State::RestoreInProgress]);
-    }
+    ) {}
 
     /**
      * Create a new backup.
@@ -39,11 +29,7 @@ final class Backuper
      */
     public function backup(): BackupDto
     {
-        $lock = Cache::lock(name: StateManager::LOCK);
-
-        if (!$lock->get() || !$this->canBackup()) {
-            throw ActionAlreadyInProgress::fromInvalidState($this->stateManager->getState());
-        }
+        $lock = $this->stateManager->getLock();
 
         try {
             $this->stateManager->setState(State::BackupInProgress);
