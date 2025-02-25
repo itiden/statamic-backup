@@ -27,3 +27,8 @@ level = "off"
 name = "naming/interface"
 level = "off"
 
+[[linter.rules]]
+# since we support php 8.2 we cannot use constant types
+name = "strictness/require-constant-type"
+level = "off"
+
