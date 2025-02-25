@@ -8,6 +8,7 @@ use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Support\Facades\Cache;
 use Itiden\Backup\Enums\State;
 use Itiden\Backup\Exceptions\ActionAlreadyInProgress;
@@ -23,8 +24,7 @@ final readonly class StateManager
     public function __construct(
         private Repository $cache,
         private Filesystem $filesystem,
-    ) {
-    }
+    ) {}
 
     public function getState(): State
     {
@@ -38,7 +38,7 @@ final readonly class StateManager
 
         if (
             !in_array($state, [State::BackupInProgress, State::RestoreInProgress]) &&
-                $this->cache->has(self::JOB_QUEUED_KEY)
+            $this->cache->has(self::JOB_QUEUED_KEY)
         ) {
             $state = State::Queued;
         }
@@ -71,13 +71,13 @@ final readonly class StateManager
         return $lock;
     }
 
-    public function dispatch(ShouldQueue $job)
+    public function dispatch(ShouldQueue $job): PendingDispatch
     {
         if ($this->cache->has(self::JOB_QUEUED_KEY)) {
             throw ActionAlreadyInProgress::fromInQueue();
         }
 
         $this->cache->put(self::JOB_QUEUED_KEY, true);
-        dispatch($job);
+        return dispatch($job);
     }
 }

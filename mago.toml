@@ -19,3 +19,11 @@ level = "off"
 name = "analysis/override-attribute"
 level = "off"
 
+[[linter.rules]]
+name = "naming/class"
+level = "off"
+
+[[linter.rules]]
+name = "naming/interface"
+level = "off"
+
