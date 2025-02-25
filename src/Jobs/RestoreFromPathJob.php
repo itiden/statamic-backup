@@ -21,7 +21,6 @@ final class RestoreFromPathJob implements ShouldQueue
      */
     public function __construct(
         private string $path,
-        private bool $deleteAfter,
     ) {
     }
 
@@ -34,9 +33,7 @@ final class RestoreFromPathJob implements ShouldQueue
 
         $cache->forget(StateManager::JOB_QUEUED_KEY);
 
-        if ($this->deleteAfter) {
-            File::delete($this->path);
-        }
+        File::delete($this->path);
     }
 
     public function failed(): void

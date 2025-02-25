@@ -50,7 +50,6 @@ describe('api:restore-from-upload', function (): void {
 
         $response = postJson(cp_route('api.itiden.backup.restore-from-path'), [
             'path' => $path,
-            'destroyAfterRestore' => true,
         ]);
 
         expect($response->status())->toBe(Response::HTTP_OK);
@@ -77,7 +76,6 @@ describe('api:restore-from-upload', function (): void {
 
         $response = postJson(cp_route('api.itiden.backup.restore-from-path'), [
             'path' => $emptyArchive,
-            'destroyAfterRestore' => true,
         ]);
 
         Event::assertDispatched(RestoreFailed::class);

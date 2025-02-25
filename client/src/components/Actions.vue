@@ -90,7 +90,6 @@ export default {
       this.$axios
         .post(cp_url("api/backups/restore-from-path"), {
           path: file.path,
-          destroyAfterRestore: true,
         })
         .then(({ data }) => {
           this.$toast.info(__(data.message));

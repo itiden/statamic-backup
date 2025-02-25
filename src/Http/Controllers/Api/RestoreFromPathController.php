@@ -15,12 +15,7 @@ final readonly class RestoreFromPathController
 {
     public function __invoke(RestoreFromPathRequest $request, StateManager $stateManager): JsonResponse
     {
-        $stateManager->dispatch(
-            new RestoreFromPathJob(
-                path: $request->validated('path'),
-                deleteAfter: $request->input('destroyAfterRestore', false),
-            ),
-        );
+        $stateManager->dispatch(new RestoreFromPathJob(path: $request->validated('path')));
 
         return response()->json(['message' => __('statamic-backup::backup.restore.started')]);
     }
