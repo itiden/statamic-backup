@@ -36,7 +36,7 @@ jobs:
         uses: orhun/git-cliff-action@v4
         id: generate_release_notes
         with:
-          args: -v --latest --strip header --gitup-repo "itiden/statamic-backup"
+          args: -v --latest --strip header --github-repo "itiden/statamic-backup"
           config: git-cliff-config.toml
 
       - name: Clean up release notes
