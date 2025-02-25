@@ -4,20 +4,22 @@ declare(strict_types=1);
 
 namespace Itiden\Backup;
 
-use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Support\Zipper;
 use Itiden\Backup\DataTransferObjects\BackupDto;
+use Itiden\Backup\Enums\State;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
+use Throwable;
 
 final class Backuper
 {
     public function __construct(
-        protected BackupRepository $repository,
+        private BackupRepository $repository,
+        private StateManager $stateManager,
     ) {
     }
 
@@ -28,7 +30,11 @@ final class Backuper
      */
     public function backup(): BackupDto
     {
+        $lock = $this->stateManager->getLock();
+
         try {
+            $this->stateManager->setState(State::BackupInProgress);
+
             $temp_zip_path = config('backup.temp_path') . '/temp.zip';
 
             $zipper = Zipper::open($temp_zip_path);
@@ -74,15 +80,21 @@ final class Backuper
 
             $this->enforceMaxBackups();
 
+            $this->stateManager->setState(State::BackupCompleted);
+
             return $backup;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             report($e);
 
-            $exception = new Exceptions\BackupFailed();
+            $exception = new Exceptions\BackupFailed(previous: $e);
 
             event(new BackupFailed($exception));
 
+            $this->stateManager->setState(State::BackupFailed);
+
             throw $exception;
+        } finally {
+            $lock->release();
         }
     }
 

@@ -6,8 +6,9 @@ return [
 
     'create' => 'Create Backup',
     'failed' => 'Failed to create backup on :date',
+    'no_backups' => 'There is no backups yet',
     'backup_started' => 'Starting backup...',
-    'created' => 'Backup :name created',
+    'success' => 'Backed up successfully',
 
     'upload' => [
         'label' => 'Upload Backup',

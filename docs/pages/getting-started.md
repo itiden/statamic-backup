@@ -6,6 +6,7 @@
 
 - [Statamic](https://statamic.com/) 5.x
 - [PHP ext-zip](https://www.php.net/manual/en/book.zip.php) (you probably have this installed by default)
+- [A cache driver that supports atomic locks](https://laravel.com/docs/11.x/cache#atomic-locks) (The default Laravel one works)
 
 Install by requiring the package with composer:
 

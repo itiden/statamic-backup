@@ -9,3 +9,13 @@ null_type_hint = "question"
 [[linter.rules]]
 name = "strictness/require-return-type"
 ignore_arrow_function = true
+
+[[linter.rules]]
+name = "analysis/undefined-function-or-method"
+allow_dynamic_static_calls = true
+level = "off"
+
+[[linter.rules]]
+name = "analysis/override-attribute"
+level = "off"
+

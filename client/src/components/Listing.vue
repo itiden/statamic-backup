@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div v-if="initializing" class="loading">
+    <div v-if="initializing || status === 'initializing'" class="loading">
       <loading-graphic />
     </div>
     <data-list
+      v-else-if="items.length"
       :visible-columns="columns"
       :columns="columns"
       :rows="items"
-      v-show="items.length"
     >
       <div
         class="card overflow-hidden p-0 relative"
@@ -35,18 +35,20 @@
           >
             <dropdown-list>
               <dropdown-item
-                v-if="canDownload"
+                v-if="canDownload.isPermitted"
+                :disabled="!canDownload.isPossible"
                 :text="__('statamic-backup::backup.download.label')"
                 :redirect="download_url(backup.timestamp)"
               />
-              <span v-if="canRestore">
+              <span v-if="canRestore.isPermitted && canRestore.isPossible">
                 <hr class="divider" />
                 <dropdown-item
+                  :disabled="!canRestore.isPossible"
                   :text="__('statamic-backup::backup.restore.label')"
                   @click="initiateRestore(backup.timestamp, backup.name)"
                 />
               </span>
-              <span v-if="canDestroy">
+              <span v-if="canDestroy.isPermitted && canDestroy.isPossible">
                 <hr class="divider" />
                 <dropdown-item
                   :text="__('statamic-backup::backup.destroy.label')"
@@ -59,6 +61,9 @@
         </data-list-table>
       </div>
     </data-list>
+    <div v-else>
+      <p class="text-center mt-16">{{ __("statamic-backup::backup.no_backups") }}</p>
+    </div>
 
     <confirmation-modal
       v-if="confirmingRestore"
@@ -87,8 +92,24 @@ export default {
   mixins: [Listing],
 
   mounted() {
-    this.$root.$on("onBackedup", this.request);
     this.$on("onDestroyed", this.request);
+  },
+  watch: {
+    status(newStatus, oldStatus) {
+      if (newStatus === oldStatus || oldStatus === 'initializing') return;
+
+      const completed = ["backup_completed", "restore_completed"];
+
+      if (!completed.includes(newStatus)) return;
+
+      this.request();
+
+      if (newStatus === "backup_completed") {
+        this.$toast.success(__(`statamic-backup::backup.success`));
+      } else if (newStatus === "restore_completed") {
+        this.$toast.success(__(`statamic-backup::backup.restore.success`));
+      }
+    }
   },
   data() {
     return {
@@ -98,26 +119,23 @@ export default {
       confirmingDestroy: false,
       activeTimestamp: null,
       activeName: null,
-      canDownload:
-        this.$store.state.statamic.config.user.super ??
-        this.$store.state.statamic.config.user.permissions.includes(
-          "download backups"
-        ),
-      canRestore:
-        this.$store.state.statamic.config.user.super ??
-        this.$store.state.statamic.config.user.permissions.includes(
-          "restore backups"
-        ),
-      canDestroy:
-        this.$store.state.statamic.config.user.super ??
-        this.$store.state.statamic.config.user.permissions.includes(
-          "delete backups"
-        ),
     };
   },
   computed: {
+    status() {
+      return this.$store.state['backup-provider'].status;
+    },
+    canDownload() {
+      return this.$store.getters['backup-provider/abilities'].download;
+    },
+    canRestore() {
+      return this.$store.getters['backup-provider/abilities'].restore;
+    },
+    canDestroy() {
+      return this.$store.getters['backup-provider/abilities'].destroy;
+    },
     showActions() {
-      return this.canDownload || this.canRestore || this.canDestroy;
+      return this.canDownload.isPermitted || this.canRestore.isPermitted || this.canDestroy.isPermitted;
     },
   },
   methods: {
@@ -142,11 +160,14 @@ export default {
     },
     restore() {
       this.confirmingRestore = false;
-      this.$toast.info(__('statamic-backup::backup.restore.started_name', {name:this.activeName}));
+
+      if (!this.canRestore.isPossible) return console.warn("Cannot restore backups.");
+
+      this.$store.dispatch('backup-provider/setStatus', 'restore_in_progress');
       this.$axios
         .post(this.restore_url(this.activeTimestamp))
         .then(({ data }) => {
-          this.$toast.success(__(data.message));
+          this.$toast.info(__(data.message));
           this.$emit("onRestored");
         })
         .catch((error) => {
@@ -163,6 +184,8 @@ export default {
         });
     },
     destroy() {
+      if (!this.canDestroy.isPossible) return console.warn("Cannot destroy backups.");
+
       this.confirmingDestroy = false;
       this.$axios
         .delete(this.destroy_url(this.activeTimestamp))

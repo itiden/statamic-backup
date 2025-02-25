@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Events\BackupRestored;
 
+use function Itiden\Backup\Tests\user;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\postJson;
 

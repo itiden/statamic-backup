@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Backuper;
+use Itiden\Backup\Enums\State;
+use Itiden\Backup\StateManager;
 use Itiden\Backup\Support\Zipper;
 
 describe('backuper', function (): void {
@@ -58,5 +60,13 @@ describe('backuper', function (): void {
                 ->all()
                 ->count())->toBe($i + 1);
         }
+    });
+
+    it('cannot backup while restoring', function (): void {
+        app(StateManager::class)->setState(State::RestoreInProgress);
+
+        expect(fn() => Backuper::backup())->toThrow(Exception::class);
+
+        app(StateManager::class)->setState(State::Idle);
     });
 })->group('backuper');

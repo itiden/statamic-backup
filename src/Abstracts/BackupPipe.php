@@ -17,10 +17,10 @@ abstract class BackupPipe
     /**
      * Run the restore process.
      *
-     * @param string $path The path to the root of the backup file.
-     * @param Closure(string $path):string $next The next pipe in the chain.
+     * @param string $restoringFromPath The path to the root of the backup file.
+     * @param Closure(string $restoringFromPath):string $next The next pipe in the chain.
      */
-    abstract public function restore(string $path, Closure $next): string;
+    abstract public function restore(string $restoringFromPath, Closure $next): string;
 
     /**
      * Run the backup process.

@@ -4,8 +4,8 @@
       <upload :files="files" />
 
       <button
-        v-if="canCreateBackups"
-        :disabled="loading"
+        v-if="canCreateBackups.isPermitted"
+        :disabled="loading || !canCreateBackups.isPossible"
         class="btn-primary"
         :class="{ 'btn-disabled': loading }"
         @click="backup()"
@@ -44,29 +44,29 @@ export default {
       files: [],
       confirming: false,
       loading: false,
-      canCreateBackups:
-        this.$store.state.statamic.config.user.super ??
-        this.$store.state.statamic.config.user.permissions.includes(
-          "create backups"
-        ),
-      canUpload:
-        this.$store.state.statamic.config.user.super ??
-        this.$store.state.statamic.config.user.permissions.includes(
-          "restore backups"
-        ),
     };
+  },
+  computed: {
+    status() {
+      return this.$store.state['backup-provider'].status;
+    },
+    canCreateBackups() {
+      return this.$store.getters['backup-provider/abilities'].backup;
+    },
+    canUpload() {
+      return this.$store.getters['backup-provider/abilities'].restore;
+    },
   },
   methods: {
     backup() {
       this.loading = true;
       this.confirming = false;
 
-      this.$toast.info(__("statamic-backup::backup.backup_started"));
+      this.$store.dispatch('backup-provider/setStatus', 'backup_in_progress');
       this.$axios
         .post(cp_url("api/backups"), { comment: this.value })
         .then(({ data }) => {
-          this.$toast.success(__(data.message));
-          this.$root.$emit("onBackedup");
+          this.$toast.info(__(data.message));
         })
         .catch((error) => {
           let message = "Something went wrong.";
@@ -85,14 +85,15 @@ export default {
       this.confirming = false;
       file.status = "restoring";
 
-      this.$toast.info(__("statamic-backup::backup.restore.started"));
+      this.$store.dispatch('backup-provider/setStatus','restore_in_progress');
+
       this.$axios
         .post(cp_url("api/backups/restore-from-path"), {
           path: file.path,
           destroyAfterRestore: true,
         })
         .then(({ data }) => {
-          this.$toast.success(__(data.message));
+          this.$toast.info(__(data.message));
         })
         .catch((error) => {
           let message = __("statamic-backup::backup.restore.failed");

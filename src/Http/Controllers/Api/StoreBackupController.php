@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Http\Controllers\Api;
 
+use Illuminate\Container\Attributes\Authenticated;
+use Itiden\Backup\Jobs\BackupJob;
 use Illuminate\Http\JsonResponse;
-use Itiden\Backup\Facades\Backuper;
+use Itiden\Backup\StateManager;
+use Statamic\Contracts\Auth\User;
 
 final readonly class StoreBackupController
 {
-    public function __invoke(): JsonResponse
+    public function __invoke(StateManager $stateManager, #[Authenticated] User $user): JsonResponse
     {
-        $backup = Backuper::backup();
+        $stateManager->dispatch(new BackupJob($user));
 
-        return response()->json(['message' => __('statamic-backup::backup.created', ['name' => $backup->name])]);
+        return response()->json(['message' => __('statamic-backup::backup.backup_started')]);
     }
 }

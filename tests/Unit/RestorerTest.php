@@ -7,6 +7,8 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Exceptions\RestoreFailed;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Facades\Restorer;
+use Itiden\Backup\Enums\State;
+use Itiden\Backup\StateManager;
 
 describe('restorer', function (): void {
     it('can restore from timestamp', function (): void {
@@ -32,4 +34,14 @@ describe('restorer', function (): void {
             ),
         );
     })->throws(RestoreFailed::class);
+
+    it('cannot restore while a backup is in progress', function (): void {
+        $backup = Backuper::backup();
+
+        app(StateManager::class)->setState(State::BackupInProgress);
+
+        expect(fn() => Restorer::restore($backup))->toThrow(Exception::class);
+
+        app(StateManager::class)->setState(State::Idle);
+    });
 })->group('restorer');

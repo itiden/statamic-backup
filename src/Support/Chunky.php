@@ -72,15 +72,16 @@ final class Chunky
         $fullPath = $this->path($path . '/' . $filename);
         $file = fopen($fullPath, 'w');
         // create the complete file
-        if ($file !== false) {
-            for ($i = 1; $i <= $totalChunks; $i++) {
-                fwrite($file, file_get_contents($fullPath . '.part' . $i));
-                info('writing chunk ' . $i);
-            }
-            fclose($file);
-        } else {
+
+        if (!$file) {
             throw new \Exception('cannot create the destination file');
         }
+
+        for ($i = 1; $i <= $totalChunks; $i++) {
+            fwrite($file, file_get_contents($fullPath . '.part' . $i));
+            info('writing chunk ' . $i);
+        }
+        fclose($file);
 
         // move the file to the backups folder
         $this->disk->move($path . '/' . $filename, 'backups/' . $filename);

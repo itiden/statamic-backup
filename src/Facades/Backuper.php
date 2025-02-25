@@ -6,12 +6,9 @@ namespace Itiden\Backup\Facades;
 
 use Illuminate\Support\Facades\Facade;
 use Itiden\Backup\Backuper as BackuperService;
-use Itiden\Backup\DataTransferObjects\BackupDto;
 
 /**
- * @method static BackupDto backup()
- *
- * @see \Itiden\Backup\Backuper
+ * @mixin \Itiden\Backup\Backuper
  */
 final class Backuper extends Facade
 {

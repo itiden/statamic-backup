@@ -12,6 +12,7 @@ use Itiden\Backup\Support\Zipper;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\postJson;
+use function Itiden\Backup\Tests\user;
 
 describe('api:restore-from-upload', function (): void {
     it('can restore from path', function (): void {

@@ -10,6 +10,8 @@ use Itiden\Backup\DataTransferObjects\UserActionDto;
 use Itiden\Backup\Pipes\Users as UserPipe;
 use Statamic\Yaml\Yaml;
 
+use function Itiden\Backup\Tests\user;
+
 describe('metadata', function (): void {
     it('can generate a metadata file for a backup', function (): void {
         $backup = Backuper::backup();

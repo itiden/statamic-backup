@@ -11,15 +11,18 @@ use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
+use Itiden\Backup\Enums\State;
 use Itiden\Backup\Events\BackupRestored;
 use Itiden\Backup\Events\RestoreFailed;
 use Itiden\Backup\Support\Zipper;
 use RuntimeException;
+use Throwable;
 
 final class Restorer
 {
     public function __construct(
-        protected BackupRepository $repository,
+        private BackupRepository $repository,
+        private StateManager $stateManager,
     ) {
     }
 
@@ -46,7 +49,11 @@ final class Restorer
      */
     public function restore(BackupDto $backup): void
     {
+        $lock = $this->stateManager->getLock();
+
         try {
+            $this->stateManager->setState(State::RestoreInProgress);
+
             $path = $this->getLocalBackupPath($backup);
 
             if (!File::exists($path)) {
@@ -82,14 +89,20 @@ final class Restorer
             Artisan::call('statamic:stache:clear', [
                 '--quiet' => true,
             ]);
-        } catch (Exception $e) {
+
+            $this->stateManager->setState(State::RestoreCompleted);
+        } catch (Throwable $e) {
             report($e);
 
             $exception = new Exceptions\RestoreFailed($backup, previous: $e);
 
+            $this->stateManager->setState(State::RestoreFailed);
+
             event(new RestoreFailed($exception));
 
             throw $exception;
+        } finally {
+            $lock->release();
         }
     }
 

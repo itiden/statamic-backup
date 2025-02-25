@@ -11,6 +11,7 @@ use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Facades\Restorer;
 use Itiden\Backup\Tests\SkippingPipe;
 
+use function Itiden\Backup\Tests\user;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\postJson;
 use function Statamic\trans;
@@ -41,9 +42,7 @@ describe('api:create', function (): void {
 
         $responseJson = postJson(cp_route('api.itiden.backup.store'));
 
-        $responseJson->assertJsonStructure([
-            'message',
-        ]);
+        $responseJson->assertExactJson(['message' => __('statamic-backup::backup.backup_started')]);
 
         expect(app(BackupRepository::class)
             ->all()

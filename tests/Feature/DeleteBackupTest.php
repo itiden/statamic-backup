@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Facades\Backuper;
 
+use function Itiden\Backup\Tests\user;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\deleteJson;
 
