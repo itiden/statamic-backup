@@ -15,7 +15,7 @@ describe('pipes', function (): void {
     test('backup pipes can pass zipper instance', function (string $pipe): void {
         $temp_zip = config('backup.temp_path') . '/backup.zip';
 
-        $zipper = Zipper::open($temp_zip);
+        $zipper = Zipper::write($temp_zip);
         expect(app()
             ->make($pipe)
             ->backup($zipper, fn(Zipper $z): Zipper => $z))->toBeInstanceOf(Zipper::class);
@@ -58,7 +58,7 @@ describe('pipes', function (): void {
 
         File::deleteDirectory(Stache::store('users')->directory());
 
-        $zipper = Zipper::open(config('backup.temp_path') . '/backup.zip');
+        $zipper = Zipper::write(config('backup.temp_path') . '/backup.zip');
 
         $pipe->backup(zip: $zipper, next: $callable);
 
@@ -79,7 +79,7 @@ describe('pipes', function (): void {
         File::copyDirectory(config('backup.content_path'), config('backup.content_path') . '_backup');
         File::deleteDirectory(config('backup.content_path'));
 
-        $zipper = Zipper::open(config('backup.temp_path') . '/backup.zip');
+        $zipper = Zipper::write(config('backup.temp_path') . '/backup.zip');
 
         $pipe->backup(zip: $zipper, next: $callable);
 

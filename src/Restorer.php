@@ -142,7 +142,7 @@ final class Restorer
     {
         $target = config('backup.temp_path') . DIRECTORY_SEPARATOR . 'unzipping';
 
-        Zipper::open($path, true)
+        Zipper::read($path)
             ->extractTo($target, config('backup.password'))
             ->close();
 

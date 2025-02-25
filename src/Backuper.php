@@ -37,7 +37,7 @@ final class Backuper
 
             $temp_zip_path = config('backup.temp_path') . '/temp.zip';
 
-            $zipper = Zipper::open($temp_zip_path);
+            $zipper = Zipper::write($temp_zip_path);
 
             Pipeline::via('backup')
                 ->send($zipper)

@@ -21,7 +21,7 @@ describe('zipper', function (): void {
     it('can zip file from string', function (): void {
         $target = storage_path('test.zip');
 
-        Zipper::open($target)
+        Zipper::write($target)
             ->addFromString('test.txt', 'test')
             ->close();
 
@@ -33,7 +33,7 @@ describe('zipper', function (): void {
     it('can zip file from path', function (): void {
         $target = storage_path('test.zip');
 
-        Zipper::open($target)
+        Zipper::write($target)
             ->addFile(__FILE__)
             ->close();
 
@@ -45,7 +45,7 @@ describe('zipper', function (): void {
     it('can zip directory', function (): void {
         $path = storage_path('test.zip');
 
-        Zipper::open($path)->addDirectory(config('backup.content_path'), 'example');
+        Zipper::write($path)->addDirectory(config('backup.content_path'), 'example');
 
         expect($path)->toBeString();
         expect(file_exists($path))->toBeTrue();
@@ -54,13 +54,13 @@ describe('zipper', function (): void {
     it('can unzip file', function (): void {
         $target = storage_path('test.zip');
 
-        Zipper::open($target)
+        Zipper::write($target)
             ->addFromString('test.txt', 'test')
             ->close();
 
         $unzip = storage_path('unzip');
 
-        Zipper::open($target, true)
+        Zipper::read($target)
             ->extractTo($unzip)
             ->close();
 
@@ -70,10 +70,12 @@ describe('zipper', function (): void {
     it('can unzip file to directory', function (): void {
         $target = storage_path('test.zip');
 
-        Zipper::open($target)->addFromString('test.txt', 'test');
+        Zipper::write($target)
+            ->addFromString('test.txt', 'test')
+            ->close();
 
         $unzip = storage_path('test');
-        Zipper::open($target, true)
+        Zipper::read($target)
             ->extractTo($unzip)
             ->close();
 
@@ -88,10 +90,12 @@ describe('zipper', function (): void {
 
         $target = storage_path('test.zip');
 
-        Zipper::open($target)->addDirectory(config('backup.content_path'), 'example');
+        Zipper::write($target)
+            ->addDirectory(config('backup.content_path'), 'example')
+            ->close();
 
         $unzip = storage_path('unzipdir');
-        Zipper::open($target, true)
+        Zipper::read($target)
             ->extractTo($unzip)
             ->close();
 
@@ -108,7 +112,7 @@ describe('zipper', function (): void {
         // @mago-ignore security/no-literal-password
         $password = 'password';
 
-        Zipper::open($target)
+        Zipper::write($target)
             ->addFromString('test.txt', 'test')
             ->encrypt($password)
             ->close();
@@ -118,7 +122,7 @@ describe('zipper', function (): void {
 
         $unzip = storage_path('unzip');
 
-        Zipper::open($target, true)
+        Zipper::read($target)
             ->extractTo($unzip, $password)
             ->close();
 
@@ -129,12 +133,12 @@ describe('zipper', function (): void {
     it('can write meta to zip', function (): void {
         $target = storage_path('test.zip');
 
-        Zipper::open($target)
+        Zipper::write($target)
             ->addFromString('test.txt', 'test')
             ->addMeta('test', 'test')
             ->close();
 
-        $zip = Zipper::open($target, true);
+        $zip = Zipper::read($target);
 
         expect($zip->getMeta())->toHaveKey('test');
         expect($zip->getMeta())

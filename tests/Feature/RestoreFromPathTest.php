@@ -64,7 +64,7 @@ describe('api:restore-from-upload', function (): void {
         $emptyArchive = storage_path(config('backup.temp_path') . '/empty.zip');
 
         // The zip file cant be empty, but when extracting it can if the password is wrong.
-        Zipper::open($emptyArchive)
+        Zipper::write($emptyArchive)
             ->addFromString('empty.txt', 'empty')
             ->encrypt('not-the-password-we-decrypt-with')
             ->close();

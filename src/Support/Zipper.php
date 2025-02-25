@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\File;
 use Symfony\Component\Finder\SplFileInfo;
 use ZipArchive;
 
+// @mago-ignore maintainability/too-many-methods
 final class Zipper
 {
     private ZipArchive $zip;
@@ -26,11 +27,14 @@ final class Zipper
     /**
      * Create a new instance of the Zipper.
      */
-    public static function open(string $path, bool $readOnly = false): self
+    public static function write(string $path): self
     {
-        $flags = $readOnly ? ZipArchive::RDONLY : (ZipArchive::CREATE | ZipArchive::OVERWRITE);
+        return new static($path, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+    }
 
-        return new static($path, $flags);
+    public static function read(string $path): self
+    {
+        return new static($path, ZipArchive::RDONLY);
     }
 
     /**
@@ -115,12 +119,7 @@ final class Zipper
      */
     public function addMeta(string $key, array|string $meta): self
     {
-        if (is_array($meta)) {
-            $current = $this->meta[$key] ?? [];
-            $this->meta[$key] = array_merge($current, $meta);
-        } else {
-            $this->meta[$key] = $meta;
-        }
+        $this->meta[$key] = is_array($meta) ? array_merge($this->meta[$key] ?? [], $meta) : $meta;
 
         $this->zip->setArchiveComment(comment: json_encode($this->meta));
 

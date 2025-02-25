@@ -24,7 +24,8 @@ final readonly class StateManager
     public function __construct(
         private Repository $cache,
         private Filesystem $filesystem,
-    ) {}
+    ) {
+    }
 
     public function getState(): State
     {
@@ -38,7 +39,7 @@ final readonly class StateManager
 
         if (
             !in_array($state, [State::BackupInProgress, State::RestoreInProgress]) &&
-            $this->cache->has(self::JOB_QUEUED_KEY)
+                $this->cache->has(self::JOB_QUEUED_KEY)
         ) {
             $state = State::Queued;
         }

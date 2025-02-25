@@ -27,7 +27,7 @@ describe('backuper', function (): void {
         $backup = Backuper::backup();
 
         $unzipped = config('backup.temp_path') . '/unzipped';
-        Zipper::open(Storage::disk(config('backup.destination.disk'))->path($backup->path), true)->extractTo(
+        Zipper::read(Storage::disk(config('backup.destination.disk'))->path($backup->path))->extractTo(
             $unzipped,
             config('backup.password'),
         );
