@@ -1,5 +1,9 @@
 # Backup
 
+[![Latest Version](https://img.shields.io/github/release/itiden/statamic-backup.svg)](https://github.com/itiden/statamic-backup/releases)
+[![Total Downloads](https://img.shields.io/packagist/dt/itiden/statamic-backup.svg)](https://packagist.org/packages/itiden/statamic-backup)
+![Backup tests](https://github.com/itiden/statamic-backup/workflows/Test/badge.svg)
+
 Backup is an extensible and powerful backup tool for statamic sites, it enables you to create, manage and schedule backups of your site with ease in the control panel.
 
 ![image](https://github.com/user-attachments/assets/3dfe3930-8997-4e73-a270-342585c75fee)
