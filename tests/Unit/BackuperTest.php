@@ -11,6 +11,7 @@ use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Enums\State;
 use Itiden\Backup\StateManager;
 use Itiden\Backup\Support\Zipper;
+use Statamic\Facades\Stache;
 
 describe('backuper', function (): void {
     it('can backup', function (): void {
@@ -24,15 +25,17 @@ describe('backuper', function (): void {
     });
 
     it('backups correct files', function (): void {
+        expect(File::allFiles(Stache::store('entries')->directory()))->toHaveCount(1);
+
         $backup = Backuper::backup();
 
         $unzipped = config('backup.temp_path') . '/unzipped';
-        Zipper::read(Storage::disk(config('backup.destination.disk'))->path($backup->path))->extractTo(
-            $unzipped,
-            config('backup.password'),
-        );
+        Zipper::read(Storage::disk(config('backup.destination.disk'))->path($backup->path))
+            ->extractTo($unzipped, config('backup.password'))
+            ->close();
 
-        expect(File::allFiles($unzipped)[0]->getRelativePathname())->toEqual('content/collections/pages/homepage.yaml');
+        expect(File::allFiles($unzipped))->toHaveCount(4);
+        File::deleteDirectory($unzipped);
     });
 
     it('can enforce max backups', function (): void {

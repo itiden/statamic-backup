@@ -70,6 +70,7 @@ return [
      * All pipes are expected to be instances of Itiden\Backup\Abtracts\BackupPipe
      */
     'pipeline' => [
+        Itiden\Backup\Pipes\ContentStachePipe::class,
         Itiden\Backup\Pipes\Content::class,
         Itiden\Backup\Pipes\Assets::class,
         Itiden\Backup\Pipes\Users::class,
