@@ -18,7 +18,6 @@ final readonly class ComposerBootstrapper
         $app['config']->set('statamic.users.repository', 'file');
         $app['config']->set('auth.providers.users.driver', 'statamic');
 
-
         $packagePath = realpath(__DIR__ . '/../../../');
 
         $applicationPath = $app->basePath();
@@ -39,7 +38,7 @@ final readonly class ComposerBootstrapper
         } else {
             throw new \RuntimeException('composer.json or composer.lock not found in the addon directory.');
         }
-      
+
         static::buildStatamicScripts($app);
 
         if (!file_exists($app->basePath('/users/test@example.com.yaml'))) {
@@ -47,9 +46,10 @@ final readonly class ComposerBootstrapper
         }
     }
 
-    private static function buildStatamicScripts(Application $app) {
+    private static function buildStatamicScripts(Application $app)
+    {
         // Path to the directory where you want to run the npm command
-        $directory =  $app->basePath('/vendor/statamic/cms');
+        $directory = $app->basePath('/vendor/statamic/cms');
         $buildPath = $directory . '/resources/dist';
 
         if (file_exists($buildPath . '/build/manifest.json')) {
@@ -71,9 +71,9 @@ final readonly class ComposerBootstrapper
 
         // Check if command was successful
         if ($return_var === 0) {
-            echo "Build successful!";
+            echo 'Build successful!';
         } else {
-            echo "Build failed! Errors: " . implode("\n", $output);
+            echo 'Build failed! Errors: ' . implode("\n", $output);
         }
 
         static::copyStatamicScripts($buildPath, $app);
@@ -82,11 +82,13 @@ final readonly class ComposerBootstrapper
         chdir($original_directory);
     }
 
-    private static function copyStatamicScripts(string $statamicBuildDir, Application $app) {
+    private static function copyStatamicScripts(string $statamicBuildDir, Application $app)
+    {
         static::copyDirectory($statamicBuildDir, $app->basePath('public/vendor/statamic/cp/'));
     }
 
-    private static function copyDirectory($source, $destination) {
+    private static function copyDirectory($source, $destination)
+    {
         if (!is_dir($destination)) {
             mkdir($destination, 0755, true);
         }
