@@ -1,4 +1,5 @@
-providers: []
+providers:
+  - Itiden\Backup\ServiceProvider
 
 migrations:
   - workbench/database/migrations
@@ -6,7 +7,7 @@ migrations:
 seeders: []
 
 bootstrappers:
- - 'Itiden\Backup\Tests\Testbench\Bootstrappers\ComposerBootstrapper'
+ - 'Itiden\Backup\Tests\Testbench\Bootstrappers\StatamicBootstrapper'
 
 workbench:
   start: '/cp'

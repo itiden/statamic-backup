@@ -7,13 +7,15 @@ namespace Itiden\Backup\Tests\Testbench\Bootstrappers;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\File;
 
-final readonly class ComposerBootstrapper
+final readonly class StatamicBootstrapper
 {
     /**
      * Perform any additional setup after loading the configuration.
      */
     public function bootstrap(Application $app): void
     {
+        $app['config']->set('statamic.editions.pro', true);
+
         // Configure laravel to use filebased users from statamic
         $app['config']->set('statamic.users.repository', 'file');
         $app['config']->set('auth.providers.users.driver', 'statamic');
@@ -46,7 +48,7 @@ final readonly class ComposerBootstrapper
         }
     }
 
-    private static function buildStatamicScripts(Application $app)
+    private static function buildStatamicScripts(Application $app): void
     {
         // Path to the directory where you want to run the npm command
         $directory = $app->basePath('/vendor/statamic/cms');
@@ -82,15 +84,15 @@ final readonly class ComposerBootstrapper
         chdir($original_directory);
     }
 
-    private static function copyStatamicScripts(string $statamicBuildDir, Application $app)
+    private static function copyStatamicScripts(string $statamicBuildDir, Application $app): void
     {
         static::copyDirectory($statamicBuildDir, $app->basePath('public/vendor/statamic/cp/'));
     }
 
-    private static function copyDirectory($source, $destination)
+    private static function copyDirectory($source, $destination): void
     {
         if (!is_dir($destination)) {
-            mkdir($destination, 0755, true);
+            mkdir($destination, 00755, true);
         }
         $files = scandir($source);
         foreach ($files as $file) {
