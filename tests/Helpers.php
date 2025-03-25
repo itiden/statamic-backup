@@ -71,7 +71,7 @@ function user(): StatamicUser
 
     return User::make()
         ->email('test@example.com')
-        ->set('password', 'password')
+        ->password('password')
         ->set('roles', ['user'])
         ->save();
 }
