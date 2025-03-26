@@ -2,9 +2,7 @@
 
 return [
     /**
-     * The stache stores that should be backed up
-     *
-     * This is used by the stache content backup pipe
+     * The stache stores that should be backed up by the ContentStachePipe
      */
     'stache_stores' => [
         // stores configurations
@@ -84,7 +82,7 @@ return [
      */
     'pipeline' => [
         Itiden\Backup\Pipes\ContentStachePipe::class,
-        Itiden\Backup\Pipes\Content::class,
+        // Itiden\Backup\Pipes\Content::class,
         Itiden\Backup\Pipes\Assets::class,
         Itiden\Backup\Pipes\Users::class,
     ],

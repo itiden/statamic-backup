@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Support\Zipper;
 
+use function Itiden\Backup\Tests\fixtures_path;
+
 describe('zipper', function (): void {
     it('can create instance', function (): void {
         $zip = new Zipper(storage_path('test.zip'));
@@ -45,7 +47,7 @@ describe('zipper', function (): void {
     it('can zip directory', function (): void {
         $path = storage_path('test.zip');
 
-        Zipper::write($path)->addDirectory(config('backup.content_path'), 'example');
+        Zipper::write($path)->addDirectory(fixtures_path('content/collections'), 'example');
 
         expect($path)->toBeString();
         expect(file_exists($path))->toBeTrue();
@@ -84,14 +86,14 @@ describe('zipper', function (): void {
     });
 
     it('can unzip directory', function (): void {
-        $files = collect(File::allFiles(config('backup.content_path')))->map(
+        $files = collect(File::allFiles(fixtures_path('content/collections')))->map(
             fn(SplFileInfo $file): string => $file->getPathname(),
         );
 
         $target = storage_path('test.zip');
 
         Zipper::write($target)
-            ->addDirectory(config('backup.content_path'), 'example')
+            ->addDirectory(fixtures_path('content/collections'), 'example')
             ->close();
 
         $unzip = storage_path('unzipdir');

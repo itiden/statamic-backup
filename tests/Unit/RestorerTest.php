@@ -10,17 +10,19 @@ use Itiden\Backup\Facades\Restorer;
 use Itiden\Backup\Enums\State;
 use Itiden\Backup\StateManager;
 
+use function Itiden\Backup\Tests\fixtures_path;
+
 describe('restorer', function (): void {
     it('can restore from timestamp', function (): void {
         $backup = Backuper::backup();
 
-        File::cleanDirectory(config('backup.content_path'));
+        File::cleanDirectory(fixtures_path('content/collections'));
 
-        expect(File::isEmptyDirectory(config('backup.content_path')))->toBeTrue();
+        expect(File::isEmptyDirectory(fixtures_path('content/collections')))->toBeTrue();
 
         Restorer::restoreFromTimestamp($backup->timestamp);
 
-        expect(File::isEmptyDirectory(config('backup.content_path')))->toBeFalse();
+        expect(File::isEmptyDirectory(fixtures_path('content/collections')))->toBeFalse();
     });
 
     it('throws an exception if the backup path does not exist', function (): void {

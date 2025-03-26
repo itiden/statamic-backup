@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Events\BackupRestored;
 
+use function Itiden\Backup\Tests\fixtures_path;
 use function Itiden\Backup\Tests\user;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\postJson;
@@ -81,13 +82,13 @@ describe('api:restore', function (): void {
     it('will not restore from command if you say no', function (): void {
         $backup = Backuper::backup();
 
-        File::cleanDirectory(config('backup.content_path'));
+        File::cleanDirectory(fixtures_path('content/collections'));
 
         $this
             ->artisan('statamic:backup:restore', ['--path' => Storage::path($backup->path)])
             ->expectsConfirmation('Are you sure you want to restore your content?', 'no');
 
-        expect(File::isEmptyDirectory(config('backup.content_path')))->toBeTrue();
+        expect(File::isEmptyDirectory(fixtures_path('content/collections')))->toBeTrue();
 
         $this
             ->artisan('statamic:backup:restore', ['--path' => Storage::path($backup->path), '--force' => true])
@@ -101,7 +102,7 @@ describe('api:restore', function (): void {
             ->artisan('statamic:backup:restore', ['--path' => Storage::path($backup->path), '--force' => true])
             ->assertExitCode(0);
 
-        expect(File::isEmptyDirectory(config('backup.content_path')))->toBeFalse();
+        expect(File::isEmptyDirectory(fixtures_path('content')))->toBeFalse();
     });
 
     it('will add an restore entry to metadata', function (): void {

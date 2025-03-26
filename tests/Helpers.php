@@ -10,6 +10,8 @@ use Statamic\Auth\User as StatamicUser;
 use Statamic\Facades\Role;
 use Statamic\Facades\User;
 
+use function Illuminate\Filesystem\join_paths;
+
 /**
  * Split a file into chunks
  *
@@ -74,4 +76,9 @@ function user(): StatamicUser
         ->set('password', 'password')
         ->set('roles', ['user'])
         ->save();
+}
+
+function fixtures_path(string $path): string
+{
+    return join_paths(__DIR__, '__fixtures__', $path);
 }

@@ -26,7 +26,7 @@ describe('backuper', function (): void {
     });
 
     it('backups correct files', function (): void {
-        expect(File::allFiles(Stache::store('entries')->directory()))->toHaveCount(1);
+        expect(File::allFiles(Stache::store('entries')->directory()))->toHaveCount(2); // 1 entry, 1 collection
 
         $backup = Backuper::backup();
 
@@ -35,7 +35,16 @@ describe('backuper', function (): void {
             ->extractTo($unzipped, config('backup.password'))
             ->close();
 
-        expect(File::allFiles($unzipped))->toHaveCount(4);
+        $paths = collect(File::allFiles($unzipped))->map(fn($file) => $file->getRelativePathname())->toArray();
+
+        expect($paths)->toEqualCanonicalizing([
+            'stache-content::collections/pages.yaml',
+            'stache-content::collections/pages/homepage.md',
+            'stache-content::entries/pages.yaml',
+            'stache-content::entries/pages/homepage.md',
+            'users/test@example.com.yaml',
+        ]);
+
         File::deleteDirectory($unzipped);
     });
 
