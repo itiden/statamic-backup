@@ -83,7 +83,7 @@ describe('pipes', function (): void {
         expect($zipper->getMeta())->toHaveKey(ContentStachePipe::class);
         expect($zipper->getMeta()[ContentStachePipe::class])->toHaveKey(
             'skipped',
-            'No content paths found, is the Stache configured correctly?',
+            'No stores found to backup, is the Stache configured correctly?',
         );
 
         $zipper->close();

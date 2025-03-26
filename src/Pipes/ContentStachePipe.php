@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Itiden\Backup\Pipes;
 
 use Closure;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Abstracts\BackupPipe;
 use Itiden\Backup\Support\Zipper;
@@ -29,10 +30,7 @@ final class ContentStachePipe extends BackupPipe
             ->each(function (Store $store) use ($restoringFromPath): void {
                 File::cleanDirectory($store->directory());
 
-                File::copyDirectory(
-                    join_paths($restoringFromPath, static::prefixer($store)),
-                    $store->directory(),
-                );
+                File::copyDirectory(join_paths($restoringFromPath, static::prefixer($store)), $store->directory());
             });
 
         return $next($restoringFromPath);
@@ -40,21 +38,24 @@ final class ContentStachePipe extends BackupPipe
 
     public function backup(Zipper $zip, Closure $next): Zipper
     {
-        $stores = collect(Stache::stores())
+        return collect(Stache::stores())
             ->filter(static::shouldBackupStore(...))
-            ->filter(static::storeHasSafeDirectory(...));
+            ->filter(static::storeHasSafeDirectory(...))
+            ->whenNotEmpty(
+                function (Collection $stores) use ($zip, $next): Zipper {
+                    $stores->each(fn(Store $store) => $zip->addDirectory(
+                        path: realpath($store->directory()),
+                        prefix: static::prefixer($store),
+                    ));
 
-        if ($stores->isEmpty()) {
-            return $this->skip(
-                reason: 'No content paths found, is the Stache configured correctly?',
-                next: $next,
-                zip: $zip,
+                    return $next($zip);
+                },
+                default: fn() => $this->skip(
+                    reason: 'No stores found to backup, is the Stache configured correctly?',
+                    next: $next,
+                    zip: $zip,
+                ),
             );
-        }
-
-        $stores->each(fn(Store $store) => $zip->addDirectory(realpath($store->directory()), static::prefixer($store)));
-
-        return $next($zip);
     }
 
     private static function prefixer(Store $store): string

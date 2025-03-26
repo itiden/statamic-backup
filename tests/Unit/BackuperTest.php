@@ -12,6 +12,7 @@ use Itiden\Backup\Enums\State;
 use Itiden\Backup\StateManager;
 use Itiden\Backup\Support\Zipper;
 use Statamic\Facades\Stache;
+use Symfony\Component\Finder\SplFileInfo;
 
 describe('backuper', function (): void {
     it('can backup', function (): void {
@@ -35,7 +36,9 @@ describe('backuper', function (): void {
             ->extractTo($unzipped, config('backup.password'))
             ->close();
 
-        $paths = collect(File::allFiles($unzipped))->map(fn($file) => $file->getRelativePathname())->toArray();
+        $paths = collect(File::allFiles($unzipped))
+            ->map(fn(SplFileInfo $file) => $file->getRelativePathname())
+            ->toArray();
 
         expect($paths)->toEqualCanonicalizing([
             'stache-content::collections/pages.yaml',
