@@ -25,17 +25,17 @@ describe('chunky', function (): void {
 
     it('can assemble file', function (): void {
         $chunks = chunk_file(
-            __DIR__ . '/../__fixtures__/content/collections/pages/homepage.yaml',
+            __DIR__ . '/../__fixtures__/content/collections/pages/homepage.md',
             config('backup.temp_path') . '/chunks/',
             10,
         );
 
-        $totalSize = File::size(__DIR__ . '/../__fixtures__/content/collections/pages/homepage.yaml');
+        $totalSize = File::size(__DIR__ . '/../__fixtures__/content/collections/pages/homepage.md');
 
         $dtos = $chunks->map(
             fn(string $chunk, int $index): ChunkyUploadDto => new ChunkyUploadDto(
                 path: 'dir/test',
-                filename: 'homepage.yaml',
+                filename: 'homepage.md',
                 totalChunks: $chunks->count(),
                 currentChunk: $index + 1,
                 totalSize: $totalSize,
@@ -50,10 +50,10 @@ describe('chunky', function (): void {
         expect($responses
             ->last()
             ->getData(true))->toHaveKey('file');
-        expect(Chunky::path() . '/backups/homepage.yaml')->toBeFile();
+        expect(Chunky::path() . '/backups/homepage.md')->toBeFile();
 
-        expect(File::get(Chunky::path() . '/backups/homepage.yaml'))->toBe(File::get(
-            __DIR__ . '/../__fixtures__/content/collections/pages/homepage.yaml',
+        expect(File::get(Chunky::path() . '/backups/homepage.md'))->toBe(File::get(
+            __DIR__ . '/../__fixtures__/content/collections/pages/homepage.md',
         ));
 
         File::deleteDirectory(Chunky::path());

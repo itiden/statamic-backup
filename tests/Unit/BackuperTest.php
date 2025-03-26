@@ -15,6 +15,7 @@ use Statamic\Facades\Stache;
 
 describe('backuper', function (): void {
     it('can backup', function (): void {
+        $this->withoutExceptionHandling();
         $backup = Backuper::backup();
 
         expect($backup)->toBeInstanceOf(BackupDto::class);

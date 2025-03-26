@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Pipes\Assets;
 use Itiden\Backup\Pipes\Content;
+use Itiden\Backup\Pipes\ContentStachePipe;
 use Itiden\Backup\Pipes\Users;
 use Itiden\Backup\Support\Zipper;
 use Statamic\Facades\Stache;
@@ -69,7 +70,6 @@ describe('pipes', function (): void {
     });
 
     test('can skip a pipe with content', function (): void {
-        /** @var Users::class $pipe */
         $pipe = app()->make(Content::class);
 
         $callable = function (Zipper $z): Zipper {
@@ -93,5 +93,27 @@ describe('pipes', function (): void {
 
         File::copyDirectory(config('backup.content_path') . '_backup', config('backup.content_path'));
         File::deleteDirectory(config('backup.content_path') . '_backup');
+    });
+
+    test('can skip a pipe with stache content', function (): void {
+        $pipe = app()->make(ContentStachePipe::class);
+
+        $callable = function (Zipper $z): Zipper {
+            return $z;
+        };
+
+        config()->set('backup.stache_stores', ['non-existing-store']);
+
+        $zipper = Zipper::write(config('backup.temp_path') . '/backup.zip');
+
+        $pipe->backup(zip: $zipper, next: $callable);
+
+        expect($zipper->getMeta())->toHaveKey(ContentStachePipe::class);
+        expect($zipper->getMeta()[ContentStachePipe::class])->toHaveKey(
+            'skipped',
+            'No content paths found, is the Stache configured correctly?',
+        );
+
+        $zipper->close();
     });
 })->group('pipes');

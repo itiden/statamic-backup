@@ -18,6 +18,8 @@
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="DB_CONNECTION" value="testing"/>
+        <env name="CACHE_STORE" value="array"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="APP_ENV" value="testing"/>
         <env name="APP_KEY" value="base64:2fl+Ktvkfl+Fuz4Qp/A75G2RTiWVA/ZoKZvp6fiiM10="/>
   </php>

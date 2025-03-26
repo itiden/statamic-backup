@@ -2,11 +2,24 @@
 
 return [
     /**
-     * The path to the content directory
+     * The stache stores that should be backed up
      *
-     * This is used by the default content backup driver
+     * This is used by the stache content backup pipe
      */
-    'content_path' => storage_path('content'),
+    'stache_stores' => [
+        // stores configurations
+        'asset-containers',
+        'collections',
+        'navigation',
+        // content stores
+        'taxonomies',
+        'terms',
+        'entries',
+        'globals',
+        'global-variables',
+        'collection-trees',
+        'navigation-trees',
+    ],
 
     /**
      * The backup destination options

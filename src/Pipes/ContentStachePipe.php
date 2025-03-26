@@ -11,6 +11,8 @@ use Itiden\Backup\Support\Zipper;
 use Statamic\Facades\Stache;
 use Statamic\Stache\Stores\Store;
 
+use function Illuminate\Filesystem\join_paths;
+
 final class ContentStachePipe extends BackupPipe
 {
     public static function getKey(): string
@@ -21,12 +23,16 @@ final class ContentStachePipe extends BackupPipe
     public function restore(string $restoringFromPath, Closure $next): string
     {
         collect(Stache::stores())
-            ->filter(fn(Store $store) => static::isSafePath($store->directory()))
-            ->filter(fn(Store $store) => File::exists($restoringFromPath . '/' . static::prefixer($store)))
+            ->filter(static::shouldBackupStore(...))
+            ->filter(static::storeHasSafeDirectory(...))
+            ->filter(fn(Store $store) => File::exists(join_paths($restoringFromPath, static::prefixer($store))))
             ->each(function (Store $store) use ($restoringFromPath): void {
                 File::cleanDirectory($store->directory());
 
-                File::copyDirectory($restoringFromPath . '/' . static::prefixer($store), $store->directory());
+                File::copyDirectory(
+                    join_paths($restoringFromPath, static::prefixer($store)),
+                    $store->directory(),
+                );
             });
 
         return $next($restoringFromPath);
@@ -34,9 +40,9 @@ final class ContentStachePipe extends BackupPipe
 
     public function backup(Zipper $zip, Closure $next): Zipper
     {
-        $stores = Stache::stores()
-            ->filter(fn(Store $store) => $store->key() !== 'users')
-            ->filter(fn(Store $store) => static::isSafePath($store->directory()));
+        $stores = collect(Stache::stores())
+            ->filter(static::shouldBackupStore(...))
+            ->filter(static::storeHasSafeDirectory(...));
 
         if ($stores->isEmpty()) {
             return $this->skip(
@@ -56,8 +62,10 @@ final class ContentStachePipe extends BackupPipe
         return self::getKey() . '::' . $store->key();
     }
 
-    private static function isSafePath(string $path): bool
+    private static function storeHasSafeDirectory(Store $store): bool
     {
+        $path = $store->directory();
+
         // Check if the path is a real path
         if (!realpath($path))
             return false;
@@ -69,5 +77,10 @@ final class ContentStachePipe extends BackupPipe
             ],
             strict: true,
         );
+    }
+
+    private static function shouldBackupStore(Store $store): bool
+    {
+        return in_array($store->key(), config('backup.stache_stores', []), strict: true);
     }
 }
