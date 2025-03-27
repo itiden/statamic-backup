@@ -81,7 +81,7 @@ final class Logs extends BackupPipe
     /**
      * Run the restore process.
      */
-    public function restore(string $restoringFromPath, Closure $next): void
+    public function restore(string $restoringFromPath, Closure $next): string
     {
         $path = $this->getDirectoryPath($restoringFromPath);
         // Implement the logic to restore data from the provided backup file at $path.
@@ -93,7 +93,7 @@ final class Logs extends BackupPipe
     /**
      * Run the backup process.
      */
-    public function backup(Zipper $zip, Closure $next): void
+    public function backup(Zipper $zip, Closure $next): Zipper
     {
         if (!file_exists(storage_path('logs'))) {
             return $this->skip(
