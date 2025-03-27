@@ -1,14 +1,28 @@
-providers: []
+providers:
+  - Itiden\Backup\ServiceProvider
 
 migrations:
   - workbench/database/migrations
 
 seeders: []
 
+bootstrappers:
+ - 'Itiden\Backup\Tests\Testbench\Bootstrappers\StatamicBootstrapper'
+
 workbench:
-  start: '/'
+  start: '/cp'
   install: true
   welcome: true
-  build: []
-  assets: []
+  build: [
+    'migrate:fresh'
+  ]
+  assets: [
+    'statamic'
+  ]
   sync: []
+
+env:
+ DB_CONNECTION: sqlite
+ APP_ENV: testing
+ CACHE_STORE: array
+ QUEUE_CONNECTION: sync
