@@ -1,24 +1,6 @@
 <?php
 
 return [
-    /**
-     * The stache stores that should be backed up by the ContentStachePipe
-     */
-    'stache_stores' => [
-        // stores configurations
-        'asset-containers',
-        'collections',
-        'navigation',
-        'taxonomies',
-        // content stores
-        'terms',
-        'entries',
-        'globals',
-        'global-variables',
-        'collection-trees',
-        'navigation-trees',
-        'form-submissions',
-    ],
 
     /**
      * The backup destination options
@@ -85,5 +67,24 @@ return [
         Itiden\Backup\Pipes\StacheData::class,
         Itiden\Backup\Pipes\Assets::class,
         Itiden\Backup\Pipes\Users::class,
+    ],
+
+    /**
+     * The stache stores that should be backed up by the StacheData pipe, by key
+     */
+    'stache_stores' => [
+        // stores configurations
+        'asset-containers',
+        'collections',
+        'navigation',
+        'taxonomies',
+        // content stores
+        'terms',
+        'entries',
+        'globals',
+        'global-variables',
+        'collection-trees',
+        'navigation-trees',
+        'form-submissions',
     ],
 ];
