@@ -14,7 +14,7 @@ describe('api:download', function (): void {
     it('cant be downloaded by a guest', function (): void {
         $backup = Backuper::backup();
 
-        $responseJson = getJson(cp_route('api.itiden.backup.download', $backup->timestamp));
+        $responseJson = getJson(cp_route('api.itiden.backup.download', $backup->id));
 
         expect($responseJson->status())->toBe(401);
     });
@@ -24,7 +24,7 @@ describe('api:download', function (): void {
 
         actingAs(user());
 
-        $responseJson = getJson(cp_route('api.itiden.backup.download', $backup->timestamp));
+        $responseJson = getJson(cp_route('api.itiden.backup.download', $backup->id));
 
         expect($responseJson->status())->toBe(403);
     });
@@ -43,7 +43,7 @@ describe('api:download', function (): void {
 
         actingAs($user);
 
-        $response = get(cp_route('api.itiden.backup.download', $backup->timestamp));
+        $response = get(cp_route('api.itiden.backup.download', $backup->id));
 
         expect($response)->assertDownload();
     })->with(['s3', 'local']);
@@ -59,7 +59,7 @@ describe('api:download', function (): void {
 
         actingAs($user);
 
-        get(cp_route('api.itiden.backup.download', $backup->timestamp));
+        get(cp_route('api.itiden.backup.download', $backup->id));
 
         $metadata = $backup->getMetadata();
 

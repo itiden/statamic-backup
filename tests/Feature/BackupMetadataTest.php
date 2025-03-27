@@ -131,7 +131,7 @@ describe('metadata', function (): void {
         $metadata = $backup->getMetadata();
         $metadata->addSkippedPipe(pipe: UserPipe::class, reason: 'Some reason');
 
-        $file = File::get(config('backup.metadata_path') . '/.meta/' . $backup->timestamp);
+        $file = File::get(config('backup.metadata_path') . '/.meta/' . $backup->id);
         $yaml = app(Yaml::class)->parse($file);
 
         expect($file)->not->toBeEmpty();

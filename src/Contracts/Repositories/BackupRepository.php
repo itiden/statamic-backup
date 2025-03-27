@@ -17,9 +17,9 @@ interface BackupRepository
     public function all(): Collection;
 
     /**
-     * Get a backup by timestamp.
+     * Get a backup by id.
      */
-    public function find(string $timestamp): ?BackupDto;
+    public function find(string $id): ?BackupDto;
 
     /**
      * Add a backup.
@@ -27,9 +27,9 @@ interface BackupRepository
     public function add(string $path): BackupDto;
 
     /**
-     * Delete a backup by timestamp.
+     * Delete a backup by id.
      */
-    public function remove(string $timestamp): ?BackupDto;
+    public function remove(string $id): ?BackupDto;
 
     /**
      * Clear all backups.

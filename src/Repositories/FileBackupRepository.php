@@ -28,9 +28,16 @@ final class FileBackupRepository implements BackupRepository
         $this->filesystem = Storage::disk(config('backup.destination.disk'));
     }
 
-    private function makeFilename(string $timestamp): string
+    private function makeFilename(string $timestamp, string $id): string
     {
-        return Str::slug(config('app.name')) . '-' . $timestamp . '.zip';
+        return implode('', [
+            Str::slug(config('app.name')),
+            '-',
+            $timestamp,
+            '-',
+            $id,
+            '.zip',
+        ]);
     }
 
     public function all(): Collection
@@ -45,30 +52,27 @@ final class FileBackupRepository implements BackupRepository
         $this->filesystem->makeDirectory(path: $this->path);
 
         $timestamp = (string) Carbon::now()->unix();
+        $id = (string) Str::ulid();
 
         $this->filesystem->putFileAs(
             path: $this->path,
             file: new StreamableFile($path),
-            name: $this->makeFilename($timestamp),
+            name: $this->makeFilename($timestamp, $id),
         );
 
-        return $this->find($timestamp);
+        return $this->find($id);
     }
 
-    public function find(string $timestamp): ?BackupDto
+    public function find(string $id): ?BackupDto
     {
-        $path = "{$this->path}/{$this->makeFilename($timestamp)}";
-
-        if (!$this->filesystem->exists($path)) {
-            return null;
-        }
-
-        return BackupDto::fromFile($path);
+        return $this
+            ->all()
+            ->first(fn(BackupDto $backup): bool => $backup->id === $id);
     }
 
-    public function remove(string $timestamp): ?BackupDto
+    public function remove(string $id): ?BackupDto
     {
-        $backup = $this->find($timestamp);
+        $backup = $this->find($id);
 
         if (!$backup) {
             return null;
@@ -85,7 +89,7 @@ final class FileBackupRepository implements BackupRepository
     {
         $this
             ->all()
-            ->each(fn(BackupDto $backup): ?BackupDto => $this->remove($backup->timestamp));
+            ->each(fn(BackupDto $backup): ?BackupDto => $this->remove($backup->id));
         return Storage::disk(config('backup.destination.disk'))->deleteDirectory(config('backup.destination.path'));
     }
 }

@@ -28,6 +28,6 @@ final class RestoreFromTimestampJob implements ShouldQueue
     public function handle(Restorer $backuper): void
     {
         auth()->login($this->user); // ugly but it works;
-        $backuper->restoreFromTimestamp($this->timestamp);
+        $backuper->restoreFromId($this->timestamp);
     }
 }

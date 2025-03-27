@@ -133,7 +133,7 @@ final class Backuper
         if ($backups->count() > $maxBackups) {
             $backups
                 ->slice($maxBackups)
-                ->each(fn(BackupDto $backup): ?BackupDto => $this->repository->remove($backup->timestamp));
+                ->each(fn(BackupDto $backup): ?BackupDto => $this->repository->remove($backup->id));
         }
     }
 }

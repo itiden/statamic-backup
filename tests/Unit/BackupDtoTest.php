@@ -15,7 +15,7 @@ describe('dto:backup', function (): void {
 
         $backup = Backuper::backup();
 
-        expect($backup->timestamp)->toBeString();
-        expect($backup->timestamp)->toBe((string) $fakeTime->timestamp);
+        expect($backup->id)->toBeString();
+        expect($backup->created_at->timestamp)->toBe($fakeTime->timestamp);
     });
 })->group('backupdto');

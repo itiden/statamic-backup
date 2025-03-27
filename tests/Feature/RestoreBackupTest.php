@@ -54,7 +54,7 @@ describe('api:restore', function (): void {
 
         actingAs($user);
 
-        $response = postJson(cp_route('api.itiden.backup.restore', $backup->timestamp));
+        $response = postJson(cp_route('api.itiden.backup.restore', $backup->id));
 
         expect($response->status())->toBe(Response::HTTP_OK);
     });
@@ -71,10 +71,10 @@ describe('api:restore', function (): void {
 
         actingAs($user);
 
-        $response = postJson(cp_route('api.itiden.backup.restore', $backup->timestamp));
+        $response = postJson(cp_route('api.itiden.backup.restore', $backup->id));
 
         Event::assertDispatched(BackupRestored::class, function (BackupRestored $event) use ($backup): bool {
-            return $event->backup->timestamp === $backup->timestamp;
+            return $event->backup->id === $backup->id;
         });
         expect($response->status())->toBe(Response::HTTP_OK);
     });
@@ -116,7 +116,7 @@ describe('api:restore', function (): void {
 
         actingAs($user);
 
-        $response = postJson(cp_route('api.itiden.backup.restore', $backup->timestamp));
+        $response = postJson(cp_route('api.itiden.backup.restore', $backup->id));
 
         expect($response->status())->toBe(Response::HTTP_OK);
         expect($backup
