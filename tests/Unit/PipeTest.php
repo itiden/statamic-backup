@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\Pipes\Assets;
-use Itiden\Backup\Pipes\Content;
+use Itiden\Backup\Pipes\StacheData;
 use Itiden\Backup\Pipes\Users;
 use Itiden\Backup\Support\Zipper;
 use Statamic\Facades\Stache;
@@ -25,7 +25,7 @@ describe('pipes', function (): void {
         File::delete($temp_zip);
     })->with([
         Users::class,
-        Content::class,
+        StacheData::class,
         Assets::class,
     ]);
 
@@ -44,12 +44,11 @@ describe('pipes', function (): void {
         File::copyDirectory($fixtures_backup_path, $fixtues_path);
     })->with([
         Users::class,
-        Content::class,
+        StacheData::class,
         Assets::class,
     ]);
 
     test('can skip a pipe with users', function (): void {
-        /** @var Users::class $pipe */
         $pipe = app()->make(Users::class);
 
         $callable = function (Zipper $z): Zipper {
@@ -68,30 +67,25 @@ describe('pipes', function (): void {
         $zipper->close();
     });
 
-    test('can skip a pipe with content', function (): void {
-        /** @var Users::class $pipe */
-        $pipe = app()->make(Content::class);
+    test('can skip a pipe with stache content', function (): void {
+        $pipe = app()->make(StacheData::class);
 
         $callable = function (Zipper $z): Zipper {
             return $z;
         };
 
-        File::copyDirectory(config('backup.content_path'), config('backup.content_path') . '_backup');
-        File::deleteDirectory(config('backup.content_path'));
+        config()->set('backup.stache_stores', ['non-existing-store']);
 
         $zipper = Zipper::write(config('backup.temp_path') . '/backup.zip');
 
         $pipe->backup(zip: $zipper, next: $callable);
 
-        expect($zipper->getMeta())->toHaveKey(Content::class);
-        expect($zipper->getMeta()[Content::class])->toHaveKey(
+        expect($zipper->getMeta())->toHaveKey(StacheData::class);
+        expect($zipper->getMeta()[StacheData::class])->toHaveKey(
             'skipped',
-            'Content directory didn\'t exist, is it configured correctly?',
+            'No stores found to backup, is the Stache configured correctly?',
         );
 
         $zipper->close();
-
-        File::copyDirectory(config('backup.content_path') . '_backup', config('backup.content_path'));
-        File::deleteDirectory(config('backup.content_path') . '_backup');
     });
 })->group('pipes');

@@ -11,9 +11,14 @@ use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Enums\State;
 use Itiden\Backup\StateManager;
 use Itiden\Backup\Support\Zipper;
+use Statamic\Facades\Stache;
+use Symfony\Component\Finder\SplFileInfo;
+
+use function Itiden\Backup\Tests\user;
 
 describe('backuper', function (): void {
     it('can backup', function (): void {
+        $this->withoutExceptionHandling();
         $backup = Backuper::backup();
 
         expect($backup)->toBeInstanceOf(BackupDto::class);
@@ -24,15 +29,61 @@ describe('backuper', function (): void {
     });
 
     it('backups correct files', function (): void {
+        expect(File::allFiles(Stache::store('entries')->directory()))->toHaveCount(2); // 1 entry, 1 collection
+        expect(File::allFiles(Stache::store('form-submissions')->directory()))->toHaveCount(1);
+        user();
+
         $backup = Backuper::backup();
 
         $unzipped = config('backup.temp_path') . '/unzipped';
-        Zipper::read(Storage::disk(config('backup.destination.disk'))->path($backup->path))->extractTo(
-            $unzipped,
-            config('backup.password'),
-        );
+        Zipper::read(Storage::disk(config('backup.destination.disk'))->path($backup->path))
+            ->extractTo($unzipped, config('backup.password'))
+            ->close();
 
-        expect(File::allFiles($unzipped)[0]->getRelativePathname())->toEqual('content/collections/pages/homepage.yaml');
+        $paths = collect(File::allFiles($unzipped))
+            ->map(fn(SplFileInfo $file) => $file->getRelativePathname())
+            ->toArray();
+
+        expect($paths)->toEqualCanonicalizing([
+            // since the default collection store and entries store have the same directory, we will get duplicates.
+            'stache-content::collections/pages.yaml',
+            'stache-content::collections/pages/homepage.md',
+            'stache-content::entries/pages.yaml',
+            'stache-content::entries/pages/homepage.md',
+            'stache-content::form-submissions/1743066599.5568.yaml',
+            'users/test@example.com.yaml',
+        ]);
+
+        File::deleteDirectory($unzipped);
+    });
+
+    it('backups correct files and only include stache stores in config', function (): void {
+        expect(File::allFiles(Stache::store('entries')->directory()))->toHaveCount(2); // 1 entry, 1 collection
+        expect(File::allFiles(Stache::store('form-submissions')->directory()))->toHaveCount(1);
+        user();
+
+        config()->set('backup.stache_stores', [
+            'form-submissions',
+        ]);
+
+        $backup = Backuper::backup();
+
+        $unzipped = config('backup.temp_path') . '/unzipped';
+
+        Zipper::read(Storage::disk(config('backup.destination.disk'))->path($backup->path))
+            ->extractTo($unzipped, config('backup.password'))
+            ->close();
+
+        $paths = collect(File::allFiles($unzipped))
+            ->map(fn(SplFileInfo $file) => $file->getRelativePathname())
+            ->toArray();
+
+        expect($paths)->toEqualCanonicalizing([
+            'stache-content::form-submissions/1743066599.5568.yaml',
+            'users/test@example.com.yaml',
+        ]);
+
+        File::deleteDirectory($unzipped);
     });
 
     it('can enforce max backups', function (): void {

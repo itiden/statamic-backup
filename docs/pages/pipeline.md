@@ -14,7 +14,7 @@ for example, maybe you don't want to backup your users, then just comment that o
 
 ```php
 'pipeline' => [
-    Itiden\Backup\Pipes\Content::class,
+    Itiden\Backup\Pipes\StacheData::class,
     Itiden\Backup\Pipes\Assets::class,
     // Itiden\Backup\Pipes\Users::class,
 ],
@@ -68,7 +68,7 @@ use Itiden\Backup\Abstracts\BackupPipe;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Support\Zipper;
 
-final class Logs extends BackupPipe
+final readonly class Logs extends BackupPipe
 {
     /**
      * Get the key of the driver.
@@ -81,7 +81,7 @@ final class Logs extends BackupPipe
     /**
      * Run the restore process.
      */
-    public function restore(string $restoringFromPath, Closure $next): void
+    public function restore(string $restoringFromPath, Closure $next): string
     {
         $path = $this->getDirectoryPath($restoringFromPath);
         // Implement the logic to restore data from the provided backup file at $path.
@@ -93,7 +93,7 @@ final class Logs extends BackupPipe
     /**
      * Run the backup process.
      */
-    public function backup(Zipper $zip, Closure $next): void
+    public function backup(Zipper $zip, Closure $next): Zipper
     {
         if (!file_exists(storage_path('logs'))) {
             return $this->skip(
@@ -127,9 +127,9 @@ Finally, you can configure your backup to use the custom driver you've created. 
 return [
     // ...
     'pipeline' => [
-        Itiden\Backup\Drivers\Content::class,
-        Itiden\Backup\Drivers\Assets::class,
-        Itiden\Backup\Drivers\Users::class,
+        Itiden\Backup\Pipes\StacheData::class,
+        Itiden\Backup\Pipes\Assets::class,
+        Itiden\Backup\Pipes\Users::class,
         App\Backup\Pipes\Logs::class,
     ],
     // ...

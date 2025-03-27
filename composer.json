@@ -1,88 +1,88 @@
 {
-    "name": "itiden/statamic-backup",
-    "description": "Backup your Statamic site",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Neo Lejondahl",
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "ext-zip": "*",
-        "statamic/cms": "^5.0.0",
-        "pixelfear/composer-dist-plugin": "^0.1.6"
-    },
-    "require-dev": {
-        "orchestra/testbench": "^9.0",
-        "pestphp/pest": "^3.0",
-        "pestphp/pest-plugin-laravel": "^3.0",
-        "carthage-software/mago": "^0.11.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Itiden\\Backup\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Itiden\\Backup\\Tests\\": "tests",
-            "Workbench\\App\\": "workbench/app/",
-            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
-            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
-        },
-        "files": [
-            "tests/Helpers.php"
-        ]
-    },
-    "scripts": {
-        "post-autoload-dump": [
-            "@clear",
-            "@prepare"
-        ],
-        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
-        "prepare": "@php vendor/bin/testbench package:discover --ansi",
-        "build": "@php vendor/bin/testbench workbench:build --ansi",
-        "serve": [
-            "Composer\\Config::disableProcessTimeout",
-            "@build",
-            "@php vendor/bin/testbench serve --ansi"
-        ],
-        "lint": [
-            "@php vendor/bin/mago lint"
-        ],
-        "format": [
-            "@php vendor/bin/mago format"
-        ],
-        "test": [
-            "XDEBUG_MODE=coverage vendor/bin/pest --coverage"
-        ],
-        "qa": [
-            "@format",
-            "@lint",
-            "@test"
-        ]
-    },
-    "extra": {
-        "statamic": {
-            "name": "Backup",
-            "description": "Backup your Statamic site"
-        },
-        "laravel": {
-            "providers": [
-                "Itiden\\Backup\\ServiceProvider"
-            ]
-        },
-        "download-dist": {
-            "url": "https://github.com/itiden/statamic-backup/releases/download/{$version}/dist.tar.gz",
-            "path": "resources/dist"
-        }
-    },
-    "config": {
-        "allow-plugins": {
-            "pixelfear/composer-dist-plugin": true,
-            "pestphp/pest-plugin": true,
-            "carthage-software/mago": true
-        }
+  "name": "itiden/statamic-backup",
+  "description": "Backup your Statamic site",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Neo Lejondahl",
+      "role": "Developer"
     }
+  ],
+  "require": {
+    "ext-zip": "*",
+    "statamic/cms": "^5.0.0",
+    "pixelfear/composer-dist-plugin": "^0.1.6"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^9.0",
+    "pestphp/pest": "^3.0",
+    "pestphp/pest-plugin-laravel": "^3.0",
+    "carthage-software/mago": "^0.11.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Itiden\\Backup\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Itiden\\Backup\\Tests\\": "tests",
+      "Workbench\\App\\": "workbench/app/",
+      "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+      "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+    },
+    "files": [
+      "tests/Helpers.php"
+    ]
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "@clear",
+      "@prepare"
+    ],
+    "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+    "prepare": "@php vendor/bin/testbench package:discover --ansi",
+    "build": "@php vendor/bin/testbench workbench:build --ansi",
+    "serve": [
+      "Composer\\Config::disableProcessTimeout",
+      "@build",
+      "@php vendor/bin/testbench serve --ansi"
+    ],
+    "lint": [
+      "@php vendor/bin/mago lint"
+    ],
+    "format": [
+      "@php vendor/bin/mago format"
+    ],
+    "test": [
+      "XDEBUG_MODE=coverage vendor/bin/pest --coverage"
+    ],
+    "qa": [
+      "@format",
+      "@lint",
+      "@test"
+    ]
+  },
+  "extra": {
+    "statamic": {
+      "name": "Backup",
+      "description": "Backup your Statamic site"
+    },
+    "laravel": {
+      "providers": [
+        "Itiden\\Backup\\ServiceProvider"
+      ]
+    },
+    "download-dist": {
+      "url": "https://github.com/itiden/statamic-backup/releases/download/{$version}/dist.tar.gz",
+      "path": "resources/dist"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "pixelfear/composer-dist-plugin": true,
+      "pestphp/pest-plugin": true,
+      "carthage-software/mago": true
+    }
+  }
 }

@@ -1,12 +1,6 @@
 <?php
 
 return [
-    /**
-     * The path to the content directory
-     *
-     * This is used by the default content backup driver
-     */
-    'content_path' => storage_path('content'),
 
     /**
      * The backup destination options
@@ -70,8 +64,27 @@ return [
      * All pipes are expected to be instances of Itiden\Backup\Abtracts\BackupPipe
      */
     'pipeline' => [
-        Itiden\Backup\Pipes\Content::class,
+        Itiden\Backup\Pipes\StacheData::class,
         Itiden\Backup\Pipes\Assets::class,
         Itiden\Backup\Pipes\Users::class,
+    ],
+
+    /**
+     * The stache stores that should be backed up by the StacheData pipe, by key
+     */
+    'stache_stores' => [
+        // stores configurations
+        'asset-containers',
+        'collections',
+        'navigation',
+        'taxonomies',
+        // content stores
+        'terms',
+        'entries',
+        'globals',
+        'global-variables',
+        'collection-trees',
+        'nav-trees',
+        'form-submissions',
     ],
 ];
