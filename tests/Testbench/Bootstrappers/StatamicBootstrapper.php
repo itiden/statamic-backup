@@ -6,6 +6,7 @@ namespace Itiden\Backup\Tests\Testbench\Bootstrappers;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\File;
+use RuntimeException;
 
 final readonly class StatamicBootstrapper
 {
@@ -41,52 +42,46 @@ final readonly class StatamicBootstrapper
             throw new \RuntimeException('composer.json or composer.lock not found in the addon directory.');
         }
 
-        static::buildStatamicScripts($app);
+        static::copyStatamicScripts($app);
+
+        static::addBackupToInstalledPackages($app);
 
         if (!file_exists($app->basePath('/users/test@example.com.yaml'))) {
-            \Itiden\Backup\Tests\user()->addRole('super admin');
+            $user = \Itiden\Backup\Tests\user();
+            $user->makeSuper();
+            $user->save();
         }
     }
 
-    private static function buildStatamicScripts(Application $app): void
+    /**
+     * This is required for statamic to discover the addon.
+     */
+    private static function addBackupToInstalledPackages(Application $app): void
     {
-        // Path to the directory where you want to run the npm command
-        $directory = $app->basePath('/vendor/statamic/cms');
-        $buildPath = $directory . '/resources/dist';
+        $installed = File::json($app->basePath('vendor/composer/installed.json'));
 
-        if (file_exists($buildPath . '/build/manifest.json')) {
-            static::copyStatamicScripts($buildPath, $app);
-            // Reset the working directory to the original one
-            return;
-        }
+        $installed['packages']['backup'] = [
+            ...File::json(__DIR__ . '/../../../composer.json'),
+            'version' => '1.0.0',
+            'autoload' => [
+                'psr-4' => [
+                    'Itiden\\Backup\\' => realpath(__DIR__ . '/../../../src'),
+                ],
+            ],
+        ];
 
-        // Store the original working directory
-        $original_directory = getcwd();
-
-        // Change the working directory to the desired one
-        chdir($directory);
-
-        // Run the npm command
-        $output = [];
-        $return_var = 0;
-        exec('npm install && npm run build', $output, $return_var);
-
-        // Check if command was successful
-        if ($return_var === 0) {
-            echo 'Build successful!';
-        } else {
-            echo 'Build failed! Errors: ' . implode("\n", $output);
-        }
-
-        static::copyStatamicScripts($buildPath, $app);
-
-        // Reset the working directory to the original one
-        chdir($original_directory);
+        File::put($app->basePath('vendor/composer/installed.json'), json_encode($installed));
     }
 
-    private static function copyStatamicScripts(string $statamicBuildDir, Application $app): void
+    private static function copyStatamicScripts(Application $app): void
     {
-        static::copyDirectory($statamicBuildDir, $app->basePath('public/vendor/statamic/cp/'));
+        $buildPath = $app->basePath('/vendor/statamic/cms/resources/dist');
+
+        if (!file_exists($buildPath . '/build/manifest.json')) {
+            throw new RuntimeException('Statamic assets not found');
+        }
+
+        static::copyDirectory($buildPath, $app->basePath('public/vendor/statamic/cp/'));
     }
 
     private static function copyDirectory($source, $destination): void
