@@ -10,7 +10,6 @@ return [
         'collections',
         'navigation',
         // content stores
-        'taxonomies',
         'terms',
         'entries',
         'globals',
