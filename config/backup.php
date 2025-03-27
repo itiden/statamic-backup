@@ -9,6 +9,7 @@ return [
         'asset-containers',
         'collections',
         'navigation',
+        'taxonomies',
         // content stores
         'terms',
         'entries',
@@ -16,6 +17,7 @@ return [
         'global-variables',
         'collection-trees',
         'navigation-trees',
+        'form-submissions',
     ],
 
     /**
