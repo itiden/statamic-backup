@@ -84,7 +84,7 @@ return [
         'globals',
         'global-variables',
         'collection-trees',
-        'navigation-trees',
+        'nav-trees',
         'form-submissions',
     ],
 ];
