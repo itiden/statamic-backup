@@ -14,7 +14,7 @@ use Statamic\Stache\Stores\Store;
 
 use function Illuminate\Filesystem\join_paths;
 
-final class ContentStachePipe extends BackupPipe
+final class StacheData extends BackupPipe
 {
     public static function getKey(): string
     {

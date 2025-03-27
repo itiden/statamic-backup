@@ -14,7 +14,7 @@ for example, maybe you don't want to backup your users, then just comment that o
 
 ```php
 'pipeline' => [
-    Itiden\Backup\Pipes\Content::class,
+    Itiden\Backup\Pipes\StacheData::class,
     Itiden\Backup\Pipes\Assets::class,
     // Itiden\Backup\Pipes\Users::class,
 ],
@@ -127,9 +127,9 @@ Finally, you can configure your backup to use the custom driver you've created. 
 return [
     // ...
     'pipeline' => [
-        Itiden\Backup\Drivers\Content::class,
-        Itiden\Backup\Drivers\Assets::class,
-        Itiden\Backup\Drivers\Users::class,
+        Itiden\Backup\Pipes\StacheData::class,
+        Itiden\Backup\Pipes\Assets::class,
+        Itiden\Backup\Pipes\Users::class,
         App\Backup\Pipes\Logs::class,
     ],
     // ...
