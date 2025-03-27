@@ -18,8 +18,7 @@ final readonly class BackupDto
         public CarbonImmutable $created_at,
         public string $size,
         public string $path,
-    ) {
-    }
+    ) {}
 
     public function getMetadata(): Metadata
     {
@@ -29,24 +28,16 @@ final readonly class BackupDto
     /**
      * Create a new BackupDto from a file path in the configured disk
      */
-    public static function fromFile(string $path): self
+    public static function fromFile(string $path): static
     {
-        $timestamp = str(basename($path))
-            ->beforeLast('-')
-            ->afterLast('-')
-            ->toString();
-
-        $id = str(basename($path))
-            ->afterLast('-')
-            ->before('.zip')
-            ->toString();
+        [$createtAt, $id, $name] = static::extractValuesFromPath($path);
 
         $bytes = Storage::disk(config('backup.destination.disk'))->size($path);
 
-        return new self(
+        return new static(
             id: $id,
-            name: File::name($path),
-            created_at: CarbonImmutable::createFromTimestamp($timestamp),
+            name: $name,
+            created_at: $createtAt,
             size: StatamicStr::fileSizeForHumans($bytes, 2),
             path: $path,
         );
@@ -55,26 +46,35 @@ final readonly class BackupDto
     /**
      * Create a new BackupDto from a absolute path
      */
-    public static function fromAbsolutePath(string $path): self
+    public static function fromAbsolutePath(string $path): static
     {
-        $timestamp = str(basename($path))
+        [$createdAt, $id, $name] = static::extractValuesFromPath($path);
+
+        $bytes = File::size($path);
+
+        return new static(
+            id: $id,
+            name: $name,
+            created_at: $createdAt,
+            size: StatamicStr::fileSizeForHumans($bytes, 2),
+            path: $path,
+        );
+    }
+
+    private static function extractValuesFromPath(string $path): array
+    {
+        $timestamp = CarbonImmutable::createFromTimestamp(str(basename($path))
             ->beforeLast('-')
             ->afterLast('-')
-            ->toString();
+            ->toString());
 
         $id = str(basename($path))
             ->afterLast('-')
             ->before('.zip')
             ->toString();
 
-        $bytes = File::size($path);
+        $name = File::name($path);
 
-        return new self(
-            id: $id,
-            name: File::name($path),
-            created_at: CarbonImmutable::createFromTimestamp($timestamp),
-            size: StatamicStr::fileSizeForHumans($bytes, 2),
-            path: $path,
-        );
+        return [$timestamp, $id, $name];
     }
 }

@@ -44,7 +44,7 @@ final class FileBackupRepository implements BackupRepository
     {
         return collect($this->filesystem->files($this->path))
             ->map(BackupDto::fromFile(...))
-            ->sortByDesc('timestamp');
+            ->sortByDesc('created_at');
     }
 
     public function add(string $path): BackupDto
