@@ -14,7 +14,7 @@ use Statamic\Stache\Stores\Store;
 
 use function Illuminate\Filesystem\join_paths;
 
-final class StacheData extends BackupPipe
+final readonly class StacheData extends BackupPipe
 {
     public static function getKey(): string
     {
@@ -30,7 +30,10 @@ final class StacheData extends BackupPipe
             ->each(function (Store $store) use ($restoringFromPath): void {
                 File::cleanDirectory($store->directory());
 
-                File::copyDirectory(join_paths($restoringFromPath, static::prefixer($store)), $store->directory());
+                File::copyDirectory(
+                    directory: join_paths($restoringFromPath, static::prefixer($store)),
+                    destination: $store->directory()
+                );
             });
 
         return $next($restoringFromPath);
@@ -41,6 +44,7 @@ final class StacheData extends BackupPipe
         return collect(Stache::stores())
             ->filter(static::shouldBackupStore(...))
             ->filter(static::storeHasSafeDirectory(...))
+            ->filter(fn(Store $store) => File::isDirectory($store->directory()))
             ->whenNotEmpty(
                 function (Collection $stores) use ($zip, $next): Zipper {
                     $stores->each(fn(Store $store) => $zip->addDirectory(
@@ -66,10 +70,6 @@ final class StacheData extends BackupPipe
     private static function storeHasSafeDirectory(Store $store): bool
     {
         $path = $store->directory();
-
-        // Check if the path is a real path
-        if (!realpath($path))
-            return false;
 
         return !in_array(
             needle: $path,

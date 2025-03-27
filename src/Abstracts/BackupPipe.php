@@ -7,7 +7,7 @@ namespace Itiden\Backup\Abstracts;
 use Closure;
 use Itiden\Backup\Support\Zipper;
 
-abstract class BackupPipe
+abstract readonly class BackupPipe
 {
     /**
      * Get the key of the driver.

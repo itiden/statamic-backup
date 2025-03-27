@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Itiden\Backup\Pipes;
 
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Abstracts\BackupPipe;
 use Itiden\Backup\Support\Zipper;
 use Statamic\Assets\AssetContainer as Container;
 use Statamic\Facades\AssetContainer;
 
-final class Assets extends BackupPipe
+final readonly class Assets extends BackupPipe
 {
     public static function getKey(): string
     {
