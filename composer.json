@@ -55,7 +55,7 @@
       "@php vendor/bin/mago format"
     ],
     "test": [
-      "XDEBUG_MODE=coverage vendor/bin/pest --coverage --stop-on-failure"
+      "XDEBUG_MODE=coverage vendor/bin/pest --coverage"
     ],
     "qa": [
       "@format",
