@@ -68,7 +68,7 @@ use Itiden\Backup\Abstracts\BackupPipe;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Support\Zipper;
 
-final class Logs extends BackupPipe
+final readonly class Logs extends BackupPipe
 {
     /**
      * Get the key of the driver.
