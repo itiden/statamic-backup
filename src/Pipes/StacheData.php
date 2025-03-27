@@ -32,7 +32,7 @@ final readonly class StacheData extends BackupPipe
 
                 File::copyDirectory(
                     directory: join_paths($restoringFromPath, static::prefixer($store)),
-                    destination: $store->directory()
+                    destination: $store->directory(),
                 );
             });
 
