@@ -15,7 +15,7 @@ use function Itiden\Backup\Tests\fixtures_path;
 use function Itiden\Backup\Tests\user;
 
 describe('restorer', function (): void {
-    it('can restore from timestamp', function (): void {
+    it('can restore from id', function (): void {
         $backup = Backuper::backup();
 
         File::cleanDirectory(fixtures_path('content/collections'));

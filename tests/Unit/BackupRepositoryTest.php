@@ -20,7 +20,7 @@ describe('repository:backup', function (): void {
         expect($backups->first())->toBeInstanceOf(BackupDto::class);
     });
 
-    it('can get backup by timestamp', function (): void {
+    it('can get backup by id', function (): void {
         $backup = Backuper::backup();
         $foundBackup = app(BackupRepository::class)->find($backup->id);
 
@@ -29,7 +29,7 @@ describe('repository:backup', function (): void {
         expect($foundBackup)->toEqual($backup);
     });
 
-    it('returns null when timestamp doesnt exist', function (): void {
+    it('returns null when id doesnt exist', function (): void {
         $backup = app(BackupRepository::class)->find('1234567890');
         expect($backup)->toBeNull();
     });

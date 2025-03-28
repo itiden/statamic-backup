@@ -15,16 +15,16 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\postJson;
 
 describe('api:restore', function (): void {
-    it('cant restore by timestamp by a guest', function (): void {
-        $response = postJson(cp_route('api.itiden.backup.restore', 'timestamp'));
+    it('cant restore by id by a guest', function (): void {
+        $response = postJson(cp_route('api.itiden.backup.restore', 'id'));
 
         expect($response->status())->toBe(Response::HTTP_UNAUTHORIZED);
     });
 
-    it('cant restore by timestamp by a user without permissons a backup', function (): void {
+    it('cant restore by id by a user without permissons a backup', function (): void {
         actingAs(user());
 
-        $response = postJson(cp_route('api.itiden.backup.restore', 'timestamp'));
+        $response = postJson(cp_route('api.itiden.backup.restore', 'id'));
 
         expect($response->status())->toBe(Response::HTTP_FORBIDDEN);
     });
@@ -38,12 +38,12 @@ describe('api:restore', function (): void {
 
         actingAs($user);
 
-        $response = postJson(cp_route('api.itiden.backup.restore', 'timestamp'));
+        $response = postJson(cp_route('api.itiden.backup.restore', 'id'));
 
         expect($response->status())->toBe(Response::HTTP_INTERNAL_SERVER_ERROR);
     });
 
-    it('can restore by timestamp', function (): void {
+    it('can restore by id', function (): void {
         $backup = Backuper::backup();
 
         $user = user();
