@@ -17,7 +17,7 @@ final class BackupResource extends JsonResource
             'name' => $this->name,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'path' => $this->path,
-            'timestamp' => $this->id,
+            'id' => $this->id,
             'size' => $this->size,
             'metadata' => new MetadataResource(resource: $this->getMetadata()),
         ];

@@ -84,7 +84,7 @@ describe('api:view', function (): void {
                     'size',
                     'path',
                     'created_at',
-                    'timestamp',
+                    'id',
                     'metadata' => [
                         'created_by',
                         'downloads',
