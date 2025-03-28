@@ -25,7 +25,7 @@ Why use our backup addon?
 - Choose exactly what you want to backup by configuring the backup [pipeline](docs/pipeline.md).
   - Easy to extend and customize, [just create a new pipes](docs/pipeline.md#creating-a-new-backup-pipe)!
 - Uses laravels [storage system](https://laravel.com/docs/11.x/filesystem) and thus supports external storage out of the box.
-- Tested, the addon have over 85% test coverage.
+- Tested, the addon have over 95% test coverage.
 
 ## Installation
 
