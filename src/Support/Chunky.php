@@ -58,10 +58,12 @@ final class Chunky
         }
 
         $completeFile = $this->mergeChunksIntoFile($dto->path, $dto->filename, $dto->totalChunks);
-        if ($onCompleted) {
-            $onCompleted($completeFile);
-        }
+
         if ($completeFile) {
+            if ($onCompleted) {
+                $onCompleted($completeFile);
+            }
+
             return response()->json(
                 ['message' => 'File successfully uploaded', 'file' => $completeFile],
                 Response::HTTP_CREATED,
