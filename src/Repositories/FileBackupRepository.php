@@ -34,6 +34,7 @@ final class FileBackupRepository implements BackupRepository
     {
         return collect($this->filesystem->allFiles($this->path))
             ->map(BackupDto::fromFile(...))
+            ->whereInstanceOf(BackupDto::class)
             ->sortByDesc(fn(BackupDto $backup) => $backup->created_at);
     }
 

@@ -18,5 +18,5 @@ interface BackupNameResolver
     /**
      * Parse a filename and return the resolved data
      */
-    public function parseFilename(string $path): ResolvedBackupData;
+    public function parseFilename(string $path): ?ResolvedBackupData;
 }
