@@ -7,6 +7,7 @@ namespace Itiden\Backup\DataTransferObjects;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Itiden\Backup\Contracts\BackupNameResolver;
 use Itiden\Backup\Models\Metadata;
 use Statamic\Support\Str as StatamicStr;
 
@@ -18,7 +19,8 @@ final readonly class BackupDto
         public CarbonImmutable $created_at,
         public string $size,
         public string $path,
-    ) {}
+    ) {
+    }
 
     public function getMetadata(): Metadata
     {
@@ -30,14 +32,14 @@ final readonly class BackupDto
      */
     public static function fromFile(string $path): static
     {
-        [$createtAt, $id, $name] = static::extractValuesFromPath($path);
+        $values = app(BackupNameResolver::class)->parseFilename($path);
 
         $bytes = Storage::disk(config('backup.destination.disk'))->size($path);
 
         return new static(
-            id: $id,
-            name: $name,
-            created_at: $createtAt,
+            id: $values->id,
+            name: $values->name,
+            created_at: $values->createdAt,
             size: StatamicStr::fileSizeForHumans($bytes, 2),
             path: $path,
         );
@@ -48,33 +50,16 @@ final readonly class BackupDto
      */
     public static function fromAbsolutePath(string $path): static
     {
-        [$createdAt, $id, $name] = static::extractValuesFromPath($path);
+        $values = app(BackupNameResolver::class)->parseFilename($path);
 
         $bytes = File::size($path);
 
         return new static(
-            id: $id,
-            name: $name,
-            created_at: $createdAt,
+            id: $values->id,
+            name: $values->name,
+            created_at: $values->createdAt,
             size: StatamicStr::fileSizeForHumans($bytes, 2),
             path: $path,
         );
-    }
-
-    private static function extractValuesFromPath(string $path): array
-    {
-        $timestamp = CarbonImmutable::createFromTimestamp(str(basename($path))
-            ->beforeLast('-')
-            ->afterLast('-')
-            ->toString());
-
-        $id = str(basename($path))
-            ->afterLast('-')
-            ->before('.zip')
-            ->toString();
-
-        $name = File::name($path);
-
-        return [$timestamp, $id, $name];
     }
 }

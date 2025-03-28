@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Repositories;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\File as StreamableFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Itiden\Backup\Contracts\BackupNameResolver;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Events\BackupDeleted;
@@ -22,42 +23,30 @@ final class FileBackupRepository implements BackupRepository
     /** @var FilesystemAdapter */
     private Filesystem $filesystem;
 
-    public function __construct()
-    {
+    public function __construct(
+        private BackupNameResolver $nameResolver,
+    ) {
         $this->path = config('backup.destination.path');
         $this->filesystem = Storage::disk(config('backup.destination.disk'));
     }
 
-    private function makeFilename(string $timestamp, string $id): string
-    {
-        return implode('', [
-            Str::slug(config('app.name')),
-            '-',
-            $timestamp,
-            '-',
-            $id,
-            '.zip',
-        ]);
-    }
-
     public function all(): Collection
     {
-        return collect($this->filesystem->files($this->path))
+        return collect($this->filesystem->allFiles($this->path))
             ->map(BackupDto::fromFile(...))
-            ->sortByDesc('created_at');
+            ->sortByDesc(fn(BackupDto $backup) => $backup->created_at);
     }
 
     public function add(string $path): BackupDto
     {
         $this->filesystem->makeDirectory(path: $this->path);
 
-        $timestamp = (string) Carbon::now()->unix();
         $id = (string) Str::ulid();
 
         $this->filesystem->putFileAs(
             path: $this->path,
             file: new StreamableFile($path),
-            name: $this->makeFilename($timestamp, $id),
+            name: (string) str($this->nameResolver->generateFilename(CarbonImmutable::now(), $id))->finish('.zip'),
         );
 
         return $this->find($id);

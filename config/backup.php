@@ -49,6 +49,13 @@ return [
     ],
 
     /**
+     * The backup name resolver
+     *
+     * the resolver handles generating and parsing backup names
+     */
+    'name_resolver' => \Itiden\Backup\GenericBackupNameResolver::class,
+
+    /**
      * The backup repository
      *
      * the repository handles resolving and managing backups
