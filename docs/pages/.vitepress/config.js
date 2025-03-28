@@ -32,6 +32,10 @@ export default defineConfig({
           { text: "Metadata", link: "/metadata.md" },
         ],
       },
+      {
+        text: "Advanced",
+        items: [{ text: "Naming backups", link: "/naming-backups.md" }],
+      },
     ],
 
     search: {
