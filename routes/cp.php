@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use Itiden\Backup\Http\Controllers\Api\BackupController;
 use Itiden\Backup\Http\Controllers\Api\DestroyBackupController;
 use Itiden\Backup\Http\Controllers\Api\RestoreController;
-use Itiden\Backup\Http\Controllers\Api\RestoreFromPathController;
 use Itiden\Backup\Http\Controllers\Api\StateController;
 use Itiden\Backup\Http\Controllers\Api\StoreBackupController;
 use Itiden\Backup\Http\Controllers\DownloadBackupController;
@@ -54,8 +53,4 @@ Route::name('api.itiden.backup.')
         Route::post('/restore/{timestamp}', RestoreController::class)
             ->middleware('can:restore backups')
             ->name('restore');
-
-        Route::post('/restore-from-path', RestoreFromPathController::class)
-            ->middleware('can:restore backups')
-            ->name('restore-from-path');
     });

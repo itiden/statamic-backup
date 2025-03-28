@@ -87,11 +87,9 @@ export default {
     });
 
     this.resumable.on("fileSuccess", (file, event) => {
-      const data = JSON.parse(event);
-      this.findFile(file).status = "success";
-      this.findFile(file).path = data.file;
+      const data = JSON.parse(event);;
       this.$toast.success(data.message);
-      this.$emit("uploaded", data.file);
+      this.$emit("uploaded", file);
     });
 
     this.resumable.on("fileError", (file, event) => {

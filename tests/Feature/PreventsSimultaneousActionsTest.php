@@ -49,26 +49,6 @@ describe('prevents:simultaneous-actions', function (): void {
         Bus::assertDispatchedTimes(RestoreFromTimestampJob::class, 1);
     });
 
-    it('prevents simultaneous restore from path jobs', function (): void {
-        Bus::fake();
-
-        $user = tap(user())
-            ->assignRole('super admin')
-            ->save();
-
-        actingAs($user);
-
-        postJson(cp_route('api.itiden.backup.restore-from-path'), [
-            'path' => 'test',
-        ]);
-
-        postJson(cp_route('api.itiden.backup.restore-from-path'), [
-            'path' => 'test',
-        ])->assertServerError();
-
-        Bus::assertDispatchedTimes(RestoreFromPathJob::class, 1);
-    });
-
     it('prevents other actions when something is queued', function (): void {
         Bus::fake();
 
@@ -84,16 +64,11 @@ describe('prevents:simultaneous-actions', function (): void {
 
         postJson(cp_route('api.itiden.backup.store'))->assertServerError();
 
-        postJson(cp_route('api.itiden.backup.restore-from-path'), [
-            'path' => 'test',
-        ])->assertServerError();
-
         postJson(cp_route('api.itiden.backup.restore', [
             'timestamp' => now()->timestamp,
         ]))->assertServerError();
 
         Bus::assertNotDispatched(BackupJob::class);
-        Bus::assertNotDispatched(RestoreFromPathJob::class);
         Bus::assertDispatchedTimes(RestoreFromTimestampJob::class, 1);
     });
 });

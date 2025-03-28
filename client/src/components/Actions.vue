@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col items-end w-full">
     <div class="flex justify-end">
-      <upload :files="files" />
+      <upload :files="files" v-on:uploaded="handleFileUploaded" />
 
       <button
         v-if="canCreateBackups.isPermitted"
@@ -23,7 +23,6 @@
         :status="file.status"
         :percent="file.progress * 100"
         :file="file"
-        @restore="restore(file)"
       />
     </ul>
   </div>
@@ -58,6 +57,9 @@ export default {
     },
   },
   methods: {
+    handleFileUploaded(file) {
+      this.files = this.files.filter((item) => item.file.uniqueIdentifier !== file.uniqueIdentifier)
+    },
     backup() {
       this.loading = true;
       this.confirming = false;
@@ -78,33 +80,6 @@ export default {
         })
         .finally(() => {
           this.loading = false;
-        });
-    },
-    restore(file) {
-      this.loading = true;
-      this.confirming = false;
-      file.status = "restoring";
-
-      this.$store.dispatch('backup-provider/setStatus','restore_in_progress');
-
-      this.$axios
-        .post(cp_url("api/backups/restore-from-path"), {
-          path: file.path,
-        })
-        .then(({ data }) => {
-          this.$toast.info(__(data.message));
-        })
-        .catch((error) => {
-          let message = __("statamic-backup::backup.restore.failed");
-
-          if (error.response.data.message) {
-            message = error.response.data.message;
-          }
-          this.$toast.error(__(message));
-        })
-        .finally(() => {
-          this.loading = false;
-          file.status = "restored";
         });
     },
   },
