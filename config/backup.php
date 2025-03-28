@@ -11,6 +11,11 @@ return [
     ],
 
     /**
+     * The upload chunk size
+     */
+    'chunk_size' => 2 * 1024 * 1024,
+
+    /**
      * The directory where backup will put metadata files
      */
     'metadata_path' => storage_path('statamic-backups'),

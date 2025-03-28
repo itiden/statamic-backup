@@ -19,18 +19,22 @@ export default {
     "backup-listing": Listing,
     "backup-actions": Actions,
   },
+  props: {
+    chunkSize: {
+      type: Number,
+      default: 1 * 1024 * 1024, // 1MB
+    },
+  },
   created() {
+    console.log(this.chunkSize)
+    window.backup = {
+      chunkSize: this.chunkSize
+    };
+
     if (!this.$store.hasModule('backup-provider')) {
       this.$store.registerModule('backup-provider', store);
       this.$store.dispatch('backup-provider/pollEndpoint');
     }
-  },
-  data() {
-    return {
-      serverState: "initializing",
-      uploads: [],
-      url: cp_url("/backups"),
-    };
   },
   destroy() {
     this.$store.dispatch('backup-provider/stopPolling');
