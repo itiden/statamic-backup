@@ -23,7 +23,6 @@
         :status="file.status"
         :percent="file.progress * 100"
         :file="file"
-        @restore="restore(file)"
       />
     </ul>
   </div>
@@ -38,7 +37,11 @@ export default {
     upload: UploadButton,
     "upload-status": UploadStatus,
   },
-
+  mounted(){
+    this.$root.$on("uploaded", (file) => {
+      this.files = this.files.filter((item) => item.file.uniqueIdentifier !== file.uniqueIdentifier)
+    });
+  },
   data() {
     return {
       files: [],
@@ -78,33 +81,6 @@ export default {
         })
         .finally(() => {
           this.loading = false;
-        });
-    },
-    restore(file) {
-      this.loading = true;
-      this.confirming = false;
-      file.status = "restoring";
-
-      this.$store.dispatch('backup-provider/setStatus','restore_in_progress');
-
-      this.$axios
-        .post(cp_url("api/backups/restore-from-path"), {
-          path: file.path,
-        })
-        .then(({ data }) => {
-          this.$toast.info(__(data.message));
-        })
-        .catch((error) => {
-          let message = __("statamic-backup::backup.restore.failed");
-
-          if (error.response.data.message) {
-            message = error.response.data.message;
-          }
-          this.$toast.error(__(message));
-        })
-        .finally(() => {
-          this.loading = false;
-          file.status = "restored";
         });
     },
   },

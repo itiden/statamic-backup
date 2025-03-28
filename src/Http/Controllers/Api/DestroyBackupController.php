@@ -10,9 +10,9 @@ use Itiden\Backup\Contracts\Repositories\BackupRepository;
 
 final readonly class DestroyBackupController
 {
-    public function __invoke(string $timestamp, BackupRepository $repo): JsonResponse|RedirectResponse
+    public function __invoke(string $id, BackupRepository $repo): JsonResponse|RedirectResponse
     {
-        $backup = $repo->remove($timestamp);
+        $backup = $repo->remove($id);
 
         return response()->json(['message' => __('statamic-backup::backup.destroy.success', [
             'name' => $backup->name,

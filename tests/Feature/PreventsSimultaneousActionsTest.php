@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Bus;
 use Itiden\Backup\Jobs\BackupJob;
 use Itiden\Backup\Jobs\RestoreFromPathJob;
-use Itiden\Backup\Jobs\RestoreFromTimestampJob;
+use Itiden\Backup\Jobs\RestoreJob;
 use Statamic\Contracts\Auth\User;
 
 use function Itiden\Backup\Tests\user;
@@ -39,34 +39,14 @@ describe('prevents:simultaneous-actions', function (): void {
         actingAs($user);
 
         postJson(cp_route('api.itiden.backup.restore', [
-            'timestamp' => now()->timestamp,
+            'id' => now()->timestamp,
         ]));
 
         postJson(cp_route('api.itiden.backup.restore', [
-            'timestamp' => now()->timestamp,
+            'id' => now()->timestamp,
         ]))->assertServerError();
 
-        Bus::assertDispatchedTimes(RestoreFromTimestampJob::class, 1);
-    });
-
-    it('prevents simultaneous restore from path jobs', function (): void {
-        Bus::fake();
-
-        $user = tap(user())
-            ->assignRole('super admin')
-            ->save();
-
-        actingAs($user);
-
-        postJson(cp_route('api.itiden.backup.restore-from-path'), [
-            'path' => 'test',
-        ]);
-
-        postJson(cp_route('api.itiden.backup.restore-from-path'), [
-            'path' => 'test',
-        ])->assertServerError();
-
-        Bus::assertDispatchedTimes(RestoreFromPathJob::class, 1);
+        Bus::assertDispatchedTimes(RestoreJob::class, 1);
     });
 
     it('prevents other actions when something is queued', function (): void {
@@ -79,21 +59,16 @@ describe('prevents:simultaneous-actions', function (): void {
         actingAs($user);
 
         postJson(cp_route('api.itiden.backup.restore', [
-            'timestamp' => now()->timestamp,
+            'id' => now()->timestamp,
         ]));
 
         postJson(cp_route('api.itiden.backup.store'))->assertServerError();
 
-        postJson(cp_route('api.itiden.backup.restore-from-path'), [
-            'path' => 'test',
-        ])->assertServerError();
-
         postJson(cp_route('api.itiden.backup.restore', [
-            'timestamp' => now()->timestamp,
+            'id' => now()->timestamp,
         ]))->assertServerError();
 
         Bus::assertNotDispatched(BackupJob::class);
-        Bus::assertNotDispatched(RestoreFromPathJob::class);
-        Bus::assertDispatchedTimes(RestoreFromTimestampJob::class, 1);
+        Bus::assertDispatchedTimes(RestoreJob::class, 1);
     });
 });

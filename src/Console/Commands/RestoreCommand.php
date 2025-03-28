@@ -22,9 +22,15 @@ final class RestoreCommand extends Command
 
     public function handle(BackupRepository $repo): void
     {
-        /* @var BackupDto $backup */
+        /** @var BackupDto $backup */
         $backup = match (true) {
-            (bool) $this->option('path') => BackupDto::fromAbsolutePath($this->option('path')),
+            (bool) $this->option('path') => new BackupDto(
+                'not-that-important',
+                basename($this->option('path')),
+                now()->toImmutable(),
+                (string) filesize($this->option('path')),
+                $this->option('path'),
+            ),
             default
                 => BackupDto::fromFile(select(
                 label: 'Which backup do you want to restore to?',

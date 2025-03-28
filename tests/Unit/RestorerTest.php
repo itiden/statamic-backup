@@ -15,14 +15,14 @@ use function Itiden\Backup\Tests\fixtures_path;
 use function Itiden\Backup\Tests\user;
 
 describe('restorer', function (): void {
-    it('can restore from timestamp', function (): void {
+    it('can restore from id', function (): void {
         $backup = Backuper::backup();
 
         File::cleanDirectory(fixtures_path('content/collections'));
 
         expect(File::isEmptyDirectory(fixtures_path('content/collections')))->toBeTrue();
 
-        Restorer::restoreFromTimestamp($backup->timestamp);
+        Restorer::restoreFromId($backup->id);
 
         expect(File::isEmptyDirectory(fixtures_path('content/collections')))->toBeFalse();
     });
@@ -57,10 +57,10 @@ describe('restorer', function (): void {
         Restorer::restore(
             new BackupDto(
                 name: 'test',
-                created_at: now(),
+                created_at: now()->toImmutable(),
                 size: '0',
                 path: 'test/path',
-                timestamp: (string) now()->timestamp,
+                id: (string) random_bytes(10),
             ),
         );
     })->throws(RestoreFailed::class);

@@ -13,9 +13,9 @@ final readonly class DownloadBackupController
     /**
      * Handle the incoming request.
      */
-    public function __invoke(string $timestamp, BackupRepository $repo): StreamedResponse
+    public function __invoke(string $id, BackupRepository $repo): StreamedResponse
     {
-        $backup = $repo->find($timestamp);
+        $backup = $repo->find($id);
 
         $backup
             ->getMetadata()

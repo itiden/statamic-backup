@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Support;
 
+use Closure;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\DataTransferObjects\ChunkyTestDto;
 use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
 use SplFileInfo;
+
+use function Illuminate\Filesystem\join_paths;
 
 final class Chunky
 {
@@ -33,9 +36,10 @@ final class Chunky
     }
 
     /**
-     * put a from≤ chunks.
+     * Store a chunk of a file. If all chunks are uploaded, merge them into a single file.
+     * @param ?Closure<string> $onCompleted Callback to run when the file is fully uploaded.
      */
-    public function put(ChunkyUploadDto $dto): JsonResponse
+    public function put(ChunkyUploadDto $dto, ?Closure $onCompleted = null): JsonResponse
     {
         if (!$this->disk->putFileAs($dto->path, $dto->file, $dto->filename . '.part' . $dto->currentChunk)) {
             return response()->json(['message' => 'Error saving chunk'], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -54,7 +58,12 @@ final class Chunky
         }
 
         $completeFile = $this->mergeChunksIntoFile($dto->path, $dto->filename, $dto->totalChunks);
+
         if ($completeFile) {
+            if ($onCompleted) {
+                $onCompleted($completeFile);
+            }
+
             return response()->json(
                 ['message' => 'File successfully uploaded', 'file' => $completeFile],
                 Response::HTTP_CREATED,
@@ -83,13 +92,15 @@ final class Chunky
         }
         fclose($file);
 
+        $targetPath = join_paths('backups', $filename);
+
         // move the file to the backups folder
-        $this->disk->move($path . '/' . $filename, 'backups/' . $filename);
+        $this->disk->move(join_paths($path, $filename), $targetPath);
 
         // delete the chunks
         $this->disk->deleteDirectory($path);
 
-        return $this->path('backups/' . $filename);
+        return $this->path($targetPath);
     }
 
     /**

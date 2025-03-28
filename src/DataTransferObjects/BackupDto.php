@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\DataTransferObjects;
 
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Itiden\Backup\Contracts\BackupNameResolver;
 use Itiden\Backup\Models\Metadata;
 use Statamic\Support\Str as StatamicStr;
 
 final readonly class BackupDto
 {
     public function __construct(
+        public string $id,
         public string $name,
-        public Carbon $created_at,
+        public CarbonImmutable $created_at,
         public string $size,
         public string $path,
-        public string $timestamp,
     ) {
     }
 
@@ -29,40 +30,22 @@ final readonly class BackupDto
     /**
      * Create a new BackupDto from a file path in the configured disk
      */
-    public static function fromFile(string $path): self
+    public static function fromFile(string $path): ?static
     {
-        $timestamp = str(basename($path))
-            ->afterLast('-')
-            ->before('.zip')
-            ->toString();
+        $values = app(BackupNameResolver::class)->parseFilename($path);
+
+        if (!$values) {
+            return null;
+        }
+
         $bytes = Storage::disk(config('backup.destination.disk'))->size($path);
 
-        return new self(
-            name: File::name($path),
-            created_at: Carbon::createFromTimestamp($timestamp),
+        return new static(
+            id: $values->id,
+            name: $values->name,
+            created_at: $values->createdAt,
             size: StatamicStr::fileSizeForHumans($bytes, 2),
             path: $path,
-            timestamp: $timestamp,
-        );
-    }
-
-    /**
-     * Create a new BackupDto from a absolute path
-     */
-    public static function fromAbsolutePath(string $path): self
-    {
-        $timestamp = str(basename($path))
-            ->afterLast('-')
-            ->before('.zip')
-            ->toString();
-        $bytes = File::size($path);
-
-        return new self(
-            name: File::name($path),
-            created_at: Carbon::createFromTimestamp($timestamp),
-            size: StatamicStr::fileSizeForHumans($bytes, 2),
-            path: $path,
-            timestamp: $timestamp,
         );
     }
 }

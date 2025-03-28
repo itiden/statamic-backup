@@ -9,7 +9,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Itiden\Backup\Restorer;
 use Statamic\Contracts\Auth\User;
 
-final class RestoreFromTimestampJob implements ShouldQueue
+final class RestoreJob implements ShouldQueue
 {
     use Queueable;
 
@@ -17,7 +17,7 @@ final class RestoreFromTimestampJob implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        private string $timestamp,
+        private string $id,
         private User $user,
     ) {
     }
@@ -28,6 +28,6 @@ final class RestoreFromTimestampJob implements ShouldQueue
     public function handle(Restorer $backuper): void
     {
         auth()->login($this->user); // ugly but it works;
-        $backuper->restoreFromTimestamp($this->timestamp);
+        $backuper->restoreFromId($this->id);
     }
 }

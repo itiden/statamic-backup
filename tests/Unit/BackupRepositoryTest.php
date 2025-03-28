@@ -20,16 +20,16 @@ describe('repository:backup', function (): void {
         expect($backups->first())->toBeInstanceOf(BackupDto::class);
     });
 
-    it('can get backup by timestamp', function (): void {
+    it('can get backup by id', function (): void {
         $backup = Backuper::backup();
-        $backupByTimestamp = app(BackupRepository::class)->find($backup->timestamp);
+        $foundBackup = app(BackupRepository::class)->find($backup->id);
 
-        expect($backupByTimestamp)->toBeInstanceOf(BackupDto::class);
-        expect($backupByTimestamp->timestamp)->toBe($backup->timestamp);
-        expect($backupByTimestamp)->toEqual($backup);
+        expect($foundBackup)->toBeInstanceOf(BackupDto::class);
+        expect($foundBackup->id)->toBe($backup->id);
+        expect($foundBackup)->toEqual($backup);
     });
 
-    it('returns null when timestamp doesnt exist', function (): void {
+    it('returns null when id doesnt exist', function (): void {
         $backup = app(BackupRepository::class)->find('1234567890');
         expect($backup)->toBeNull();
     });
@@ -48,7 +48,7 @@ describe('repository:backup', function (): void {
         Event::fake();
 
         $backup = Backuper::backup();
-        app(BackupRepository::class)->remove($backup->timestamp);
+        app(BackupRepository::class)->remove($backup->id);
 
         Event::assertDispatched(BackupDeleted::class);
     });
@@ -61,14 +61,23 @@ describe('repository:backup', function (): void {
         expect(Storage::disk('local')->files(storage_path('statamic-backup/.metadata')))->toBeEmpty();
     });
 
-    it('can delete backup by timestamp', function (): void {
+    it('can delete backup by id', function (): void {
         $backup = Backuper::backup();
 
-        $backup = app(BackupRepository::class)->remove($backup->timestamp);
+        $backup = app(BackupRepository::class)->remove($backup->id);
 
         expect($backup)->toBeInstanceOf(BackupDto::class);
         expect(Storage::disk(config('backup.destination.disk'))->exists(
             config('backup.destination.path') . "/{$backup->name}.zip",
         ))->toBeFalse();
+    });
+
+    it('returns null and doesnt dispatch event when backup doesnt exist', function (): void {
+        Event::fake();
+
+        $backup = app(BackupRepository::class)->remove('1234567890');
+
+        expect($backup)->toBeNull();
+        Event::assertNotDispatched(BackupDeleted::class);
     });
 })->group('backuprepository');

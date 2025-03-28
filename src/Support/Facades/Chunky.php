@@ -10,9 +10,9 @@ use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
 use Itiden\Backup\Support\Chunky as ChunkySupport;
 
 /**
- * @method static \Illuminate\Http\JsonResponse put(ChunkyUploadDto $dto)
+ * @method static \Illuminate\Http\JsonResponse put(ChunkyUploadDto $dto, ?Closure<string> $onCompleted = null)
  * @method static \Illuminate\Http\JsonResponse exists(ChunkyTestDto $dto)
- * @method static string path()
+ * @method static string path(string $path = '')
  *
  * @see \Itiden\Backup\Support\Chunky
  */

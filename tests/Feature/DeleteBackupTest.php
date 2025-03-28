@@ -13,7 +13,7 @@ describe('api:destroy', function (): void {
     it('cant be deleted by a guest', function (): void {
         $backup = Backuper::backup();
 
-        $res = deleteJson(cp_route('api.itiden.backup.destroy', $backup->timestamp));
+        $res = deleteJson(cp_route('api.itiden.backup.destroy', $backup->id));
 
         expect($res->status())->toBe(401);
         expect(app(BackupRepository::class)->all())->toHaveCount(1);
@@ -24,7 +24,7 @@ describe('api:destroy', function (): void {
 
         actingAs(user());
 
-        $res = deleteJson(cp_route('api.itiden.backup.destroy', $backup->timestamp));
+        $res = deleteJson(cp_route('api.itiden.backup.destroy', $backup->id));
 
         expect($res->status())->toBe(403);
         expect(app(BackupRepository::class)->all())->toHaveCount(1);
@@ -41,7 +41,7 @@ describe('api:destroy', function (): void {
 
         actingAs($user);
 
-        $response = deleteJson(cp_route('api.itiden.backup.destroy', $backup->timestamp));
+        $response = deleteJson(cp_route('api.itiden.backup.destroy', $backup->id));
 
         expect($response->status())->toBe(200);
         expect($response->json('message'))->toBe('Deleted ' . $backup->name);

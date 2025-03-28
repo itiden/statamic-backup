@@ -52,26 +52,6 @@
       >
         <svg-icon name="micro/circle-with-cross" class="h-4 w-4" />
       </button>
-
-      <button
-        v-if="status === 'success'"
-        @click.prevent="restore"
-        class="btn-primary"
-      >
-        <svg-icon name="folder-home" class="h-4 w-4 mr-2 text-current" />
-        <span>{{ __("statamic-backup::backup.restore.label") }}</span>
-      </button>
-
-      <loading-graphic v-if="status === 'restoring'" :inline="true" text="" />
-
-      <span v-if="status === 'restored'" class="text-green-500 filename">
-        {{ __("statamic-backup::backup.restore.success") }}
-        <svg-icon
-          v-if="status === 'restored'"
-          name="light/check"
-          class="h-4 w-4 ml-2"
-        />
-      </span>
     </div>
   </div>
 </template>
@@ -91,9 +71,6 @@ export default {
     },
     pause() {
       this.$emit("pause", this.file);
-    },
-    restore() {
-      this.$emit("restore", this.file);
     },
   },
 };

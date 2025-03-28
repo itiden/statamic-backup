@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Itiden\Backup\Contracts\BackupNameResolver;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Backuper;
@@ -18,14 +19,22 @@ use function Itiden\Backup\Tests\user;
 
 describe('backuper', function (): void {
     it('can backup', function (): void {
-        $this->withoutExceptionHandling();
+        Carbon::setTestNow(Carbon::now());
+
         $backup = Backuper::backup();
+
+        $filename = app(BackupNameResolver::class)->generateFilename(Carbon::now()->toImmutable(), $backup->id);
 
         expect($backup)->toBeInstanceOf(BackupDto::class);
 
-        expect(Storage::disk(config('backup.destination.disk'))->exists(
-            config('backup.destination.path') . "/{$backup->name}.zip",
-        ))->toBeTrue();
+        expect(Storage::disk(config('backup.destination.disk'))->exists(str(
+            config('backup.destination.path') . "/{$filename}",
+        )->finish('.zip')))->toBeTrue();
+
+        expect(pathinfo(
+            Storage::disk(config('backup.destination.disk'))->path($backup->path),
+            PATHINFO_EXTENSION,
+        ))->toBe('zip');
     });
 
     it('backups correct files', function (): void {

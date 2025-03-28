@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
 use Itiden\Backup\Support\Facades\Chunky;
 
+use function Illuminate\Filesystem\join_paths;
 use function Itiden\Backup\Tests\chunk_file;
 
 describe('chunky', function (): void {
@@ -44,17 +45,26 @@ describe('chunky', function (): void {
             ),
         );
 
-        $responses = $dtos->map(Chunky::put(...));
+        $uploadedFile = null;
+
+        $responses = $dtos->map(function (ChunkyUploadDto $r) use (&$uploadedFile): JsonResponse {
+            return Chunky::put($r, onCompleted: function (string $file) use (&$uploadedFile): void {
+                $uploadedFile = $file;
+            });
+        });
 
         expect($responses->every(fn(JsonResponse $res): bool => $res->getStatusCode() === 201))->toBeTrue();
         expect($responses
             ->last()
             ->getData(true))->toHaveKey('file');
-        expect(Chunky::path() . '/backups/homepage.md')->toBeFile();
 
-        expect(File::get(Chunky::path() . '/backups/homepage.md'))->toBe(File::get(
+        expect(Chunky::path('backups/homepage.md'))->toBeFile();
+
+        expect(File::get(Chunky::path('/backups/homepage.md')))->toBe(File::get(
             __DIR__ . '/../__fixtures__/content/collections/pages/homepage.md',
         ));
+
+        expect($uploadedFile)->toEqual(Chunky::path('/backups/homepage.md'));
 
         File::deleteDirectory(Chunky::path());
         File::deleteDirectory(config('backup.temp_path') . '/chunks');

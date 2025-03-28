@@ -38,14 +38,14 @@
                 v-if="canDownload.isPermitted"
                 :disabled="!canDownload.isPossible"
                 :text="__('statamic-backup::backup.download.label')"
-                :redirect="download_url(backup.timestamp)"
+                :redirect="download_url(backup.id)"
               />
               <span v-if="canRestore.isPermitted && canRestore.isPossible">
                 <hr class="divider" />
                 <dropdown-item
                   :disabled="!canRestore.isPossible"
                   :text="__('statamic-backup::backup.restore.label')"
-                  @click="initiateRestore(backup.timestamp, backup.name)"
+                  @click="initiateRestore(backup.id, backup.name)"
                 />
               </span>
               <span v-if="canDestroy.isPermitted && canDestroy.isPossible">
@@ -53,7 +53,7 @@
                 <dropdown-item
                   :text="__('statamic-backup::backup.destroy.label')"
                   dangerous="true"
-                  @click="initiateDestroy(backup.timestamp, backup.name)"
+                  @click="initiateDestroy(backup.id, backup.name)"
                 />
               </span>
             </dropdown-list>
@@ -92,7 +92,8 @@ export default {
   mixins: [Listing],
 
   mounted() {
-    this.$on("onDestroyed", this.request);
+    this.$on("onDestroyed", this.request); // refetch backup list after destroy is completed
+    this.$root.$on("uploaded", this.request); // refetch backup list after upload is completed
   },
   watch: {
     status(newStatus, oldStatus) {
@@ -117,7 +118,7 @@ export default {
       columns: this.initialColumns,
       confirmingRestore: false,
       confirmingDestroy: false,
-      activeTimestamp: null,
+      activeId: null,
       activeName: null,
     };
   },
@@ -139,22 +140,22 @@ export default {
     },
   },
   methods: {
-    download_url(timestamp) {
-      return cp_url("api/backups/download/" + timestamp);
+    download_url(id) {
+      return cp_url("api/backups/download/" + id);
     },
-    restore_url(timestamp) {
-      return cp_url("api/backups/restore/" + timestamp);
+    restore_url(id) {
+      return cp_url("api/backups/restore/" + id);
     },
-    destroy_url(timestamp) {
-      return cp_url("api/backups/" + timestamp);
+    destroy_url(id) {
+      return cp_url("api/backups/" + id);
     },
-    initiateDestroy(timestamp, name) {
-      this.activeTimestamp = timestamp;
+    initiateDestroy(id, name) {
+      this.activeId = id;
       this.activeName = name;
       this.confirmingDestroy = true;
     },
-    initiateRestore(timestamp, name) {
-      this.activeTimestamp = timestamp;
+    initiateRestore(id, name) {
+      this.activeId = id;
       this.activeName = name;
       this.confirmingRestore = true;
     },
@@ -165,7 +166,7 @@ export default {
 
       this.$store.dispatch('backup-provider/setStatus', 'restore_in_progress');
       this.$axios
-        .post(this.restore_url(this.activeTimestamp))
+        .post(this.restore_url(this.activeId))
         .then(({ data }) => {
           this.$toast.info(__(data.message));
           this.$emit("onRestored");
@@ -180,7 +181,7 @@ export default {
         })
         .finally(() => {
           this.activeName = null;
-          this.activeTimestamp = null;
+          this.activeId = null;
         });
     },
     destroy() {
@@ -188,7 +189,7 @@ export default {
 
       this.confirmingDestroy = false;
       this.$axios
-        .delete(this.destroy_url(this.activeTimestamp))
+        .delete(this.destroy_url(this.activeId))
         .then(({ data }) => {
           this.$toast.success(__(data.message));
           this.$emit("onDestroyed");
@@ -203,7 +204,7 @@ export default {
         })
         .finally(() => {
           this.activeName = null;
-          this.activeTimestamp = null;
+          this.activeId = null;
         });
     },
   },

@@ -39,7 +39,7 @@ final class Metadata
             'root' => config('backup.metadata_path') . '/.meta',
         ]);
 
-        $yaml = YAML::parse($this->filesystem->get($this->backup->timestamp) ?? '');
+        $yaml = YAML::parse($this->filesystem->get($this->backup->id) ?? '');
 
         $this->createdBy = $yaml['created_by'] ?? null;
         $this->downloads = array_map(UserActionDto::fromArray(...), $yaml['downloads'] ?? []);
@@ -107,13 +107,13 @@ final class Metadata
 
     public function delete(): void
     {
-        $this->filesystem->delete($this->backup->timestamp);
+        $this->filesystem->delete($this->backup->id);
     }
 
     private function save(): void
     {
         $this->filesystem->put(
-            $this->backup->timestamp,
+            $this->backup->id,
             YAML::dump([
                 'created_by' => $this->createdBy,
                 'downloads' => array_map(fn(UserActionDto $action): array => $action->toArray(), $this->downloads),

@@ -31,12 +31,12 @@ final class Restorer
      *
      * @throws Exception
      */
-    public function restoreFromTimestamp(string $timestamp): void
+    public function restoreFromId(string $id): void
     {
-        $backup = $this->repository->find($timestamp);
+        $backup = $this->repository->find($id);
 
         if (!$backup) {
-            throw new RuntimeException("Backup with timestamp {$timestamp} not found.");
+            throw new RuntimeException("Backup with id {$id} not found.");
         }
 
         $this->restore($backup);
