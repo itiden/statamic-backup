@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col items-end w-full">
     <div class="flex justify-end">
-      <upload :files="files" v-on:uploaded="handleFileUploaded" />
+      <upload :files="files" />
 
       <button
         v-if="canCreateBackups.isPermitted"
@@ -37,7 +37,11 @@ export default {
     upload: UploadButton,
     "upload-status": UploadStatus,
   },
-
+  mounted(){
+    this.$root.$on("uploaded", (file) => {
+      this.files = this.files.filter((item) => item.file.uniqueIdentifier !== file.uniqueIdentifier)
+    });
+  },
   data() {
     return {
       files: [],
@@ -57,9 +61,6 @@ export default {
     },
   },
   methods: {
-    handleFileUploaded(file) {
-      this.files = this.files.filter((item) => item.file.uniqueIdentifier !== file.uniqueIdentifier)
-    },
     backup() {
       this.loading = true;
       this.confirming = false;

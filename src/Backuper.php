@@ -121,7 +121,7 @@ final class Backuper
     /**
      * Remove oldest backups when max backups is exceeded if it's present.
      */
-    private function enforceMaxBackups(): void
+    public function enforceMaxBackups(): void
     {
         $maxBackups = config('backup.max_backups', false);
         if (!$maxBackups) {

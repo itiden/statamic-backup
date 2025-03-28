@@ -92,7 +92,8 @@ export default {
   mixins: [Listing],
 
   mounted() {
-    this.$on("onDestroyed", this.request);
+    this.$on("onDestroyed", this.request); // refetch backup list after destroy is completed
+    this.$root.$on("uploaded", this.request); // refetch backup list after upload is completed
   },
   watch: {
     status(newStatus, oldStatus) {
