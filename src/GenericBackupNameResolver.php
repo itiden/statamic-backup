@@ -10,34 +10,33 @@ use Itiden\Backup\DataTransferObjects\ResolvedBackupData;
 
 final readonly class GenericBackupNameResolver implements BackupNameResolver
 {
+    private const Separator = '---';
+
     public function generateFilename(CarbonImmutable $createdAt, string $id): string
     {
-        return implode('', [
+        return implode(static::Separator, [
             str(config('app.name'))->slug(),
-            '-',
             $createdAt->timestamp,
-            '-',
             $id,
         ]);
     }
 
-    public function parseFilename(string $path): ResolvedBackupData
+    public function parseFilename(string $path): ?ResolvedBackupData
     {
         /** @var string */
         $filename = pathinfo($path, PATHINFO_FILENAME);
 
-        $createdAt = CarbonImmutable::createFromTimestamp((string) str($filename)
-            ->beforeLast('-')
-            ->afterLast('-'));
+        $parts = explode(static::Separator, $filename);
 
-        $id = (string) str($filename)
-            ->afterLast('-')
-            ->before('.zip');
+        if (count($parts) !== 3)
+            return null;
 
-        $name = (string) str($filename)
-            ->remove('-' . $createdAt->timestamp)
-            ->before('.zip');
+        [$name, $createdAt, $id] = $parts;
 
-        return new ResolvedBackupData(createdAt: $createdAt, id: $id, name: $name);
+        return new ResolvedBackupData(
+            createdAt: CarbonImmutable::createFromTimestamp($createdAt),
+            id: $id,
+            name: $name,
+        );
     }
 }
