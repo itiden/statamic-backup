@@ -44,22 +44,4 @@ final readonly class BackupDto
             path: $path,
         );
     }
-
-    /**
-     * Create a new BackupDto from a absolute path
-     */
-    public static function fromAbsolutePath(string $path): static
-    {
-        $values = app(BackupNameResolver::class)->parseFilename($path);
-
-        $bytes = File::size($path);
-
-        return new static(
-            id: $values->id,
-            name: $values->name,
-            created_at: $values->createdAt,
-            size: StatamicStr::fileSizeForHumans($bytes, 2),
-            path: $path,
-        );
-    }
 }
