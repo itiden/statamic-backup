@@ -71,4 +71,13 @@ describe('repository:backup', function (): void {
             config('backup.destination.path') . "/{$backup->name}.zip",
         ))->toBeFalse();
     });
+
+    it('returns null and doesnt dispatch event when backup doesnt exist', function (): void {
+        Event::fake();
+
+        $backup = app(BackupRepository::class)->remove('1234567890');
+
+        expect($backup)->toBeNull();
+        Event::assertNotDispatched(BackupDeleted::class);
+    });
 })->group('backuprepository');
