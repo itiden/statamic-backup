@@ -51,7 +51,7 @@ export default {
         "X-CSRF-TOKEN":
           document.querySelector("input[name=_token]").value,
       },
-      chunkSize: window.backup.chunkSize || 1 * 1024 * 1024, // 1MB
+      chunkSize: window.backup.chunkSize || 2 * 1024 * 1024, // 2MB
       forceChunkSize: true,
       maxChunkRetries: 1,
       maxFiles: 1,
