@@ -5,6 +5,6 @@
 
 @csrf
 
-<itiden-backup />
+<itiden-backup :chunk-size="{{ config('backup.chunk_size') }}" />
 
 @endsection
