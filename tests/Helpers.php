@@ -32,7 +32,7 @@ function chunk_file(string $file, string $path, int $buffer = 1024): Collection
     for ($i = 1; $i <= $totalChunks; $i++) {
         $chunk = fread($fileHandle, $buffer);
 
-        $chunkPath = $path . $fileName . ".part$i";
+        $chunkPath = join_paths($path, "{$fileName}.part{$i}");
 
         File::put($chunkPath, $chunk);
 

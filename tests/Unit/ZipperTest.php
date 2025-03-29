@@ -23,9 +23,7 @@ describe('zipper', function (): void {
     it('can zip file from string', function (): void {
         $target = storage_path('test.zip');
 
-        Zipper::write($target)
-            ->addFromString('test.txt', 'test')
-            ->close();
+        Zipper::write($target)->addFromString('test.txt', 'test')->close();
 
         expect(file_exists($target))->toBeTrue();
 
@@ -35,9 +33,7 @@ describe('zipper', function (): void {
     it('can zip file from path', function (): void {
         $target = storage_path('test.zip');
 
-        Zipper::write($target)
-            ->addFile(__FILE__)
-            ->close();
+        Zipper::write($target)->addFile(__FILE__)->close();
 
         expect(file_exists($target))->toBeTrue();
 
@@ -56,15 +52,11 @@ describe('zipper', function (): void {
     it('can unzip file', function (): void {
         $target = storage_path('test.zip');
 
-        Zipper::write($target)
-            ->addFromString('test.txt', 'test')
-            ->close();
+        Zipper::write($target)->addFromString('test.txt', 'test')->close();
 
         $unzip = storage_path('unzip');
 
-        Zipper::read($target)
-            ->extractTo($unzip)
-            ->close();
+        Zipper::read($target)->extractTo($unzip)->close();
 
         expect(file_exists($unzip))->toBeTrue();
     });
@@ -72,34 +64,25 @@ describe('zipper', function (): void {
     it('can unzip file to directory', function (): void {
         $target = storage_path('test.zip');
 
-        Zipper::write($target)
-            ->addFromString('test.txt', 'test')
-            ->close();
+        Zipper::write($target)->addFromString('test.txt', 'test')->close();
 
         $unzip = storage_path('test');
-        Zipper::read($target)
-            ->extractTo($unzip)
-            ->close();
+        Zipper::read($target)->extractTo($unzip)->close();
 
         expect(file_exists($unzip))->toBeTrue();
         expect(file_exists(storage_path('test') . '/test.txt'))->toBeTrue();
     });
 
     it('can unzip directory', function (): void {
-        $files = collect(File::allFiles(fixtures_path('content/collections')))->map(
-            fn(SplFileInfo $file): string => $file->getPathname(),
-        );
+        $files = collect(File::allFiles(fixtures_path('content/collections')))
+            ->map(fn(SplFileInfo $file): string => $file->getPathname());
 
         $target = storage_path('test.zip');
 
-        Zipper::write($target)
-            ->addDirectory(fixtures_path('content/collections'), 'example')
-            ->close();
+        Zipper::write($target)->addDirectory(fixtures_path('content/collections'), 'example')->close();
 
         $unzip = storage_path('unzipdir');
-        Zipper::read($target)
-            ->extractTo($unzip)
-            ->close();
+        Zipper::read($target)->extractTo($unzip)->close();
 
         expect(file_exists($unzip))->toBeTrue();
         expect(file_exists(storage_path('unzipdir') . '/example'))->toBeTrue();
@@ -111,7 +94,7 @@ describe('zipper', function (): void {
 
     it('can encrypt when zipping', function (): void {
         $target = storage_path('test.zip');
-        // @mago-ignore security/no-literal-password
+        // @mago-expect security/no-literal-password
         $password = 'password';
 
         Zipper::write($target)
@@ -124,9 +107,7 @@ describe('zipper', function (): void {
 
         $unzip = storage_path('unzip');
 
-        Zipper::read($target)
-            ->extractTo($unzip, $password)
-            ->close();
+        Zipper::read($target)->extractTo($unzip, $password)->close();
 
         expect(File::allFiles($unzip)[0]->getRelativePathname())->toBe('test.txt');
         expect(File::get($unzip . '/test.txt'))->toBe('test');
@@ -143,9 +124,7 @@ describe('zipper', function (): void {
         $zip = Zipper::read($target);
 
         expect($zip->getMeta())->toHaveKey('test');
-        expect($zip->getMeta())
-            ->get('test')
-            ->toBe('test');
+        expect($zip->getMeta())->get('test')->toBe('test');
 
         $zip->close();
     });

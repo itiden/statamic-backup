@@ -37,9 +37,7 @@ describe('api:download', function (): void {
 
         $user = user();
 
-        $user
-            ->assignRole('admin')
-            ->save();
+        $user->assignRole('admin')->save();
 
         actingAs($user);
 
@@ -53,9 +51,7 @@ describe('api:download', function (): void {
 
         $user = user();
 
-        $user
-            ->assignRole('admin')
-            ->save();
+        $user->assignRole('admin')->save();
 
         actingAs($user);
 

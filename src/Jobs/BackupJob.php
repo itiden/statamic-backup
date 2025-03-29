@@ -20,8 +20,7 @@ final class BackupJob implements ShouldQueue
      */
     public function __construct(
         private User $user,
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.

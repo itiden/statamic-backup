@@ -22,6 +22,10 @@ final readonly class SkippingPipe extends BackupPipe
 
     public function backup(Zipper $zip, Closure $next): Zipper
     {
-        return $this->skip(reason: 'This pipe is skipped', next: $next, zip: $zip);
+        return $this->skip(
+            reason: 'This pipe is skipped',
+            next: $next,
+            zip: $zip,
+        );
     }
 }

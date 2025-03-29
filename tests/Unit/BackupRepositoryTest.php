@@ -39,9 +39,7 @@ describe('repository:backup', function (): void {
 
         app(BackupRepository::class)->empty();
 
-        expect(app(BackupRepository::class)
-            ->all()
-            ->count())->toBe(0);
+        expect(app(BackupRepository::class)->all()->count())->toBe(0);
     });
 
     it('dispatches backup removed event', function (): void {

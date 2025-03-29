@@ -16,10 +16,10 @@ describe('command:restore', function (): void {
 
         $backups = app(BackupRepository::class)->all();
 
-        artisan('statamic:backup:restore')
-            ->expectsQuestion(question: 'Which backup do you want to restore to?', answer: $backups->first()->path)
-            ->expectsConfirmation('Are you sure you want to restore your content?')
-            ->assertFailed();
+        artisan('statamic:backup:restore')->expectsQuestion(
+            question: 'Which backup do you want to restore to?',
+            answer: $backups->first()->path,
+        )->expectsConfirmation('Are you sure you want to restore your content?')->assertFailed();
     });
 
     it('can restore from a specific path', function (): void {
@@ -27,9 +27,9 @@ describe('command:restore', function (): void {
 
         $backup = Backuper::backup();
 
-        artisan('statamic:backup:restore', ['--path' => Storage::disk(config('backup.destination.disk'))->path(
-            $backup->path,
-        )])
+        artisan('statamic:backup:restore', ['--path' => Storage::disk(config(
+            'backup.destination.disk',
+        ))->path($backup->path)])
             ->expectsConfirmation('Are you sure you want to restore your content?')
             ->assertFailed();
     });

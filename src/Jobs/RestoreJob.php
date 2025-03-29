@@ -19,8 +19,7 @@ final class RestoreJob implements ShouldQueue
     public function __construct(
         private string $id,
         private User $user,
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.

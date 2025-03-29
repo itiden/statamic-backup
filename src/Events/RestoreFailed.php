@@ -10,6 +10,5 @@ final readonly class RestoreFailed
 {
     public function __construct(
         public Exceptions\RestoreFailed $exception,
-    ) {
-    }
+    ) {}
 }

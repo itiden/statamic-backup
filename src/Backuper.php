@@ -8,11 +8,11 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
-use Itiden\Backup\Support\Zipper;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Enums\State;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
+use Itiden\Backup\Support\Zipper;
 use Throwable;
 
 final class Backuper
@@ -20,8 +20,7 @@ final class Backuper
     public function __construct(
         private BackupRepository $repository,
         private StateManager $stateManager,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new backup.
@@ -69,7 +68,10 @@ final class Backuper
             $zipMeta->each(
                 static fn(Collection $meta, string $key): mixed => match ($key) {
                     'skipped' => $meta->each(function (string $reason, string $pipe) use ($metadata): void {
-                        $metadata->addSkippedPipe(pipe: $pipe, reason: $reason);
+                        $metadata->addSkippedPipe(
+                            pipe: $pipe,
+                            reason: $reason,
+                        );
                     }),
                 },
             );
@@ -105,15 +107,11 @@ final class Backuper
     {
         $metadata = collect(['skipped' => collect()]);
 
-        $zip
-            ->getMeta()
-            ->each(static function (array|string $meta, string $key) use ($metadata): void {
-                if (is_array($meta) && isset($meta['skipped'])) {
-                    $metadata
-                        ->get('skipped')
-                        ->put($key, $meta['skipped']);
-                }
-            });
+        $zip->getMeta()->each(static function (array|string $meta, string $key) use ($metadata): void {
+            if (is_array($meta) && isset($meta['skipped'])) {
+                $metadata->get('skipped')->put($key, $meta['skipped']);
+            }
+        });
 
         return $metadata;
     }

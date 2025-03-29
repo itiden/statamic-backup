@@ -15,8 +15,7 @@ final readonly class SkippedPipeDto implements Arrayable
     public function __construct(
         public string $pipe,
         public string $reason,
-    ) {
-    }
+    ) {}
 
     public function toArray(): array
     {
@@ -28,6 +27,9 @@ final readonly class SkippedPipeDto implements Arrayable
 
     public static function fromArray(array $array): static
     {
-        return new static(pipe: $array['pipe'], reason: $array['reason']);
+        return new static(
+            pipe: $array['pipe'],
+            reason: $array['reason'],
+        );
     }
 }

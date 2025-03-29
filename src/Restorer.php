@@ -23,8 +23,7 @@ final class Restorer
     public function __construct(
         private BackupRepository $repository,
         private StateManager $stateManager,
-    ) {
-    }
+    ) {}
 
     /**
      * Restore from a backup with a given timestamp.
@@ -73,9 +72,7 @@ final class Restorer
 
             $user = auth()->user();
             if ($user) {
-                $backup
-                    ->getMetadata()
-                    ->addRestore($user);
+                $backup->getMetadata()->addRestore($user);
             }
 
             File::cleanDirectory(config('backup.temp_path'));
@@ -142,9 +139,7 @@ final class Restorer
     {
         $target = config('backup.temp_path') . DIRECTORY_SEPARATOR . 'unzipping';
 
-        Zipper::read($path)
-            ->extractTo($target, config('backup.password'))
-            ->close();
+        Zipper::read($path)->extractTo($target, config('backup.password'))->close();
 
         if (!collect(File::allFiles($target))->count()) {
             throw new Exception('This backup is empty, perhaps you used the wrong password?');

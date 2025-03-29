@@ -33,17 +33,15 @@ describe('chunky', function (): void {
 
         $totalSize = File::size(__DIR__ . '/../__fixtures__/content/collections/pages/homepage.md');
 
-        $dtos = $chunks->map(
-            fn(string $chunk, int $index): ChunkyUploadDto => new ChunkyUploadDto(
-                path: 'dir/test',
-                filename: 'homepage.md',
-                totalChunks: $chunks->count(),
-                currentChunk: $index + 1,
-                totalSize: $totalSize,
-                identifier: basename($chunk),
-                file: new UploadedFile($chunk, basename($chunk)),
-            ),
-        );
+        $dtos = $chunks->map(fn(string $chunk, int $index): ChunkyUploadDto => new ChunkyUploadDto(
+            path: 'dir/test',
+            filename: 'homepage.md',
+            totalChunks: $chunks->count(),
+            currentChunk: $index + 1,
+            totalSize: $totalSize,
+            identifier: basename($chunk),
+            file: new UploadedFile($chunk, basename($chunk)),
+        ));
 
         $uploadedFile = null;
 
@@ -54,15 +52,12 @@ describe('chunky', function (): void {
         });
 
         expect($responses->every(fn(JsonResponse $res): bool => $res->getStatusCode() === 201))->toBeTrue();
-        expect($responses
-            ->last()
-            ->getData(true))->toHaveKey('file');
+        expect($responses->last()->getData(true))->toHaveKey('file');
 
         expect(Chunky::path('backups/homepage.md'))->toBeFile();
 
-        expect(File::get(Chunky::path('/backups/homepage.md')))->toBe(File::get(
-            __DIR__ . '/../__fixtures__/content/collections/pages/homepage.md',
-        ));
+        expect(File::get(Chunky::path('/backups/homepage.md')))
+            ->toBe(File::get(__DIR__ . '/../__fixtures__/content/collections/pages/homepage.md'));
 
         expect($uploadedFile)->toEqual(Chunky::path('/backups/homepage.md'));
 

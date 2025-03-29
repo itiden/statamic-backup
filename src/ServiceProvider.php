@@ -40,12 +40,9 @@ final class ServiceProvider extends AddonServiceProvider
 
     public function bootAddon(): void
     {
-        $this->publishes(
-            [
-                __DIR__ . '/../config/backup.php' => config_path('backup.php'),
-            ],
-            'backup-config',
-        );
+        $this->publishes([
+            __DIR__ . '/../config/backup.php' => config_path('backup.php'),
+        ], 'backup-config');
 
         $this->configurePermissions();
         $this->configureNavigation();
@@ -60,9 +57,7 @@ final class ServiceProvider extends AddonServiceProvider
 
         $frequency = config('backup.schedule.frequency');
 
-        $schedule
-            ->command('statamic:backup')
-            ->$frequency(config('backup.schedule.time'));
+        $schedule->command('statamic:backup')->$frequency(config('backup.schedule.time'));
     }
 
     public function register(): void
@@ -101,18 +96,10 @@ final class ServiceProvider extends AddonServiceProvider
                 ->register('manage backups')
                 ->label('Manage Backups')
                 ->children([
-                    $permission
-                        ->make('create backups')
-                        ->label('Create Backups'),
-                    $permission
-                        ->make('restore backups')
-                        ->label('Restore From Backups'),
-                    $permission
-                        ->make('download backups')
-                        ->label('Download Backups'),
-                    $permission
-                        ->make('delete backups')
-                        ->label('Delete Backups'),
+                    $permission->make('create backups')->label('Create Backups'),
+                    $permission->make('restore backups')->label('Restore From Backups'),
+                    $permission->make('download backups')->label('Download Backups'),
+                    $permission->make('delete backups')->label('Delete Backups'),
                 ]));
         });
     }

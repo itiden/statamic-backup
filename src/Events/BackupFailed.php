@@ -10,6 +10,5 @@ final readonly class BackupFailed
 {
     public function __construct(
         public Exceptions\BackupFailed $exception,
-    ) {
-    }
+    ) {}
 }

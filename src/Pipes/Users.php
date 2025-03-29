@@ -32,7 +32,11 @@ final readonly class Users extends BackupPipe
         $usersDir = Stache::store('users')?->directory();
 
         if (!File::exists($usersDir)) {
-            return $this->skip(reason: 'No users found.', next: $next, zip: $zip);
+            return $this->skip(
+                reason: 'No users found.',
+                next: $next,
+                zip: $zip,
+            );
         }
 
         $zip->addDirectory($usersDir, static::getKey());

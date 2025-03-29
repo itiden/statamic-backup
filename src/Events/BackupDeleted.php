@@ -10,6 +10,5 @@ final readonly class BackupDeleted
 {
     public function __construct(
         public BackupDto $backup,
-    ) {
-    }
+    ) {}
 }

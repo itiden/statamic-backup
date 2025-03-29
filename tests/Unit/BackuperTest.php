@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\BackupNameResolver;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
-use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Enums\State;
+use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\StateManager;
 use Itiden\Backup\Support\Zipper;
 use Statamic\Facades\Stache;
@@ -27,14 +27,12 @@ describe('backuper', function (): void {
 
         expect($backup)->toBeInstanceOf(BackupDto::class);
 
-        expect(Storage::disk(config('backup.destination.disk'))->exists(str(
-            config('backup.destination.path') . "/{$filename}",
-        )->finish('.zip')))->toBeTrue();
+        expect(Storage::disk(config('backup.destination.disk'))->exists(
+            str(config('backup.destination.path') . "/{$filename}")->finish('.zip'),
+        ))->toBeTrue();
 
-        expect(pathinfo(
-            Storage::disk(config('backup.destination.disk'))->path($backup->path),
-            PATHINFO_EXTENSION,
-        ))->toBe('zip');
+        expect(pathinfo(Storage::disk(config('backup.destination.disk'))->path($backup->path), PATHINFO_EXTENSION))
+            ->toBe('zip');
     });
 
     it('backups correct files', function (): void {
@@ -53,15 +51,16 @@ describe('backuper', function (): void {
             ->map(fn(SplFileInfo $file) => $file->getRelativePathname())
             ->toArray();
 
-        expect($paths)->toEqualCanonicalizing([
-            // since the default collection store and entries store have the same directory, we will get duplicates.
-            'stache-content::collections/pages.yaml',
-            'stache-content::collections/pages/homepage.md',
-            'stache-content::entries/pages.yaml',
-            'stache-content::entries/pages/homepage.md',
-            'stache-content::form-submissions/1743066599.5568.yaml',
-            'users/test@example.com.yaml',
-        ]);
+        expect($paths)
+            ->toEqualCanonicalizing([
+                // since the default collection store and entries store have the same directory, we will get duplicates.
+                'stache-content::collections/pages.yaml',
+                'stache-content::collections/pages/homepage.md',
+                'stache-content::entries/pages.yaml',
+                'stache-content::entries/pages/homepage.md',
+                'stache-content::form-submissions/1743066599.5568.yaml',
+                'users/test@example.com.yaml',
+            ]);
 
         File::deleteDirectory($unzipped);
     });
@@ -87,10 +86,11 @@ describe('backuper', function (): void {
             ->map(fn(SplFileInfo $file) => $file->getRelativePathname())
             ->toArray();
 
-        expect($paths)->toEqualCanonicalizing([
-            'stache-content::form-submissions/1743066599.5568.yaml',
-            'users/test@example.com.yaml',
-        ]);
+        expect($paths)
+            ->toEqualCanonicalizing([
+                'stache-content::form-submissions/1743066599.5568.yaml',
+                'users/test@example.com.yaml',
+            ]);
 
         File::deleteDirectory($unzipped);
     });
@@ -103,9 +103,7 @@ describe('backuper', function (): void {
             Carbon::setTestNow(Carbon::now()->addDays($i));
             Backuper::backup();
 
-            expect(app(BackupRepository::class)
-                ->all()
-                ->count())->toBeLessThanOrEqual(5);
+            expect(app(BackupRepository::class)->all()->count())->toBeLessThanOrEqual(5);
         }
     });
 
@@ -116,9 +114,7 @@ describe('backuper', function (): void {
             Carbon::setTestNow(Carbon::now()->addDays($i));
             Backuper::backup();
 
-            expect(app(BackupRepository::class)
-                ->all()
-                ->count())->toBe($i + 1);
+            expect(app(BackupRepository::class)->all()->count())->toBe($i + 1);
         }
     });
 

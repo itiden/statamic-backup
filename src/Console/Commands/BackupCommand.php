@@ -8,7 +8,8 @@ use Illuminate\Console\Command;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Backuper;
 
-use function Laravel\Prompts\{info, spin};
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\spin;
 
 /**
  * Backup site

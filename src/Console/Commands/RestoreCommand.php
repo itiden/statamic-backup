@@ -9,7 +9,10 @@ use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Restorer;
 
-use function Laravel\Prompts\{confirm, spin, info, select};
+use function Laravel\Prompts\confirm;
+use function Laravel\Prompts\info;
+use function Laravel\Prompts\select;
+use function Laravel\Prompts\spin;
 
 /**
  * Restore content from a directory / backup
@@ -31,27 +34,21 @@ final class RestoreCommand extends Command
                 (string) filesize($this->option('path')),
                 $this->option('path'),
             ),
-            default
-                => BackupDto::fromFile(select(
+            default => BackupDto::fromFile(select(
                 label: 'Which backup do you want to restore to?',
                 scroll: 10,
-                options: $repo
-                    ->all()
-                    ->flatMap(static fn(BackupDto $backup): array => [$backup->path => $backup->path]),
+                options: $repo->all()->flatMap(static fn(BackupDto $backup): array => [$backup->path => $backup->path]),
                 required: true,
             )),
         };
 
-        if (
-            $this->option('force') ||
-                confirm(
-                    label: 'Are you sure you want to restore your content?',
-                    hint: "This will overwrite your current content with state from {$backup->created_at->format(
-                        'Y-m-d H:i:s',
-                    )}",
-                    required: true,
-                )
-        ) {
+        if ($this->option('force') || confirm(
+                label: 'Are you sure you want to restore your content?',
+                hint: "This will overwrite your current content with state from {$backup->created_at->format(
+                    'Y-m-d H:i:s',
+                )}",
+                required: true,
+            )) {
             spin(static fn() => Restorer::restore($backup), 'Restoring backup');
 
             info('Backup restored!');

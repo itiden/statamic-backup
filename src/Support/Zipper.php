@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\File;
 use Symfony\Component\Finder\SplFileInfo;
 use ZipArchive;
 
-// @mago-ignore maintainability/too-many-methods
+// @mago-expect maintainability/too-many-methods
 final class Zipper
 {
     private ZipArchive $zip;
@@ -52,10 +52,8 @@ final class Zipper
     {
         $this->zip->setPassword($password);
 
-        collect(range(0, $this->zip->numFiles - 1))->each(fn(int $file): bool => $this->zip->setEncryptionIndex(
-            $file,
-            ZipArchive::EM_AES_256,
-        ));
+        collect(range(0, $this->zip->numFiles - 1))
+            ->each(fn(int $file): bool => $this->zip->setEncryptionIndex($file, ZipArchive::EM_AES_256));
 
         return $this;
     }
@@ -85,9 +83,10 @@ final class Zipper
      */
     public function addDirectory(string $path, ?string $prefix = null): self
     {
-        collect(File::allFiles($path))->each(function (SplFileInfo $file) use ($prefix): void {
-            $this->addFile($file->getPathname(), $prefix . '/' . $file->getRelativePathname());
-        });
+        collect(File::allFiles($path))
+            ->each(function (SplFileInfo $file) use ($prefix): void {
+                $this->addFile($file->getPathname(), $prefix . '/' . $file->getRelativePathname());
+            });
 
         return $this;
     }

@@ -10,9 +10,7 @@ describe('command:clear-temp', function (): void {
 
         File::deleteDirectory($temp_path);
 
-        $this
-            ->artisan('statamic:backup:temp-clear')
-            ->assertExitCode(0);
+        $this->artisan('statamic:backup:temp-clear')->assertExitCode(0);
     });
 
     it('will clear temp path when running backup clear command', function (): void {
