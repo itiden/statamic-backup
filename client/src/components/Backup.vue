@@ -22,7 +22,7 @@ export default {
   props: {
     chunkSize: {
       type: Number,
-      default: 1 * 1024 * 1024, // 1MB
+      default: 2 * 1024 * 1024, // 2MB
     },
   },
   created() {
