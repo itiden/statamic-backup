@@ -88,7 +88,7 @@ commit_parsers = [
     { message = "^fix*", group = "<!-- 1 -->:bug: Bug fixes" },
     { message = "^perf*", group = "<!-- 2 -->:zap: Performance" },
     { message = "^chore*", group = "<!-- 3 -->:gear: Miscellaneous" },
-    { message = "^docs*", group = "<!-- 3 -->:page_facing_up: Documentation" },
+    { message = "^docs*", group = "<!-- 4 -->:page_facing_up: Documentation" },
 ]
 
 # filter out the commits that are not matched by commit parsers
