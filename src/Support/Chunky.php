@@ -59,18 +59,14 @@ final class Chunky
 
         $completeFile = $this->mergeChunksIntoFile($dto->path, $dto->filename, $dto->totalChunks);
 
-        if ($completeFile) {
-            if ($onCompleted) {
-                $onCompleted($completeFile);
-            }
-
-            return response()->json(
-                ['message' => 'File successfully uploaded', 'file' => $completeFile],
-                Response::HTTP_CREATED,
-            );
+        if ($onCompleted) {
+            $onCompleted($completeFile);
         }
 
-        return response()->json(['message' => 'Error restoring file'], Response::HTTP_INTERNAL_SERVER_ERROR);
+        return response()->json(
+            ['message' => 'File successfully uploaded', 'file' => $completeFile],
+            Response::HTTP_CREATED,
+        );
     }
 
     /**
@@ -88,8 +84,8 @@ final class Chunky
 
         for ($i = 1; $i <= $totalChunks; $i++) {
             fwrite($file, file_get_contents($fullPath . '.part' . $i));
-            info('writing chunk ' . $i);
         }
+
         fclose($file);
 
         $targetPath = join_paths('backups', $filename);
