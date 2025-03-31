@@ -8,20 +8,19 @@ use Illuminate\Support\Facades\File;
 use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
 use Itiden\Backup\Support\Facades\Chunky;
 
-use function Illuminate\Filesystem\join_paths;
 use function Itiden\Backup\Tests\chunk_file;
 
 describe('chunky', function (): void {
     it('can upload chunk', function (): void {
         $file = UploadedFile::fake()->create('test', 1000);
 
-        $dto = new ChunkyUploadDto('dir/test', 'name', 1, 1, 1000, $file->hashName(), $file);
+        $dto = new ChunkyUploadDto('name', 1, 1, 1000, $file->hashName(), $file);
 
         $res = Chunky::put($dto);
 
         expect($res->getStatusCode())->toBe(201);
         expect($res->getData(true))->toHaveAttribute('message');
-        expect(Chunky::path() . '/dir/test/' . $dto->filename . '.part1')->toBeFile();
+        expect(Chunky::path() . '/' . $file->hashName() . '/' . $dto->filename . '.part1')->toBeFile();
     });
 
     it('can assemble file', function (): void {
@@ -35,12 +34,11 @@ describe('chunky', function (): void {
 
         $dtos = $chunks->map(
             fn(string $chunk, int $index): ChunkyUploadDto => new ChunkyUploadDto(
-                path: 'dir/test',
                 filename: 'homepage.md',
                 totalChunks: $chunks->count(),
                 currentChunk: $index + 1,
                 totalSize: $totalSize,
-                identifier: basename($chunk),
+                identifier: 'homepage-and-some-hash',
                 file: new UploadedFile($chunk, basename($chunk)),
             ),
         );
@@ -58,13 +56,13 @@ describe('chunky', function (): void {
             ->last()
             ->getData(true))->toHaveKey('file');
 
-        expect(Chunky::path('backups/homepage.md'))->toBeFile();
+        expect(Chunky::path('assembled/homepage.md'))->toBeFile();
 
-        expect(File::get(Chunky::path('/backups/homepage.md')))->toBe(File::get(
+        expect(File::get(Chunky::path('/assembled/homepage.md')))->toBe(File::get(
             __DIR__ . '/../__fixtures__/content/collections/pages/homepage.md',
         ));
 
-        expect($uploadedFile)->toEqual(Chunky::path('/backups/homepage.md'));
+        expect($uploadedFile)->toEqual(Chunky::path('/assembled/homepage.md'));
 
         File::deleteDirectory(Chunky::path());
         File::deleteDirectory(config('backup.temp_path') . '/chunks');
