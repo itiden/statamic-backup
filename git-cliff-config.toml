@@ -23,9 +23,19 @@ body = """
     ## [Unreleased]
 {% endif -%}
 
+{%- set breaking_commits = commits | filter(attribute="breaking", value=true) -%}
+{%- if breaking_commits | length > 0 %}
+    ## Breaking changes
+    {% for commit in breaking_commits %}
+        - {% if commit.scope %}**{{ commit.scope | upper_first }}**: {% endif %}\
+            {{ commit.breaking_description | upper_first }} \
+            [{{ commit.id | truncate(length=7, end="") }}]({{ self::remote_url() }}/commit/{{ commit.id }})
+    {% endfor %}
+{% endif -%}
+
 {% for group, commits in commits | group_by(attribute="group") %}
     ### {{ group | upper_first }}
-    {%- for commit in commits %}
+    {% for commit in commits %}
         - {{ commit.message | split(pat="\n") | first | upper_first | trim }}\
             {% if commit.remote.username %} by @{{ commit.remote.username }}{%- endif -%}
             {% if commit.remote.pr_number %} in \
@@ -45,6 +55,7 @@ body = """
     {%- endif %}
 {%- endfor %}\n
 """
+
 # template for the changelog footer
 footer = """
 {%- macro remote_url() -%}
@@ -77,6 +88,7 @@ commit_parsers = [
     { message = "^fix*", group = "<!-- 1 -->:bug: Bug fixes" },
     { message = "^perf*", group = "<!-- 2 -->:zap: Performance" },
     { message = "^chore*", group = "<!-- 3 -->:gear: Miscellaneous" },
+    { message = "^docs*", group = "<!-- 3 -->:page_facing_up: Documentation" },
 ]
 
 # filter out the commits that are not matched by commit parsers
