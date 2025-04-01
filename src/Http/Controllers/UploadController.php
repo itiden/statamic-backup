@@ -21,7 +21,10 @@ final readonly class UploadController
             $repo,
             $backuper,
         ): void {
-            $repo->add($completeFile);
+            $backup = $repo->add($completeFile);
+
+            $backuper->addMetaFromZipToBackupMeta($completeFile, $backup);
+
             $backuper->enforceMaxBackups();
         });
     }

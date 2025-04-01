@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Itiden\Backup;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
@@ -13,6 +12,7 @@ use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Enums\State;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
+use Itiden\Backup\Models\Metadata;
 use Throwable;
 
 final class Backuper
@@ -50,29 +50,21 @@ final class Backuper
                 $zipper->encrypt($password);
             }
 
+            $zipper->addMeta('is_backup', 'true');
+            $zipper->addMeta('version', '1');
             $zipper->addMeta('created_at', now()->toIso8601String());
-
-            $zipMeta = $this->resolveMetaFromZip($zipper);
 
             $zipper->close();
 
             $backup = $this->repository->add($temp_zip_path);
 
-            $metadata = $backup->getMetadata();
+            $metadata = static::addMetaFromZipToBackupMeta($temp_zip_path, $backup);
 
             $user = auth()->user();
 
             if ($user) {
                 $metadata->setCreatedBy($user);
             }
-
-            $zipMeta->each(
-                static fn(Collection $meta, string $key): mixed => match ($key) {
-                    'skipped' => $meta->each(function (string $reason, string $pipe) use ($metadata): void {
-                        $metadata->addSkippedPipe(pipe: $pipe, reason: $reason);
-                    }),
-                },
-            );
 
             event(new BackupCreated($backup));
 
@@ -84,8 +76,6 @@ final class Backuper
 
             return $backup;
         } catch (Throwable $e) {
-            report($e);
-
             $exception = new Exceptions\BackupFailed(previous: $e);
 
             event(new BackupFailed($exception));
@@ -98,22 +88,17 @@ final class Backuper
         }
     }
 
-    /**
-     * @return Collection<string, Collection<string|int, mixed>>
-     */
-    private function resolveMetaFromZip(Zipper $zip): Collection
+    public static function addMetaFromZipToBackupMeta(string $pathToZip, BackupDto $backup): Metadata
     {
-        $metadata = collect(['skipped' => collect()]);
-
+        $metadata = $backup->getMetadata();
+        $zip = Zipper::read($pathToZip);
         $zip
             ->getMeta()
-            ->each(static function (array|string $meta, string $key) use ($metadata): void {
-                if (is_array($meta) && isset($meta['skipped'])) {
-                    $metadata
-                        ->get('skipped')
-                        ->put($key, $meta['skipped']);
-                }
-            });
+            ->filter(static fn(mixed $data) => is_array($data) && isset($data['skipped']))
+            ->map(static fn(array $data) => $data['skipped'])
+            ->each(static fn(string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason));
+
+        $zip->close();
 
         return $metadata;
     }
