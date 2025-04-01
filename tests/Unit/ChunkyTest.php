@@ -6,7 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
-use Itiden\Backup\Support\Facades\Chunky;
+use Itiden\Backup\Support\Chunky;
 
 use function Itiden\Backup\Tests\chunk_file;
 
@@ -16,11 +16,11 @@ describe('chunky', function (): void {
 
         $dto = new ChunkyUploadDto('name', 1, 1, 1000, $file->hashName(), $file);
 
-        $res = Chunky::put($dto);
+        $res = app(Chunky::class)->put($dto);
 
         expect($res->getStatusCode())->toBe(201);
         expect($res->getData(true))->toHaveAttribute('message');
-        expect(Chunky::path() . '/' . $file->hashName() . '/' . $dto->filename . '.part1')->toBeFile();
+        expect(app(Chunky::class)->path() . '/' . $file->hashName() . '/' . $dto->filename . '.part1')->toBeFile();
     });
 
     it('can assemble file', function (): void {
@@ -46,7 +46,7 @@ describe('chunky', function (): void {
         $uploadedFile = null;
 
         $responses = $dtos->map(function (ChunkyUploadDto $r) use (&$uploadedFile): JsonResponse {
-            return Chunky::put($r, onCompleted: function (string $file) use (&$uploadedFile): void {
+            return app(Chunky::class)->put($r, onCompleted: function (string $file) use (&$uploadedFile): void {
                 $uploadedFile = $file;
             });
         });
@@ -56,15 +56,15 @@ describe('chunky', function (): void {
             ->last()
             ->getData(true))->toHaveKey('file');
 
-        expect(Chunky::path('assembled/homepage.md'))->toBeFile();
+        expect(app(Chunky::class)->path('assembled/homepage.md'))->toBeFile();
 
-        expect(File::get(Chunky::path('/assembled/homepage.md')))->toBe(File::get(
+        expect(File::get(app(Chunky::class)->path('/assembled/homepage.md')))->toBe(File::get(
             __DIR__ . '/../__fixtures__/content/collections/pages/homepage.md',
         ));
 
-        expect($uploadedFile)->toEqual(Chunky::path('/assembled/homepage.md'));
+        expect($uploadedFile)->toEqual(app(Chunky::class)->path('/assembled/homepage.md'));
 
-        File::deleteDirectory(Chunky::path());
+        File::deleteDirectory(app(Chunky::class)->path());
         File::deleteDirectory(config('backup.temp_path') . '/chunks');
     });
 })->group('chunky');

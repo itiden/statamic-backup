@@ -15,6 +15,8 @@ use Itiden\Backup\Events\BackupFailed;
 use Itiden\Backup\Models\Metadata;
 use Throwable;
 
+use function Illuminate\Filesystem\join_paths;
+
 final class Backuper
 {
     public function __construct(
@@ -35,7 +37,7 @@ final class Backuper
         try {
             $this->stateManager->setState(State::BackupInProgress);
 
-            $temp_zip_path = config('backup.temp_path') . '/temp.zip';
+            $temp_zip_path = join_paths(config('backup.temp_path'), 'temp.zip');
 
             $zipper = Zipper::write($temp_zip_path);
 

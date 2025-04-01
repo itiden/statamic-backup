@@ -11,13 +11,17 @@ use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\ChunkyTestDto;
 use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
 use Itiden\Backup\Http\Requests\ChunkyUploadRequest;
-use Itiden\Backup\Support\Facades\Chunky;
+use Itiden\Backup\Support\Chunky;
 
 final readonly class UploadController
 {
-    public function __invoke(ChunkyUploadRequest $request, BackupRepository $repo, Backuper $backuper): JsonResponse
-    {
-        return Chunky::put(ChunkyUploadDto::fromRequest($request), onCompleted: function (string $completeFile) use (
+    public function __invoke(
+        ChunkyUploadRequest $request,
+        Chunky $chunky,
+        BackupRepository $repo,
+        Backuper $backuper,
+    ): JsonResponse {
+        return $chunky->put(ChunkyUploadDto::fromRequest($request), onCompleted: function (string $completeFile) use (
             $repo,
             $backuper,
         ): void {
@@ -29,8 +33,8 @@ final readonly class UploadController
         });
     }
 
-    public function test(Request $request): JsonResponse
+    public function test(Request $request, Chunky $chunky): JsonResponse
     {
-        return Chunky::exists(ChunkyTestDto::fromRequest($request));
+        return $chunky->exists(ChunkyTestDto::fromRequest($request));
     }
 }

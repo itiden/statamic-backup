@@ -2,14 +2,12 @@
 
 declare(strict_types=1);
 
-use Illuminate\Http\File as HttpFile;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
-use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
 use Itiden\Backup\Facades\Backuper;
-use Itiden\Backup\Support\Facades\Chunky;
+use Itiden\Backup\Support\Chunky;
 
 use function Illuminate\Filesystem\join_paths;
 use function Itiden\Backup\Tests\chunk_file;
@@ -63,7 +61,7 @@ describe('api:upload', function (): void {
         $res->assertSuccessful();
         expect(app(BackupRepository::class)->all())->toHaveCount(2);
 
-        File::cleanDirectory(Chunky::path());
+        File::cleanDirectory(app(Chunky::class)->path());
         File::cleanDirectory(config('backup.temp_path'));
         app(BackupRepository::class)->empty();
     });
@@ -109,8 +107,27 @@ describe('api:upload', function (): void {
             $res->assertStatus(200);
         });
 
-        File::cleanDirectory(Chunky::path());
+        File::cleanDirectory(app(Chunky::class)->path());
         File::cleanDirectory(config('backup.temp_path'));
         app(BackupRepository::class)->empty();
+    });
+
+    it('returns correct response when chunk doesnt exist', function () {
+        File::cleanDirectory(config('backup.temp_path'));
+        Storage::disk(config('backup.destination.disk'))->deleteDirectory(config('backup.destination.path'));
+
+        $user = user();
+        $user->makeSuper();
+        $user->save();
+
+        actingAs($user);
+
+        $res = getJson(cp_route('itiden.backup.chunky.test', [
+            'resumableIdentifier' => 'test-chunk-identifier',
+            'resumableFilename' => 'test-file.txt',
+            'resumableChunkNumber' => 1,
+        ]));
+
+        $res->assertStatus(404);
     });
 });
