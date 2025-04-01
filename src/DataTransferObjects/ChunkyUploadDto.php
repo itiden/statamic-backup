@@ -11,7 +11,6 @@ final readonly class ChunkyUploadDto
 {
     // @mago-ignore maintainability/excessive-parameter-list
     public function __construct(
-        public string $path,
         public string $filename,
         public int $totalChunks,
         public int $currentChunk,
@@ -27,7 +26,6 @@ final readonly class ChunkyUploadDto
     public static function fromRequest(Request $request): static
     {
         return new static(
-            path: 'temp/' . $request->input('resumableIdentifier'),
             filename: $request->input('resumableFilename'),
             totalChunks: (int) $request->input('resumableTotalChunks'),
             currentChunk: (int) $request->input('resumableChunkNumber'),

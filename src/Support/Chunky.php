@@ -11,7 +11,6 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\DataTransferObjects\ChunkyTestDto;
 use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
-use SplFileInfo;
 
 use function Illuminate\Filesystem\join_paths;
 
@@ -41,11 +40,11 @@ final class Chunky
      */
     public function put(ChunkyUploadDto $dto, ?Closure $onCompleted = null): JsonResponse
     {
-        if (!$this->disk->putFileAs($dto->path, $dto->file, $dto->filename . '.part' . $dto->currentChunk)) {
+        if (!$this->disk->putFileAs($dto->identifier, $dto->file, $dto->filename . '.part' . $dto->currentChunk)) {
             return response()->json(['message' => 'Error saving chunk'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $chunksOnDiskSize = collect($this->disk->allFiles($dto->path))->reduce(
+        $chunksOnDiskSize = collect($this->disk->allFiles($dto->identifier))->reduce(
             fn(int $carry, string $item): int => $carry + $this->disk->size($item),
             0,
         );
@@ -57,7 +56,7 @@ final class Chunky
             );
         }
 
-        $completeFile = $this->mergeChunksIntoFile($dto->path, $dto->filename, $dto->totalChunks);
+        $completeFile = $this->mergeChunksIntoFile($dto->identifier, $dto->filename, $dto->totalChunks);
 
         if ($onCompleted) {
             $onCompleted($completeFile);
@@ -72,31 +71,30 @@ final class Chunky
     /**
      * Merge chunks into a single file.
      */
-    public function mergeChunksIntoFile(string $path, string $filename, int $totalChunks): string
+    public function mergeChunksIntoFile(string $chunkPath, string $filename, int $totalChunks): string
     {
-        $fullPath = $this->path($path . '/' . $filename);
-        $file = fopen($fullPath, 'w');
+        $this->disk->makeDirectory('assembled');
+
+        $assembledPath = $this->path(join_paths('assembled', $filename));
+
         // create the complete file
+        $file = fopen($assembledPath, 'w');
 
         if (!$file) {
             throw new \Exception('cannot create the destination file');
         }
 
+        // loop through the chunks and write them to the file
         for ($i = 1; $i <= $totalChunks; $i++) {
-            fwrite($file, file_get_contents($fullPath . '.part' . $i));
+            fwrite($file, file_get_contents($this->path("{$chunkPath}/{$filename}.part{$i}")));
         }
 
         fclose($file);
 
-        $targetPath = join_paths('backups', $filename);
-
-        // move the file to the backups folder
-        $this->disk->move(join_paths($path, $filename), $targetPath);
-
         // delete the chunks
-        $this->disk->deleteDirectory($path);
+        $this->disk->deleteDirectory($chunkPath);
 
-        return $this->path($targetPath);
+        return $assembledPath;
     }
 
     /**
@@ -107,7 +105,7 @@ final class Chunky
         // Logic from RestoreUploadController::getChunkFilePath method goes here
         $chunk = $dto->filename . '.part' . $dto->currentChunk;
 
-        if ($this->disk->exists($dto->path . '/' . $chunk)) {
+        if ($this->disk->exists($dto->identifier . '/' . $chunk)) {
             return response()->json(['message' => 'Chunk already exists'], 200);
         }
 

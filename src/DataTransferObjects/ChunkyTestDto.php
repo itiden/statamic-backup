@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 final readonly class ChunkyTestDto
 {
     public function __construct(
-        public string $path,
+        public string $identifier,
         public string $filename,
         public int $currentChunk,
     ) {
@@ -21,7 +21,7 @@ final readonly class ChunkyTestDto
     public static function fromRequest(Request $request): static
     {
         return new static(
-            path: 'temp/' . $request->input('resumableIdentifier'),
+            identifier: $request->input('resumableIdentifier'),
             filename: $request->input('resumableFilename'),
             currentChunk: (int) $request->input('resumableChunkNumber'),
         );

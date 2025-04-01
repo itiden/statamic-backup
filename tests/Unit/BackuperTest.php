@@ -35,6 +35,14 @@ describe('backuper', function (): void {
             Storage::disk(config('backup.destination.disk'))->path($backup->path),
             PATHINFO_EXTENSION,
         ))->toBe('zip');
+
+        $zipper = Zipper::read(Storage::disk(config('backup.destination.disk'))->path($backup->path));
+
+        $meta = $zipper->getMeta();
+        expect($meta)->toHaveKey('is_backup', 'true');
+        expect($meta)->toHaveKey('version', '1');
+
+        $zipper->close();
     });
 
     it('backups correct files', function (): void {

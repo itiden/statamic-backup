@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Event;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
+use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
 use Itiden\Backup\Exceptions\RestoreFailed;
@@ -139,11 +140,19 @@ describe('api:create', function (): void {
 
         postJson(cp_route('api.itiden.backup.store'));
 
-        expect(app(BackupRepository::class)
+        /** @var BackupDto */
+        $backup = app(BackupRepository::class)
             ->all()
-            ->first()
-            ->getMetadata()
-            ->getSkippedPipes())->toHaveCount(1);
+            ->first();
+
+        $metadata = $backup->getMetadata();
+
+        expect($metadata->getSkippedPipes())->toHaveCount(1);
+        expect(
+            $metadata
+                ->getSkippedPipes()
+                ->first()->pipe,
+        )->toBe(SkippingPipe::class);
     });
 
     it('can encrypt backup with password', function (): void {
