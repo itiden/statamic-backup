@@ -10,11 +10,11 @@ use Itiden\Backup\DataTransferObjects\ResolvedBackupData;
 
 final readonly class GenericBackupNameResolver implements BackupNameResolver
 {
-    private const Separator = '---';
+    private const SEPARATOR = '---';
 
     public function generateFilename(CarbonImmutable $createdAt, string $id): string
     {
-        return implode(static::Separator, [
+        return implode(static::SEPARATOR, [
             str(config('app.name'))->slug(),
             $createdAt->timestamp,
             $id,
@@ -26,7 +26,7 @@ final readonly class GenericBackupNameResolver implements BackupNameResolver
         /** @var string */
         $filename = pathinfo($path, PATHINFO_FILENAME);
 
-        $parts = explode(static::Separator, $filename);
+        $parts = explode(static::SEPARATOR, $filename);
 
         if (count($parts) !== 3)
             return null;

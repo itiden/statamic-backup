@@ -112,7 +112,7 @@ describe('api:upload', function (): void {
         app(BackupRepository::class)->empty();
     });
 
-    it('returns correct response when chunk doesnt exist', function () {
+    it('returns correct response when chunk doesnt exist', function (): void {
         File::cleanDirectory(config('backup.temp_path'));
         Storage::disk(config('backup.destination.disk'))->deleteDirectory(config('backup.destination.path'));
 
