@@ -46,7 +46,9 @@ describe('metadata', function (): void {
 
         $metadata->setCreatedBy($user);
 
-        expect($metadata->getCreatedBy())->toBe($user);
+        expect($metadata
+            ->getCreatedBy()
+            ->getAuthIdentifier())->toBe($user->getAuthIdentifier());
     });
 
     it('can get the downloads for a backup', function (): void {
