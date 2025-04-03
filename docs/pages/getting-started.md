@@ -26,10 +26,28 @@ To learn more about the configuration read [here](./configuration.md)!
 
 ## Usage
 
-First you will have to give your user permissions to manage backups, this is done like any other permission in statamic.
+### Permissions
 
-Then you should see a `Backups` entry in the navigation menu.
+The package comes with a few permissions to keep your backups safe:
 
-On the backups page you can create new backups, delete or restore from existing, or upload and restore from that.
+- `manage backups` - This permissions allows the user to access the backups page and view the backups.
+  - `create backups` - This permission allows the user to create backups.
+  - `delete backups` - This permission allows the user to delete backups.
+  - `restore backups` - This permission allows the user to restore and upload backups.
+  - `download backups` - This permission allows the user to download backups.
 
-The uploader chunks backups so no need to worry about the file being larger than your servers post sizes!
+If you want to know more about permissions, you can read the statamic [permissions documentation](https://statamic.dev/users#permissions).
+
+We recommend using the `roles` or `groups` feature to manage permissions.
+
+### Backups
+
+When you have configured your permissions, you should see a `Backups` entry in the navigation menu.
+
+On the backups page you can create new backups, delete or restore from existing, or upload backups.
+
+The uploader chunks backups so no need to worry about the file being larger than your servers post sizes! (the chunk size is configurable!)
+
+### CLI
+
+You can also manage backups from the cli, see [here](./commands.md) for a list of all available commands.
