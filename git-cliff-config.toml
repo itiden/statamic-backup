@@ -25,7 +25,7 @@ body = """
 
 {%- set breaking_commits = commits | filter(attribute="breaking", value=true) -%}
 {%- if breaking_commits | length > 0 %}
-    ## Breaking changes
+    ### Breaking changes
     {% for commit in breaking_commits %}
         - {% if commit.scope %}**{{ commit.scope | upper_first }}**: {% endif %}\
             {{ commit.breaking_description | upper_first }} \
