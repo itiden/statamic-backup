@@ -7,7 +7,7 @@ return [
      */
     'destination' => [
         'disk' => 'local',
-        'path' => 'statamic-backups',
+        'path' => 'backups',
     ],
 
     /**
@@ -18,12 +18,12 @@ return [
     /**
      * The directory where backup will put metadata files
      */
-    'metadata_path' => storage_path('statamic-backups'),
+    'metadata_path' => storage_path('statamic_backup/metadata'),
 
     /**
      * The path to the temp directory
      */
-    'temp_path' => storage_path('framework/statamic-backup'),
+    'temp_path' => storage_path('statamic_backup/temp_files'),
 
     /**
      * The maximum number of backups to keep
