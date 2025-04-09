@@ -44,10 +44,8 @@ final class Chunky
             return response()->json(['message' => 'Error saving chunk'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        $chunksOnDiskSize = collect($this->disk->allFiles($dto->identifier))->reduce(
-            fn(int $carry, string $item): int => $carry + $this->disk->size($item),
-            0,
-        );
+        $chunksOnDiskSize = collect($this->disk->allFiles($dto->identifier))
+            ->reduce(fn(int $carry, string $item): int => $carry + $this->disk->size($item), 0);
 
         if ($chunksOnDiskSize < $dto->totalSize) {
             return response()->json(

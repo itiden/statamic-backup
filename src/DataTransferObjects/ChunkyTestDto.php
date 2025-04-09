@@ -12,8 +12,7 @@ final readonly class ChunkyTestDto
         public string $identifier,
         public string $filename,
         public int $currentChunk,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new ChunkyTestDto from a request

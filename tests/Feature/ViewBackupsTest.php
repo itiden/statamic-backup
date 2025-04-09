@@ -12,9 +12,7 @@ use function Pest\Laravel\getJson;
 
 describe('api:view', function (): void {
     test('guest cant view backups', function (): void {
-        $this
-            ->get(cp_route('itiden.backup.index'))
-            ->assertRedirect(cp_route('login'));
+        $this->get(cp_route('itiden.backup.index'))->assertRedirect(cp_route('login'));
     });
 
     test('user without permission cant view backups', function (): void {
@@ -30,15 +28,11 @@ describe('api:view', function (): void {
 
         $user = user();
 
-        $user
-            ->set('roles', ['admin'])
-            ->save();
+        $user->set('roles', ['admin'])->save();
 
         actingAs($user);
 
-        get(cp_route('itiden.backup.index'))
-            ->assertOk()
-            ->assertViewIs('itiden-backup::backups');
+        get(cp_route('itiden.backup.index'))->assertOk()->assertViewIs('itiden-backup::backups');
     });
 
     test('user without permission cant get backups from api', function (): void {
@@ -57,24 +51,16 @@ describe('api:view', function (): void {
 
         $user = user();
 
-        $user
-            ->set('roles', ['admin'])
-            ->save();
+        $user->set('roles', ['admin'])->save();
 
         actingAs($user);
 
         $backup = Backuper::backup();
 
         // Set some metadata so we can test it has correct structure
-        $backup
-            ->getMetadata()
-            ->addDownload($user);
-        $backup
-            ->getMetadata()
-            ->addRestore($user);
-        $backup
-            ->getMetadata()
-            ->addSkippedPipe(Users::class, 'Oh no it failed!');
+        $backup->getMetadata()->addDownload($user);
+        $backup->getMetadata()->addRestore($user);
+        $backup->getMetadata()->addSkippedPipe(Users::class, 'Oh no it failed!');
 
         getJson(cp_route('api.itiden.backup.index'))
             ->assertOk()

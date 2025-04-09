@@ -9,7 +9,7 @@ use Illuminate\Http\UploadedFile;
 
 final readonly class ChunkyUploadDto
 {
-    // @mago-ignore maintainability/excessive-parameter-list
+    // @mago-expect maintainability/excessive-parameter-list
     public function __construct(
         public string $filename,
         public int $totalChunks,
@@ -17,8 +17,7 @@ final readonly class ChunkyUploadDto
         public int $totalSize,
         public string $identifier,
         public UploadedFile $file,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new ChunkyUploadDto from a request

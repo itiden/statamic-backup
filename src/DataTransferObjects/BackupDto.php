@@ -19,8 +19,7 @@ final readonly class BackupDto
         public CarbonImmutable $created_at,
         public string $size,
         public string $path,
-    ) {
-    }
+    ) {}
 
     public function getMetadata(): Metadata
     {

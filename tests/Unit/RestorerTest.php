@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\DataTransferObjects\BackupDto;
+use Itiden\Backup\Enums\State;
 use Itiden\Backup\Exceptions\RestoreFailed;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Facades\Restorer;
-use Itiden\Backup\Enums\State;
 use Itiden\Backup\StateManager;
 use Statamic\Facades\Stache;
 
@@ -54,15 +54,13 @@ describe('restorer', function (): void {
     });
 
     it('throws an exception if the backup path does not exist', function (): void {
-        Restorer::restore(
-            new BackupDto(
-                name: 'test',
-                created_at: now()->toImmutable(),
-                size: '0',
-                path: 'test/path',
-                id: (string) random_bytes(10),
-            ),
-        );
+        Restorer::restore(new BackupDto(
+            name: 'test',
+            created_at: now()->toImmutable(),
+            size: '0',
+            path: 'test/path',
+            id: (string) random_bytes(10),
+        ));
     })->throws(RestoreFailed::class);
 
     it('cannot restore while a backup is in progress', function (): void {

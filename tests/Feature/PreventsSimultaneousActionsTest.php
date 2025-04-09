@@ -16,9 +16,7 @@ describe('prevents:simultaneous-actions', function (): void {
     it('prevents simultaneous backup jobs', function (): void {
         Bus::fake();
 
-        $user = tap(user())
-            ->assignRole('admin')
-            ->save();
+        $user = tap(user())->assignRole('admin')->save();
 
         actingAs($user);
 
@@ -32,9 +30,7 @@ describe('prevents:simultaneous-actions', function (): void {
     it('prevents simultaneous restore jobs', function (): void {
         Bus::fake();
 
-        $user = tap(user())
-            ->assignRole('super admin')
-            ->save();
+        $user = tap(user())->assignRole('super admin')->save();
 
         actingAs($user);
 
@@ -52,9 +48,7 @@ describe('prevents:simultaneous-actions', function (): void {
     it('prevents other actions when something is queued', function (): void {
         Bus::fake();
 
-        $user = tap(user(), fn(User $user) => $user
-            ->assignRole('super admin')
-            ->save());
+        $user = tap(user(), fn(User $user) => $user->assignRole('super admin')->save());
 
         actingAs($user);
 

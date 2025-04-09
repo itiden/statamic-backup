@@ -16,9 +16,7 @@ describe('pipes', function (): void {
         $temp_zip = config('backup.temp_path') . '/backup.zip';
 
         $zipper = Zipper::write($temp_zip);
-        expect(app()
-            ->make($pipe)
-            ->backup($zipper, fn(Zipper $z): Zipper => $z))->toBeInstanceOf(Zipper::class);
+        expect(app()->make($pipe)->backup($zipper, fn(Zipper $z): Zipper => $z))->toBeInstanceOf(Zipper::class);
 
         $zipper->close();
 
@@ -36,9 +34,7 @@ describe('pipes', function (): void {
         File::copyDirectory($fixtues_path, $fixtures_backup_path);
 
         $path = config('backup.temp_path') . '/backup';
-        expect(app()
-            ->make($pipe)
-            ->restore($path, fn(string $z): string => $z))->toBe($path);
+        expect(app()->make($pipe)->restore($path, fn(string $z): string => $z))->toBe($path);
 
         File::deleteDirectory($fixtues_path);
         File::copyDirectory($fixtures_backup_path, $fixtues_path);
@@ -59,7 +55,10 @@ describe('pipes', function (): void {
 
         $zipper = Zipper::write(config('backup.temp_path') . '/backup.zip');
 
-        $pipe->backup(zip: $zipper, next: $callable);
+        $pipe->backup(
+            zip: $zipper,
+            next: $callable,
+        );
 
         expect($zipper->getMeta())->toHaveKey(Users::class);
         expect($zipper->getMeta()[Users::class])->toHaveKey('skipped', 'No users found.');
@@ -78,13 +77,14 @@ describe('pipes', function (): void {
 
         $zipper = Zipper::write(config('backup.temp_path') . '/backup.zip');
 
-        $pipe->backup(zip: $zipper, next: $callable);
+        $pipe->backup(
+            zip: $zipper,
+            next: $callable,
+        );
 
         expect($zipper->getMeta())->toHaveKey(StacheData::class);
-        expect($zipper->getMeta()[StacheData::class])->toHaveKey(
-            'skipped',
-            'No stores found to backup, is the Stache configured correctly?',
-        );
+        expect($zipper->getMeta()[StacheData::class])
+            ->toHaveKey('skipped', 'No stores found to backup, is the Stache configured correctly?');
 
         $zipper->close();
     });

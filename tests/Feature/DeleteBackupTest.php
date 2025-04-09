@@ -35,9 +35,7 @@ describe('api:destroy', function (): void {
 
         $user = user();
 
-        $user
-            ->assignRole('super admin')
-            ->save();
+        $user->assignRole('super admin')->save();
 
         actingAs($user);
 

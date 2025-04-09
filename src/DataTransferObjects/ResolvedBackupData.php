@@ -12,6 +12,5 @@ final readonly class ResolvedBackupData
         public CarbonImmutable $createdAt,
         public string $id,
         public string $name,
-    ) {
-    }
+    ) {}
 }

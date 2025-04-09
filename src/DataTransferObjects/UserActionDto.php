@@ -14,8 +14,7 @@ final readonly class UserActionDto implements Arrayable
     public function __construct(
         public string $userId,
         public string $timestamp,
-    ) {
-    }
+    ) {}
 
     public function getUser(): ?User
     {
@@ -37,6 +36,9 @@ final readonly class UserActionDto implements Arrayable
 
     public static function fromArray(array $data): static
     {
-        return new static(userId: $data['user_id'], timestamp: $data['timestamp']);
+        return new static(
+            userId: $data['user_id'],
+            timestamp: $data['timestamp'],
+        );
     }
 }

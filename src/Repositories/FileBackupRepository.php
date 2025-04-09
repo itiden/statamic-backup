@@ -55,9 +55,7 @@ final class FileBackupRepository implements BackupRepository
 
     public function find(string $id): ?BackupDto
     {
-        return $this
-            ->all()
-            ->first(fn(BackupDto $backup): bool => $backup->id === $id);
+        return $this->all()->first(fn(BackupDto $backup): bool => $backup->id === $id);
     }
 
     public function remove(string $id): ?BackupDto
@@ -77,9 +75,7 @@ final class FileBackupRepository implements BackupRepository
 
     public function empty(): bool
     {
-        $this
-            ->all()
-            ->each(fn(BackupDto $backup): ?BackupDto => $this->remove($backup->id));
+        $this->all()->each(fn(BackupDto $backup): ?BackupDto => $this->remove($backup->id));
         return Storage::disk(config('backup.destination.disk'))->deleteDirectory(config('backup.destination.path'));
     }
 }

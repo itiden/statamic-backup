@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "329076d31a8a5946200273adfe7a41ee",
+    "content-hash": "cbc62f71f523263350751c141ae31127",
     "packages": [
         {
             "name": "ajthinking/archetype",
@@ -7861,16 +7861,16 @@
         },
         {
             "name": "carthage-software/mago",
-            "version": "0.11.1",
+            "version": "0.22.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/carthage-software/mago.git",
-                "reference": "f79f89309f7d73928367733943c0aaeffdd0a062"
+                "reference": "35f62e03c0f0f8b5fd62e12220724a3321b25480"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/carthage-software/mago/zipball/f79f89309f7d73928367733943c0aaeffdd0a062",
-                "reference": "f79f89309f7d73928367733943c0aaeffdd0a062",
+                "url": "https://api.github.com/repos/carthage-software/mago/zipball/35f62e03c0f0f8b5fd62e12220724a3321b25480",
+                "reference": "35f62e03c0f0f8b5fd62e12220724a3321b25480",
                 "shasum": ""
             },
             "require": {
@@ -7896,13 +7896,19 @@
             "license": [
                 "MIT OR Apache-2.0"
             ],
+            "authors": [
+                {
+                    "name": "Saif Eddin Gmati",
+                    "email": "azjezz@carthage.software"
+                }
+            ],
             "description": "Mago is a toolchain for PHP that aims to provide a set of tools to help developers write better code.",
             "keywords": [
                 "dev"
             ],
             "support": {
                 "issues": "https://github.com/carthage-software/mago/issues",
-                "source": "https://github.com/carthage-software/mago/tree/0.11.1"
+                "source": "https://github.com/carthage-software/mago/tree/0.22.2"
             },
             "funding": [
                 {
@@ -7910,7 +7916,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-21T20:52:15+00:00"
+            "time": "2025-04-05T07:53:19+00:00"
         },
         {
             "name": "doctrine/deprecations",

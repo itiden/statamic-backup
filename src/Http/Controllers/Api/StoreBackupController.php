@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Itiden\Backup\Http\Controllers\Api;
 
 use Illuminate\Container\Attributes\Authenticated;
-use Itiden\Backup\Jobs\BackupJob;
 use Illuminate\Http\JsonResponse;
+use Itiden\Backup\Jobs\BackupJob;
 use Itiden\Backup\StateManager;
 use Statamic\Contracts\Auth\User;
 

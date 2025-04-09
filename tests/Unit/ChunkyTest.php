@@ -32,35 +32,31 @@ describe('chunky', function (): void {
 
         $totalSize = File::size(__DIR__ . '/../__fixtures__/content/collections/pages/homepage.md');
 
-        $dtos = $chunks->map(
-            fn(string $chunk, int $index): ChunkyUploadDto => new ChunkyUploadDto(
-                filename: 'homepage.md',
-                totalChunks: $chunks->count(),
-                currentChunk: $index + 1,
-                totalSize: $totalSize,
-                identifier: 'homepage-and-some-hash',
-                file: new UploadedFile($chunk, basename($chunk)),
-            ),
-        );
+        $dtos = $chunks->map(fn(string $chunk, int $index): ChunkyUploadDto => new ChunkyUploadDto(
+            filename: 'homepage.md',
+            totalChunks: $chunks->count(),
+            currentChunk: $index + 1,
+            totalSize: $totalSize,
+            identifier: 'homepage-and-some-hash',
+            file: new UploadedFile($chunk, basename($chunk)),
+        ));
 
         $uploadedFile = null;
 
         $responses = $dtos->map(function (ChunkyUploadDto $r) use (&$uploadedFile): JsonResponse {
-            return app(Chunky::class)->put($r, onCompleted: function (string $file) use (&$uploadedFile): void {
-                $uploadedFile = $file;
-            });
+            return app(Chunky::class)
+                ->put($r, onCompleted: function (string $file) use (&$uploadedFile): void {
+                    $uploadedFile = $file;
+                });
         });
 
         expect($responses->every(fn(JsonResponse $res): bool => $res->getStatusCode() === 201))->toBeTrue();
-        expect($responses
-            ->last()
-            ->getData(true))->toHaveKey('file');
+        expect($responses->last()->getData(true))->toHaveKey('file');
 
         expect(app(Chunky::class)->path('assembled/homepage.md'))->toBeFile();
 
-        expect(File::get(app(Chunky::class)->path('/assembled/homepage.md')))->toBe(File::get(
-            __DIR__ . '/../__fixtures__/content/collections/pages/homepage.md',
-        ));
+        expect(File::get(app(Chunky::class)->path('/assembled/homepage.md')))
+            ->toBe(File::get(__DIR__ . '/../__fixtures__/content/collections/pages/homepage.md'));
 
         expect($uploadedFile)->toEqual(app(Chunky::class)->path('/assembled/homepage.md'));
 

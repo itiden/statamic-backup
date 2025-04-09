@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Itiden\Backup\Http\Controllers\Api\StateController;
 use Itiden\Backup\Enums\State;
+use Itiden\Backup\Http\Controllers\Api\StateController;
 use Itiden\Backup\StateManager;
 
 use function Itiden\Backup\Tests\user;
@@ -18,9 +18,7 @@ describe('api:state', function (): void {
     it('returns the correct state', function (): void {
         $user = user();
 
-        $user
-            ->set('roles', ['admin'])
-            ->save();
+        $user->set('roles', ['admin'])->save();
 
         actingAs($user);
 

@@ -7,15 +7,15 @@ namespace Itiden\Backup\Models;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
-use Itiden\Backup\DataTransferObjects\BackupDto;
-use Itiden\Backup\Abstracts\BackupPipe;
-use Statamic\Facades\User;
-use Statamic\Facades\YAML;
 use Illuminate\Support\Facades\Storage;
+use Itiden\Backup\Abstracts\BackupPipe;
+use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\DataTransferObjects\SkippedPipeDto;
 use Itiden\Backup\DataTransferObjects\UserActionDto;
+use Statamic\Facades\User;
+use Statamic\Facades\YAML;
 
-// @mago-ignore maintainability/too-many-methods
+// @mago-expect maintainability/too-many-methods
 final class Metadata
 {
     private Filesystem $filesystem;
@@ -65,14 +65,20 @@ final class Metadata
 
     public function addDownload(Authenticatable $user): void
     {
-        $this->downloads[] = new UserActionDto(userId: $user->getAuthIdentifier(), timestamp: now()->toString());
+        $this->downloads[] = new UserActionDto(
+            userId: $user->getAuthIdentifier(),
+            timestamp: now()->toString(),
+        );
 
         $this->save();
     }
 
     public function addRestore(Authenticatable $user): void
     {
-        $this->restores[] = new UserActionDto(userId: $user->getAuthIdentifier(), timestamp: now()->toString());
+        $this->restores[] = new UserActionDto(
+            userId: $user->getAuthIdentifier(),
+            timestamp: now()->toString(),
+        );
 
         $this->save();
     }
@@ -100,7 +106,10 @@ final class Metadata
      */
     public function addSkippedPipe(string $pipe, string $reason): void
     {
-        $this->skippedPipes[] = new SkippedPipeDto(pipe: $pipe, reason: $reason);
+        $this->skippedPipes[] = new SkippedPipeDto(
+            pipe: $pipe,
+            reason: $reason,
+        );
 
         $this->save();
     }
@@ -112,14 +121,11 @@ final class Metadata
 
     private function save(): void
     {
-        $this->filesystem->put(
-            $this->backup->id,
-            YAML::dump([
-                'created_by' => $this->createdBy,
-                'downloads' => array_map(fn(UserActionDto $action): array => $action->toArray(), $this->downloads),
-                'restores' => array_map(fn(UserActionDto $action): array => $action->toArray(), $this->restores),
-                'skipped_pipes' => array_map(fn(SkippedPipeDto $dto): array => $dto->toArray(), $this->skippedPipes),
-            ]),
-        );
+        $this->filesystem->put($this->backup->id, YAML::dump([
+            'created_by' => $this->createdBy,
+            'downloads' => array_map(fn(UserActionDto $action): array => $action->toArray(), $this->downloads),
+            'restores' => array_map(fn(UserActionDto $action): array => $action->toArray(), $this->restores),
+            'skipped_pipes' => array_map(fn(SkippedPipeDto $dto): array => $dto->toArray(), $this->skippedPipes),
+        ]));
     }
 }

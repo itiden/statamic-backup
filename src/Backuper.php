@@ -7,12 +7,12 @@ namespace Itiden\Backup;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
-use Itiden\Backup\Support\Zipper;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Enums\State;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
 use Itiden\Backup\Models\Metadata;
+use Itiden\Backup\Support\Zipper;
 use Throwable;
 
 use function Illuminate\Filesystem\join_paths;
@@ -22,8 +22,7 @@ final class Backuper
     public function __construct(
         private BackupRepository $repository,
         private StateManager $stateManager,
-    ) {
-    }
+    ) {}
 
     /**
      * Create a new backup.
