@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Itiden\Backup\DataTransferObjects;
 
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\BackupNameResolver;
 use Itiden\Backup\Models\Metadata;

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cbc62f71f523263350751c141ae31127",
+    "content-hash": "37c5c3f3801b349c3111da4478eabc6d",
     "packages": [
         {
             "name": "ajthinking/archetype",
@@ -7861,16 +7861,16 @@
         },
         {
             "name": "carthage-software/mago",
-            "version": "0.22.2",
+            "version": "0.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/carthage-software/mago.git",
-                "reference": "35f62e03c0f0f8b5fd62e12220724a3321b25480"
+                "reference": "427f12e6eb3df1c23e0f39329c38ad152d05d58d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/carthage-software/mago/zipball/35f62e03c0f0f8b5fd62e12220724a3321b25480",
-                "reference": "35f62e03c0f0f8b5fd62e12220724a3321b25480",
+                "url": "https://api.github.com/repos/carthage-software/mago/zipball/427f12e6eb3df1c23e0f39329c38ad152d05d58d",
+                "reference": "427f12e6eb3df1c23e0f39329c38ad152d05d58d",
                 "shasum": ""
             },
             "require": {
@@ -7908,7 +7908,7 @@
             ],
             "support": {
                 "issues": "https://github.com/carthage-software/mago/issues",
-                "source": "https://github.com/carthage-software/mago/tree/0.22.2"
+                "source": "https://github.com/carthage-software/mago/tree/0.23.0"
             },
             "funding": [
                 {
@@ -7916,7 +7916,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-04-05T07:53:19+00:00"
+            "time": "2025-04-13T16:38:38+00:00"
         },
         {
             "name": "doctrine/deprecations",
