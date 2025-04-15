@@ -39,10 +39,7 @@ Otherwise, here is a "quickstart guide":
    composer require itiden/statamic-backup
    ```
 
-2. Set the `content_path` config value to the path of your content, start with publishing the config:
-   ```bash
-   php artisan vendor:publish --tag="backup-config"
-   ```
+2. Give your user permissions to manage backups and start managing backups in the control panel. ([permissions](https://itiden.github.io/statamic-backup/getting-started.html#permissions))
 
 ## Documentation
 
