@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
+use Itiden\Backup\Enums\State;
 use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
 use Itiden\Backup\Exceptions\RestoreFailed;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Facades\Restorer;
+use Itiden\Backup\StateManager;
 use Itiden\Backup\Tests\SkippingPipe;
 
 use function Itiden\Backup\Tests\user;
@@ -85,6 +88,8 @@ describe('api:create', function (): void {
         postJson(cp_route('api.itiden.backup.store'));
 
         Event::assertDispatched(BackupFailed::class);
+        expect(Cache::has(StateManager::JOB_QUEUED_KEY))->toBeFalse();
+        expect(app(StateManager::class)->getState())->toBe(State::BackupFailed);
     });
 
     it('sets created by metadata when user is authenticated', function (): void {

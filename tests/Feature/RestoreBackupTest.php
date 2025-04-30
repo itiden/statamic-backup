@@ -3,11 +3,15 @@
 declare(strict_types=1);
 
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Itiden\Backup\Enums\State;
 use Itiden\Backup\Events\BackupRestored;
+use Itiden\Backup\Events\RestoreFailed;
 use Itiden\Backup\Facades\Backuper;
+use Itiden\Backup\StateManager;
 
 use function Itiden\Backup\Tests\fixtures_path;
 use function Itiden\Backup\Tests\user;
@@ -39,6 +43,24 @@ describe('api:restore', function (): void {
         $response = postJson(cp_route('api.itiden.backup.restore', 'id'));
 
         expect($response->status())->toBe(Response::HTTP_INTERNAL_SERVER_ERROR);
+    });
+
+    it('sets correct states if restore fails', function (): void {
+        Event::fake();
+        $backup = Backuper::backup();
+
+        $user = user();
+
+        $user->assignRole('super admin')->save();
+
+        actingAs($user);
+
+        config()->set('backup.pipeline', ['im-not-valid']);
+        postJson(cp_route('api.itiden.backup.restore', $backup->id));
+
+        Event::assertDispatched(RestoreFailed::class);
+        expect(Cache::has(StateManager::JOB_QUEUED_KEY))->toBeFalse();
+        expect(app(StateManager::class)->getState())->toBe(State::RestoreFailed);
     });
 
     it('can restore by id', function (): void {
