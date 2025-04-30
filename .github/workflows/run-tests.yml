@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         php: [8.2, 8.3, 8.4]
+        dependency-version: [prefer-lowest, prefer-stable]
 
     steps:
       - name: Checkout
@@ -25,7 +26,7 @@ jobs:
           coverage: xdebug
 
       - name: Install Dependencies
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+        run: composer install --${{ matrix.dependency-version }} --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Tests
         run: ./vendor/bin/pest --ci
