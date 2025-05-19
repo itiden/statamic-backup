@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Jobs;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Itiden\Backup\Restorer;
 use Itiden\Backup\StateManager;
-use Statamic\Contracts\Auth\User;
 
 final class RestoreJob implements ShouldQueue
 {
@@ -20,7 +20,7 @@ final class RestoreJob implements ShouldQueue
      */
     public function __construct(
         private string $id,
-        private User $user,
+        private Authenticatable $user,
     ) {}
 
     /**
@@ -28,9 +28,10 @@ final class RestoreJob implements ShouldQueue
      */
     public function handle(Restorer $backuper, Repository $cache): void
     {
-        auth()->login($this->user); // ugly but it works;
-
-        $backuper->restoreFromId($this->id);
+        $backuper->restoreFromId(
+            id: $this->id,
+            user: $this->user,
+        );
 
         $cache->forget(StateManager::JOB_QUEUED_KEY);
     }

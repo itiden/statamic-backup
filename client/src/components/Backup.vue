@@ -26,7 +26,8 @@ export default {
     },
   },
   created() {
-    console.log(this.chunkSize)
+    // console.log(this.chunkSize)
+
     window.backup = {
       chunkSize: this.chunkSize
     };

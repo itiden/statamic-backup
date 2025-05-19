@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Itiden\Backup;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
@@ -29,7 +30,7 @@ final class Backuper
      *
      * @throws Exceptions\BackupFailed
      */
-    public function backup(): BackupDto
+    public function backup(?Authenticatable $user = null): BackupDto
     {
         $lock = $this->stateManager->getLock();
 
@@ -60,8 +61,6 @@ final class Backuper
             $backup = $this->repository->add($temp_zip_path);
 
             $metadata = static::addMetaFromZipToBackupMeta($temp_zip_path, $backup);
-
-            $user = auth()->user();
 
             if ($user) {
                 $metadata->setCreatedBy($user);

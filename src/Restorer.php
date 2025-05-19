@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Itiden\Backup;
 
 use Exception;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
@@ -30,7 +31,7 @@ final class Restorer
      *
      * @throws Exception
      */
-    public function restoreFromId(string $id): void
+    public function restoreFromId(string $id, ?Authenticatable $user = null): void
     {
         $backup = $this->repository->find($id);
 
@@ -38,7 +39,7 @@ final class Restorer
             throw new RuntimeException("Backup with id {$id} not found.");
         }
 
-        $this->restore($backup);
+        $this->restore($backup, $user);
     }
 
     /**
@@ -46,7 +47,7 @@ final class Restorer
      *
      * @throws RestoreFailed
      */
-    public function restore(BackupDto $backup): void
+    public function restore(BackupDto $backup, ?Authenticatable $user = null): void
     {
         $lock = $this->stateManager->getLock();
 
@@ -70,7 +71,6 @@ final class Restorer
 
             event(new BackupRestored($backup));
 
-            $user = auth()->user();
             if ($user) {
                 $backup->getMetadata()->addRestore($user);
             }
