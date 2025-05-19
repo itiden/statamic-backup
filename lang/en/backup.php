@@ -13,6 +13,7 @@ return [
     'state' => [
         'idle' => 'Idle',
         'initializing' => 'Fetching initial status',
+        'queued' => 'Waiting for action to start',
         'backup_in_progress' => 'Backup in progress',
         'restore_in_progress' => 'Restore in progress',
         'backup_completed' => 'Backup completed',
