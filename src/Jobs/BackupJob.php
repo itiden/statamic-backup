@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Jobs;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Itiden\Backup\Backuper;
 use Itiden\Backup\StateManager;
-use Statamic\Contracts\Auth\User;
 
 final class BackupJob implements ShouldQueue
 {
@@ -19,7 +19,7 @@ final class BackupJob implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        private User $user,
+        private Authenticatable $user,
     ) {}
 
     /**
@@ -27,9 +27,7 @@ final class BackupJob implements ShouldQueue
      */
     public function handle(Backuper $backuper, Repository $cache): void
     {
-        auth()->login($this->user); // ugly but it works;
-
-        $backuper->backup();
+        $backuper->backup(user: $this->user);
 
         $cache->forget(StateManager::JOB_QUEUED_KEY);
     }
