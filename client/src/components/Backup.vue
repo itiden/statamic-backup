@@ -1,7 +1,12 @@
 <template>
   <div>
     <div class="flex">
-      <h1 class="mb-6">{{ __("statamic-backup::backup.title") }}</h1>
+      <div class="flex flex-col mb-4">
+        <h1>{{ __("statamic-backup::backup.title") }}</h1>
+        <p v-if="status !== 'idle'" class="text-sm text-gray-700 whitespace-nowrap">
+          {{ __(`statamic-backup::backup.state.${status}`) }}
+        </p>
+      </div>
       <backup-actions @openBrowser="openBrowser" />
     </div>
 
@@ -36,6 +41,11 @@ export default {
       this.$store.registerModule('backup-provider', store);
       this.$store.dispatch('backup-provider/pollEndpoint');
     }
+  },
+  computed: {
+    status() {
+      return this.$store.state['backup-provider'].status;
+    },
   },
   destroy() {
     this.$store.dispatch('backup-provider/stopPolling');
