@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="drag-notification" :class="{ 'hidden': !canUpload.isPossible || !isDragging }" ref="dropzone">
+    <div class="drag-notification" :class="{ 'hidden': !canUpload.isPossible || !isDragging }">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-12 w-12 m-4">
         <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M.752 2.251a1.5 1.5 0 0 1 1.5-1.5m0 22.5a1.5 1.5 0 0 1-1.5-1.5m22.5 0a1.5 1.5 0 0 1-1.5 1.5m0-22.5a1.5 1.5 0 0 1 1.5 1.5m0 15.75v-1.5m0-3.75v-1.5m0-3.75v-1.5m-22.5 12v-1.5m0-3.75v-1.5m0-3.75v-1.5m5.25-5.25h1.5m3.75 0h1.5m3.75 0h1.5m-12 22.5h1.5m3.75 0h1.5m3.75 0h1.5m-6-5.25v-12m4.5 4.5-4.5-4.5-4.5 4.5"></path>
       </svg>
@@ -71,7 +71,7 @@ export default {
     // Resumable.js isn't supported, fall back on a different method
     if (!this.resumable.support) return alert("Your browser doesn't support chunked uploads. Get a better browser.");
 
-    const backupElement = document.getElementById("statamic-backup");
+    const dropzone = document.getElementById("statamic-backup");
 
     this.$watch(
       (state) => {
@@ -81,16 +81,14 @@ export default {
         if (newValue) {
           if (this.$refs.browse) {
             this.resumable.assignBrowse(this.$refs.browse);
-            this.resumable.assignDrop(backupElement);
+            this.resumable.assignDrop(dropzone);
           }
         } else {
           console.log(this.resumable)
-          this.resumable.unAssignDrop([backupElement]);
+          this.resumable.unAssignDrop([dropzone]);
         }
       }
     );
-
-    this.resumable.handleDropEvent = console.log;
 
     // set up event listeners to feed into vues reactivity
     this.resumable.on("fileAdded", (file, event) => {
@@ -127,15 +125,15 @@ export default {
       if (progress > localFile.progress) localFile.progress = progress;
     });
 
-    backupElement.addEventListener("dragover", (event) => {
+    dropzone.addEventListener("dragover", (event) => {
       event.preventDefault();
       this.isDragging = true;
     });
-    backupElement.addEventListener("dragleave", (event) => {
+    dropzone.addEventListener("dragleave", (event) => {
       event.preventDefault();
       this.isDragging = false;
     });
-    backupElement.addEventListener("drop", (event) => {
+    dropzone.addEventListener("drop", (event) => {
       event.preventDefault();
       this.isDragging = false;
     });
