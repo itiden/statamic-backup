@@ -1,7 +1,15 @@
 <template>
-  <div v-if="canCreateBackups.isPermitted && canUpload.isPermitted && canUpload.isPossible" ref="dropzone" class="btn mr-3">
-    <svg-icon name="upload" class="h-4 w-4 mr-2 text-current" />
-    <span>{{ __("statamic-backup::backup.upload.label") }}</span>
+  <div>
+    <div class="drag-notification" :class="{ 'hidden': !isDragging }" ref="dropzone">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-12 w-12 m-4">
+        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M.752 2.251a1.5 1.5 0 0 1 1.5-1.5m0 22.5a1.5 1.5 0 0 1-1.5-1.5m22.5 0a1.5 1.5 0 0 1-1.5 1.5m0-22.5a1.5 1.5 0 0 1 1.5 1.5m0 15.75v-1.5m0-3.75v-1.5m0-3.75v-1.5m-22.5 12v-1.5m0-3.75v-1.5m0-3.75v-1.5m5.25-5.25h1.5m3.75 0h1.5m3.75 0h1.5m-12 22.5h1.5m3.75 0h1.5m3.75 0h1.5m-6-5.25v-12m4.5 4.5-4.5-4.5-4.5 4.5"></path>
+      </svg>
+      <span>Drop File to Upload</span>
+    </div>
+    <div v-if="canCreateBackups.isPermitted && canUpload.isPermitted && canUpload.isPossible" ref="browse" class="btn mr-3">
+      <svg-icon name="upload" class="h-4 w-4 mr-2 text-current" />
+      <span>{{ __("statamic-backup::backup.upload.label") }}</span>
+    </div>
   </div>
 </template>
 <script>
@@ -19,6 +27,7 @@ export default {
       resumable: null,
       confirming: false,
       loading: false,
+      isDragging: false,
     };
   },
   computed: {
@@ -62,6 +71,7 @@ export default {
     // Resumable.js isn't supported, fall back on a different method
     if (!this.resumable.support) return alert("Your browser doesn't support chunked uploads. Get a better browser.");
 
+    const backupElement = document.getElementById("statamic-backup");
 
     this.$watch(
       (state) => {
@@ -69,13 +79,15 @@ export default {
       },
       (newValue) => {
         if (newValue) {
-          if (this.$refs.dropzone) {
-            this.resumable.assignBrowse(this.$refs.dropzone);
-            this.resumable.assignDrop(this.$refs.dropzone);
+          if (this.$refs.browse) {
+            this.resumable.assignBrowse(this.$refs.browse);
+            this.resumable.assignDrop(backupElement);
           }
         }
       }
     );
+
+    this.resumable.handleDropEvent = console.log;
 
     // set up event listeners to feed into vues reactivity
     this.resumable.on("fileAdded", (file, event) => {
@@ -110,6 +122,19 @@ export default {
       // if we are doing multiple chunks we may get a lower progress number if one chunk response comes back early
       const progress = file.progress();
       if (progress > localFile.progress) localFile.progress = progress;
+    });
+
+    backupElement.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      this.isDragging = true;
+    });
+    backupElement.addEventListener("dragleave", (event) => {
+      event.preventDefault();
+      this.isDragging = false;
+    });
+    backupElement.addEventListener("drop", (event) => {
+      event.preventDefault();
+      this.isDragging = false;
     });
   },
 };

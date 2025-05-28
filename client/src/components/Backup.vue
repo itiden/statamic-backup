@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="relative" id="statamic-backup">
     <div class="flex">
       <div class="flex flex-col mb-4">
         <h1>{{ __("statamic-backup::backup.title") }}</h1>
