@@ -16,6 +16,8 @@ use function Laravel\Prompts\spin;
 
 /**
  * Restore content from a directory / backup
+ *
+ * @mago-expect lint:strictness/require-property-type
  */
 final class RestoreCommand extends Command
 {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Itiden\Backup;
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
@@ -37,16 +38,17 @@ final class Backuper
         try {
             $this->stateManager->setState(State::BackupInProgress);
 
-            $temp_zip_path = join_paths(config('backup.temp_path'), 'temp.zip');
+            $temp_zip_path = join_paths(Config::string('backup.temp_path'), 'temp.zip');
 
             $zipper = Zipper::write($temp_zip_path);
 
             Pipeline::via('backup')
                 ->send($zipper)
-                ->through(config('backup.pipeline'))
+                ->through(Config::array('backup.pipeline'))
                 ->thenReturn();
 
-            $password = config('backup.password');
+            /** @var string|null */
+            $password = Config::get('backup.password');
 
             if ($password) {
                 $zipper->encrypt($password);
@@ -108,7 +110,9 @@ final class Backuper
      */
     public function enforceMaxBackups(): void
     {
-        $maxBackups = config('backup.max_backups', false);
+        /** @var int|false */
+        $maxBackups = Config::get('backup.max_backups', false);
+
         if (!$maxBackups) {
             return;
         }

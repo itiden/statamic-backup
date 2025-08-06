@@ -7,6 +7,7 @@ namespace Itiden\Backup;
 use Exception;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Support\Facades\Storage;
@@ -18,6 +19,8 @@ use Itiden\Backup\Events\RestoreFailed;
 use Itiden\Backup\Support\Zipper;
 use RuntimeException;
 use Throwable;
+
+use function Illuminate\Filesystem\join_paths;
 
 final class Restorer
 {
@@ -66,7 +69,7 @@ final class Restorer
 
             Pipeline::via('restore')
                 ->send($path)
-                ->through(config('backup.pipeline'))
+                ->through(Config::array('backup.pipeline'))
                 ->thenReturn();
 
             event(new BackupRestored($backup));
@@ -75,7 +78,7 @@ final class Restorer
                 $backup->getMetadata()->addRestore($user);
             }
 
-            File::cleanDirectory(config('backup.temp_path'));
+            File::cleanDirectory(Config::string('backup.temp_path'));
 
             /**
              * Clear the cache and stache to make sure everything is up to date.
@@ -108,7 +111,7 @@ final class Restorer
      */
     private function getLocalBackupPath(BackupDto $backup): string
     {
-        $disk = config('backup.destination.disk');
+        $disk = Config::string('backup.destination.disk');
         /**
          * If the backup does not exist on the given disk, return the path.
          */
@@ -116,13 +119,13 @@ final class Restorer
             return $backup->path;
         }
 
-        if (config("filesystems.disks.{$disk}.driver") === 'local') {
+        if (Config::string("filesystems.disks.{$disk}.driver") === 'local') {
             return Storage::disk($disk)->path($backup->path);
         }
 
         $tempDisk = Storage::build([
             'driver' => 'local',
-            'root' => config('backup.temp_path') . DIRECTORY_SEPARATOR . 'backup',
+            'root' => join_paths(Config::string('backup.temp_path'), 'backup'),
         ]);
 
         $tempDisk->writeStream('backup.zip', Storage::disk($disk)->readStream($backup->path));
@@ -137,7 +140,7 @@ final class Restorer
      */
     private function unzip(string $path): string
     {
-        $target = config('backup.temp_path') . DIRECTORY_SEPARATOR . 'unzipping';
+        $target = join_paths(Config::string('backup.temp_path'), 'unzipping');
 
         Zipper::read($path)->extractTo($target, config('backup.password'))->close();
 

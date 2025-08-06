@@ -59,16 +59,15 @@ describe('backuper', function (): void {
             ->map(fn(SplFileInfo $file) => $file->getRelativePathname())
             ->toArray();
 
-        expect($paths)
-            ->toEqualCanonicalizing([
-                // since the default collection store and entries store have the same directory, we will get duplicates.
-                'stache-content::collections/pages.yaml',
-                'stache-content::collections/pages/homepage.md',
-                'stache-content::entries/pages.yaml',
-                'stache-content::entries/pages/homepage.md',
-                'stache-content::form-submissions/1743066599.5568.yaml',
-                'users/test@example.com.yaml',
-            ]);
+        expect($paths)->toEqualCanonicalizing([
+            // since the default collection store and entries store have the same directory, we will get duplicates.
+            'stache-content::collections/pages.yaml',
+            'stache-content::collections/pages/homepage.md',
+            'stache-content::entries/pages.yaml',
+            'stache-content::entries/pages/homepage.md',
+            'stache-content::form-submissions/1743066599.5568.yaml',
+            'users/test@example.com.yaml',
+        ]);
 
         File::deleteDirectory($unzipped);
     });
@@ -94,11 +93,10 @@ describe('backuper', function (): void {
             ->map(fn(SplFileInfo $file) => $file->getRelativePathname())
             ->toArray();
 
-        expect($paths)
-            ->toEqualCanonicalizing([
-                'stache-content::form-submissions/1743066599.5568.yaml',
-                'users/test@example.com.yaml',
-            ]);
+        expect($paths)->toEqualCanonicalizing([
+            'stache-content::form-submissions/1743066599.5568.yaml',
+            'users/test@example.com.yaml',
+        ]);
 
         File::deleteDirectory($unzipped);
     });

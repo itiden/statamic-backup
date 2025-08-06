@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Itiden\Backup\Enums\State;
 use Itiden\Backup\Exceptions\ActionAlreadyInProgress;
 
@@ -28,7 +29,7 @@ final readonly class StateManager
 
     public function getState(): State
     {
-        $path = join_paths(config('backup.metadata_path'), self::STATE_FILE);
+        $path = join_paths(Config::string('backup.metadata_path'), self::STATE_FILE);
 
         if (!$this->filesystem->exists($path)) {
             return State::Idle;
@@ -48,9 +49,9 @@ final readonly class StateManager
 
     public function setState(State $state): void
     {
-        $this->filesystem->ensureDirectoryExists(path: config('backup.metadata_path'));
+        $this->filesystem->ensureDirectoryExists(path: Config::string('backup.metadata_path'));
         $this->filesystem->put(
-            path: join_paths(config('backup.metadata_path'), self::STATE_FILE),
+            path: join_paths(Config::string('backup.metadata_path'), self::STATE_FILE),
             contents: $state->value,
             lock: true,
         );

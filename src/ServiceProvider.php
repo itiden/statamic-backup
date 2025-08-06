@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Itiden\Backup;
 
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Config;
 use Itiden\Backup\Console\Commands\BackupCommand;
 use Itiden\Backup\Console\Commands\ClearFilesCommand;
 use Itiden\Backup\Console\Commands\RestoreCommand;
@@ -17,6 +18,7 @@ use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
 
+// @mago-expect lint:strictness/require-property-type
 final class ServiceProvider extends AddonServiceProvider
 {
     protected $viewNamespace = 'itiden-backup';
@@ -55,17 +57,17 @@ final class ServiceProvider extends AddonServiceProvider
             return;
         }
 
-        $frequency = config('backup.schedule.frequency');
+        $frequency = Config::string('backup.schedule.frequency');
 
-        $schedule->command('statamic:backup')->$frequency(config('backup.schedule.time'));
+        $schedule->command('statamic:backup')->$frequency(Config::get('backup.schedule.time'));
     }
 
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/backup.php', 'backup');
 
-        $this->app->bind(BackupRepository::class, config('backup.repository'));
-        $this->app->bind(BackupNameResolver::class, config('backup.name_resolver'));
+        $this->app->bind(BackupRepository::class, Config::string('backup.repository'));
+        $this->app->bind(BackupNameResolver::class, Config::string('backup.name_resolver'));
     }
 
     private function configureCommands(): void

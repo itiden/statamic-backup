@@ -19,11 +19,15 @@ allow_dynamic_static_calls = true
 level = "off"
 
 [[linter.rules]]
-name = "analysis/override-attribute"
+name = "best-practices/override-attribute"
 level = "off"
 
 [[linter.rules]]
 name = "naming/class"
+level = "off"
+
+[[linter.rules]]
+name = "best-practices/literal-named-argument"
 level = "off"
 
 [[linter.rules]]
@@ -34,4 +38,3 @@ level = "off"
 # since we support php 8.2 we cannot use constant types
 name = "strictness/require-constant-type"
 level = "off"
-

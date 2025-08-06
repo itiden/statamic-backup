@@ -9,6 +9,7 @@ use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\File as StreamableFile;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Itiden\Backup\Contracts\BackupNameResolver;
@@ -26,8 +27,8 @@ final class FileBackupRepository implements BackupRepository
     public function __construct(
         private BackupNameResolver $nameResolver,
     ) {
-        $this->path = config('backup.destination.path');
-        $this->filesystem = Storage::disk(config('backup.destination.disk'));
+        $this->path = Config::string('backup.destination.path');
+        $this->filesystem = Storage::disk(Config::string('backup.destination.disk'));
     }
 
     public function all(): Collection
@@ -66,7 +67,7 @@ final class FileBackupRepository implements BackupRepository
             return null;
         }
 
-        Storage::disk(config('backup.destination.disk'))->delete($backup->path);
+        Storage::disk(Config::string('backup.destination.disk'))->delete($backup->path);
 
         event(new BackupDeleted($backup));
 
@@ -76,6 +77,8 @@ final class FileBackupRepository implements BackupRepository
     public function empty(): bool
     {
         $this->all()->each(fn(BackupDto $backup): ?BackupDto => $this->remove($backup->id));
-        return Storage::disk(config('backup.destination.disk'))->deleteDirectory(config('backup.destination.path'));
+        return Storage::disk(Config::string('backup.destination.disk'))->deleteDirectory(Config::string(
+            'backup.destination.path',
+        ));
     }
 }

@@ -16,8 +16,10 @@ use function Laravel\Prompts\spin;
  */
 final class BackupCommand extends Command
 {
+    // @mago-expect lint:strictness/require-property-type
     protected $signature = 'statamic:backup';
 
+    // @mago-expect lint:strictness/require-property-type
     protected $description = 'Run the backup pipeline';
 
     public function handle(): void

@@ -6,6 +6,7 @@ namespace Itiden\Backup\Pipes;
 
 use Closure;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Abstracts\BackupPipe;
 use Itiden\Backup\Support\Zipper;
@@ -69,6 +70,7 @@ final readonly class StacheData extends BackupPipe
 
     private static function storeHasSafeDirectory(Store $store): bool
     {
+        /** @var string */
         $path = $store->directory();
 
         return !in_array(
@@ -82,6 +84,6 @@ final readonly class StacheData extends BackupPipe
 
     private static function shouldBackupStore(Store $store): bool
     {
-        return in_array($store->key(), config('backup.stache_stores', []), strict: true);
+        return in_array($store->key(), Config::array('backup.stache_stores', []), strict: true);
     }
 }

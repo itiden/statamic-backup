@@ -41,6 +41,7 @@ describe('chunky', function (): void {
             file: new UploadedFile($chunk, basename($chunk)),
         ));
 
+        /** @var ?string */
         $uploadedFile = null;
 
         $responses = $dtos->map(function (ChunkyUploadDto $r) use (&$uploadedFile): JsonResponse {
