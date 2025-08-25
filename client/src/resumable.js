@@ -4,11 +4,17 @@ import { reactive, ref, watch } from "vue";
 /**
  * @param {{
  *  chunkSize: number,
- *  dropZone:  import("vue").Ref<HTMLElement>
- *  browseTarget: import("vue").Ref<HTMLElement>
+ *  dropZone:  import("vue").Ref<HTMLElement>,
+ *  browseTarget: import("vue").Ref<HTMLElement>,
+ *  onFileUploaded: (file: File) => void
  * }}
  */
-export const useResumable = ({ chunkSize, dropZone, browseTarget }) => {
+export const useResumable = ({
+  chunkSize,
+  dropZone,
+  browseTarget,
+  onFileUploaded,
+}) => {
   const files = ref([]);
 
   const findFile = (file) =>
@@ -68,6 +74,8 @@ export const useResumable = ({ chunkSize, dropZone, browseTarget }) => {
     const data = JSON.parse(event);
 
     window.Statamic.$toast.success(data.message);
+
+    onFileUploaded?.(findFile(file));
 
     files.value = files.value.filter(
       (item) => item.file.uniqueIdentifier !== file.uniqueIdentifier

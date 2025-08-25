@@ -2,17 +2,21 @@
 import { Listing, DropdownItem, Header, Button } from "@statamic/cms/ui";
 import { requireElevatedSession } from "@statamic/cms"
 import { useBackupStore } from "../store";
-import { ref, useTemplateRef } from "vue";
+import { ref } from "vue";
 import { useResumable } from "../resumable";
 
 const props = defineProps(['chunkSize']);
 
 const backupStore = useBackupStore();
 
-const dropZone = useTemplateRef("dropZone");
+const listing = ref(null);
+
+const dropZone = ref(null);
 const browseTarget = ref(null);
 
-const { files } = useResumable({ chunkSize: props.chunkSize ?? 2 * 1024 * 1024, dropZone, browseTarget });
+const { files } = useResumable({ chunkSize: props.chunkSize ?? 2 * 1024 * 1024, dropZone, browseTarget, onFileUploaded: (file) => {
+  listing.value.refresh();
+}});
 
 backupStore.startPolling();
 
@@ -44,6 +48,7 @@ const queueBackup = async () => {
         const { data } = await window.Statamic.$app.config.globalProperties.$axios.post(cp_url("api/backups"));
 
         Statamic.$toast.info(__(data.message));
+        listing.value.refresh();
     } catch (e) {
         console.error(e);
 
@@ -62,6 +67,7 @@ const deleteBackup = async (id) => {
         const { data } = await window.Statamic.$app.config.globalProperties.$axios.delete(cp_url(`api/backups/${id}`));
 
         Statamic.$toast.info(__(data.message));
+        listing.value.refresh();
     } catch (e) {
         console.error(e);
 
@@ -89,7 +95,7 @@ const deleteBackup = async (id) => {
         <span v-if="file.status === 'error'" class="text-red-600"> - {{ __('statamic-backup::backup.upload.error') }}</span>
     </p>
 
-    <Listing :allowSearch="false" :allowCustomizingColumns="false" :url="cp_url('api/backups')">
+    <Listing ref="listing" :allowSearch="false" :allowCustomizingColumns="false" :url="cp_url('api/backups')">
         <template #prepended-row-actions="{ row }">
             <DropdownItem v-if="backupStore.abilities.download.isPermitted"
                 :text="__('statamic-backup::backup.download.label')"
