@@ -7,8 +7,6 @@
     "client",
     "docs"
   ],
-  "dependencies": {},
-  "devDependencies": {},
   "scripts": {
     "docs:dev": "npm run dev --workspace=docs",
     "docs:build": "npm run build --workspace=docs",

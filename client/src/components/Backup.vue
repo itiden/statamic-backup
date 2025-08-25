@@ -1,55 +1,65 @@
-<template>
-  <div>
-    <div class="flex">
-      <div class="flex flex-col mb-4">
-        <h1>{{ __("statamic-backup::backup.title") }}</h1>
-        <p v-if="status !== 'idle'" class="text-sm text-gray-700 whitespace-nowrap">
-          {{ __(`statamic-backup::backup.state.${status}`) }}
-        </p>
-      </div>
-      <backup-actions @openBrowser="openBrowser" />
-    </div>
+<script setup>
+import { Listing, DropdownItem, Header, Button } from "@statamic/cms/ui";
+import { requireElevatedSession } from "@statamic/cms"
+import { useBackupStore } from "../store";
 
-    <backup-listing />
-  </div>
-</template>
+const backupStore = useBackupStore();
 
-<script>
-import Listing from "./Listing.vue";
-import Actions from "./Actions.vue";
-import { store } from "../store";
+backupStore.startPolling();
 
-export default {
-  components: {
-    "backup-listing": Listing,
-    "backup-actions": Actions,
-  },
-  props: {
-    chunkSize: {
-      type: Number,
-      default: 2 * 1024 * 1024, // 2MB
-    },
-  },
-  created() {
-    // console.log(this.chunkSize)
+const restoreFrom = async (id) => {
 
-    window.backup = {
-      chunkSize: this.chunkSize
-    };
+    try {
+        await requireElevatedSession();
 
-    if (!this.$store.hasModule('backup-provider')) {
-      this.$store.registerModule('backup-provider', store);
-      this.$store.dispatch('backup-provider/pollEndpoint');
+        const { data } = await window.Statamic.$app.config.globalProperties.$axios.post(cp_url(`api/backups/restore/${id}`));
+
+        Statamic.$toast.info(__(data.message));
+    } catch (e) {
+        console.error(e);
+
+        if (error.response.data.message) {
+            Statamic.$toast.error(message);
+        } else {
+            Statamic.$toast.error(__('statamic-backup::backup.restore.failed'));
+        }
     }
-  },
-  computed: {
-    status() {
-      return this.$store.state['backup-provider'].status;
-    },
-  },
-  destroy() {
-    this.$store.dispatch('backup-provider/stopPolling');
-    this.$store.unregisterModule('backup-provider');
-  },
-};
+}
+
+const queueBackup = async () => {
+    try {
+        backupStore.setStatus('backup_in_progress');
+
+        const { data } = await window.Statamic.$app.config.globalProperties.$axios.post(cp_url("api/backups"));
+
+        Statamic.$toast.info(__(data.message));
+    } catch (e) {
+        console.error(e);
+
+        if (error.response.data.message) {
+            Statamic.$toast.error(message);
+        } else {
+            Statamic.$toast.error(__('statamic-backup::backup.restore.failed'));
+        }
+    }
+}
+
 </script>
+<template>
+    <Header :icon="database" :title="__('statamic-backup::backup.title')">
+        <Button icon="save" variant="primary" v-on:click="queueBackup" :disabled="!backupStore.abilities.backup.isPossible">{{ __("statamic-backup::backup.create") }}</Button>
+    </Header>
+
+    <Listing :allowSearch="false" :allowCustomizingColumns="false" :url="cp_url('api/backups')">
+        <template #prepended-row-actions="{ row }">
+            <DropdownItem v-if="backupStore.abilities.download.isPermitted"
+                :text="__('statamic-backup::backup.download.label')"
+                :href="`${cp_url('api/backups/download')}/${row.id}`" />
+            <DropdownItem v-if="backupStore.abilities.restore.isPermitted"
+                :disabled="!backupStore.abilities.restore.isPossible" @click="restoreFrom(row.id)"
+                :text="__('statamic-backup::backup.restore.label')" />
+            <DropdownItem v-if="backupStore.abilities.destroy.isPermitted" :dangerous="true"
+                @click="() => console.log(row.id, row.name)" :text="__('statamic-backup::backup.destroy.label')" />
+        </template>
+    </Listing>
+</template>
