@@ -2,7 +2,7 @@
   "name": "@statamic-backup/client",
   "type": "module",
   "scripts": {
-    "dev": "vite build --watch",
+    "dev": "vite build --watch --mode development",
     "build": "vite build"
   },
   "devDependencies": {
