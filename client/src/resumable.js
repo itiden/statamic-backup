@@ -1,5 +1,5 @@
 import Resumable from "resumablejs";
-import { reactive, ref, watch } from "vue";
+import { ref, watch } from "vue";
 
 /**
  * @param {{
