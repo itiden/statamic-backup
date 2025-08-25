@@ -67,6 +67,7 @@ export const useResumable = ({
         path: null,
       },
     ];
+    window.Statamic.$progress.start(file.uniqueIdentifier);
     resumable.upload();
   });
 
@@ -75,6 +76,7 @@ export const useResumable = ({
 
     window.Statamic.$toast.success(data.message);
 
+    window.Statamic.$progress.complete(file.uniqueIdentifier);
     onFileUploaded?.(findFile(file));
 
     files.value = files.value.filter(

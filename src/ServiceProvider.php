@@ -87,7 +87,7 @@ final class ServiceProvider extends AddonServiceProvider
                 ->can('manage backups')
                 ->section('Tools')
                 ->route('itiden.backup.index')
-                ->icon('table');
+                ->icon('save');
         });
     }
 

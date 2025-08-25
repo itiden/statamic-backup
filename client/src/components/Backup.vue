@@ -2,7 +2,7 @@
 import { Listing, DropdownItem, Header, Button } from "@statamic/cms/ui";
 import { requireElevatedSession } from "@statamic/cms"
 import { useBackupStore } from "../store";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useResumable } from "../resumable";
 
 const props = defineProps(['chunkSize']);
@@ -20,6 +20,11 @@ const { files } = useResumable({ chunkSize: props.chunkSize ?? 2 * 1024 * 1024, 
 
 backupStore.startPolling();
 
+watch(() => backupStore.status, (newStatus, oldStatus) => {
+    if (newStatus !== oldStatus) {
+        listing.value.refresh();
+    }
+});
 
 
 const restoreFrom = async (id) => {
