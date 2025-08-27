@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\Http\Controllers;
 
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -19,6 +20,6 @@ final readonly class DownloadBackupController
 
         $backup->getMetadata()->addDownload(auth()->user());
 
-        return Storage::disk(config('backup.destination.disk'))->download($backup->path);
+        return Storage::disk(Config::string('backup.destination.disk'))->download($backup->path);
     }
 }

@@ -6,6 +6,7 @@ namespace Itiden\Backup\Pipes;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Abstracts\BackupPipe;
 use Itiden\Backup\Support\Zipper;
@@ -47,6 +48,6 @@ final readonly class Assets extends BackupPipe
 
     public static function isLocal(Container $container): bool
     {
-        return config('filesystems.disks.' . $container->diskHandle())['driver'] === 'local';
+        return Config::array('filesystems.disks.' . $container->diskHandle())['driver'] === 'local';
     }
 }

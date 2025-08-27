@@ -7,6 +7,7 @@ namespace Itiden\Backup\Models;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Abstracts\BackupPipe;
 use Itiden\Backup\DataTransferObjects\BackupDto;
@@ -15,7 +16,9 @@ use Itiden\Backup\DataTransferObjects\UserActionDto;
 use Statamic\Facades\User;
 use Statamic\Facades\YAML;
 
-// @mago-expect maintainability/too-many-methods
+use function Illuminate\Filesystem\join_paths;
+
+// @mago-expect lint:maintainability/too-many-methods
 final class Metadata
 {
     private Filesystem $filesystem;
@@ -36,7 +39,7 @@ final class Metadata
     ) {
         $this->filesystem = Storage::build([
             'driver' => 'local',
-            'root' => config('backup.metadata_path') . '/.meta',
+            'root' => join_paths(Config::string('backup.metadata_path'), '.meta'),
         ]);
 
         $yaml = YAML::parse($this->filesystem->get($this->backup->id) ?? '');

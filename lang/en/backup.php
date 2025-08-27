@@ -10,6 +10,18 @@ return [
     'backup_started' => 'Starting backup...',
     'success' => 'Backed up successfully',
 
+    'state' => [
+        'idle' => 'Idle',
+        'initializing' => 'Fetching initial status',
+        'queued' => 'Waiting for action to start',
+        'backup_in_progress' => 'Backup in progress',
+        'restore_in_progress' => 'Restore in progress',
+        'backup_completed' => 'Backup completed',
+        'restore_completed' => 'Restore completed',
+        'backup_failed' => 'Backup failed',
+        'restore_failed' => 'Restore failed',
+    ],
+
     'upload' => [
         'label' => 'Upload Backup',
 

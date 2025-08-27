@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\File;
 use Symfony\Component\Finder\SplFileInfo;
 use ZipArchive;
 
-// @mago-expect maintainability/too-many-methods
+// @mago-expect lint:maintainability/too-many-methods
 final class Zipper
 {
     private ZipArchive $zip;
@@ -83,10 +83,9 @@ final class Zipper
      */
     public function addDirectory(string $path, ?string $prefix = null): self
     {
-        collect(File::allFiles($path))
-            ->each(function (SplFileInfo $file) use ($prefix): void {
-                $this->addFile($file->getPathname(), $prefix . '/' . $file->getRelativePathname());
-            });
+        collect(File::allFiles($path))->each(function (SplFileInfo $file) use ($prefix): void {
+            $this->addFile($file->getPathname(), $prefix . '/' . $file->getRelativePathname());
+        });
 
         return $this;
     }

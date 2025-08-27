@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Itiden\Backup\DataTransferObjects;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\BackupNameResolver;
 use Itiden\Backup\Models\Metadata;
@@ -36,7 +37,7 @@ final readonly class BackupDto
             return null;
         }
 
-        $bytes = Storage::disk(config('backup.destination.disk'))->size($path);
+        $bytes = Storage::disk(Config::string('backup.destination.disk'))->size($path);
 
         return new static(
             id: $values->id,

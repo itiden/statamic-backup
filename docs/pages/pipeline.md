@@ -98,9 +98,9 @@ final readonly class Logs extends BackupPipe
         if (!file_exists(storage_path('logs'))) {
             return $this->skip(
                 reason: 'There was no logs directory',
-                next: $next
+                next: $next,
                 zip: $zip
-            )
+            );
         }
 
         // Implement the logic to create a backup of your data and add it to the ZipArchive instance $zip.

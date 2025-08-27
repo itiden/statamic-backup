@@ -8,6 +8,7 @@ use Closure;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\DataTransferObjects\ChunkyTestDto;
 use Itiden\Backup\DataTransferObjects\ChunkyUploadDto;
@@ -22,7 +23,7 @@ final class Chunky
     {
         $this->disk = Storage::build([
             'driver' => 'local',
-            'root' => config('backup.temp_path') . '/chunky',
+            'root' => join_paths(Config::string('backup.temp_path'), 'chunky'),
         ]);
     }
 
