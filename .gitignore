@@ -3,3 +3,4 @@ vendor
 resources/dist
 docs/pages/.vitepress/cache
 docs/pages/.vitepress/dist
+composer.lock
