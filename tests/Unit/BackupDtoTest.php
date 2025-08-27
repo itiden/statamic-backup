@@ -9,7 +9,7 @@ describe('dto:backup', function (): void {
     it('will resolve valid timestamp when app name has many dashes', function (): void {
         config(['app.name' => 'app-with-many-dashes']);
 
-        $fakeTime = Carbon::parse('2021-01-01 12:00:00');
+        $fakeTime = Carbon::now();
 
         Carbon::setTestNow($fakeTime);
 
