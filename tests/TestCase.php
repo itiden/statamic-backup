@@ -16,6 +16,7 @@ class TestCase extends AddonTestCase
 
     protected string $addonServiceProvider = ServiceProvider::class;
 
+    // @mago-expect lint:parameter-type
     protected function resolveApplicationConfiguration($app): void
     {
         parent::resolveApplicationConfiguration($app);

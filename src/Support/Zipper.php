@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\File;
 use Symfony\Component\Finder\SplFileInfo;
 use ZipArchive;
 
-// @mago-expect lint:maintainability/too-many-methods
+// @mago-expect lint:too-many-methods
 final class Zipper
 {
     private ZipArchive $zip;

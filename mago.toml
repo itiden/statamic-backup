@@ -1,40 +1,44 @@
-[source]
-paths = ["src", "tests"]
-includes = ["vendor"]
+# Welcome to Mago!
+# For full documentation, see https://mago.carthage.software/tools/overview
+php-version = "8.4.0"
 
-[format]
-null_type_hint = "question"
+[source]
+paths = [
+    "src",
+    "tests",
+    "workbench/app/",
+    "workbench/database/factories/",
+    "workbench/database/seeders/",
+]
+includes = ["vendor"]
+excludes = []
+
+[formatter]
+print-width = 120
+tab-width = 4
+use-tabs = false
+null-type-hint = "question"
 
 [linter]
-default_plugins = true
-plugins = ["laravel"]
+integrations = ["laravel"]
 
-[[linter.rules]]
-name = "strictness/require-return-type"
-ignore_arrow_function = true
+[linter.rules]
+ambiguous-function-call = { enabled = false }
+literal-named-argument = { enabled = false }
+halstead = { effort-threshold = 7000 }
+return-type = { ignore-arrow-function = true }
+constant-type = { enabled = false }
+class-name = { enabled = false }
+interface-name = { enabled = false }
 
-[[linter.rules]]
-name = "analysis/undefined-function-or-method"
-allow_dynamic_static_calls = true
-level = "off"
+[analyzer]
+excludes = ['tests']
 
-[[linter.rules]]
-name = "best-practices/override-attribute"
-level = "off"
 
-[[linter.rules]]
-name = "naming/class"
-level = "off"
-
-[[linter.rules]]
-name = "best-practices/literal-named-argument"
-level = "off"
-
-[[linter.rules]]
-name = "naming/interface"
-level = "off"
-
-[[linter.rules]]
-# since we support php 8.2 we cannot use constant types
-name = "strictness/require-constant-type"
-level = "off"
+# Analyzer Settings
+find-unused-definitions = true
+find-unused-expressions = false
+analyze-dead-code = false
+check-throws = false
+allow-possibly-undefined-array-keys = true
+perform-heuristic-checks = true

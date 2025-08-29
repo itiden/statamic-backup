@@ -11,6 +11,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 final class BackupResource extends JsonResource
 {
+    // @mago-expect lint:parameter-type
     public function toArray($request): array
     {
         return [

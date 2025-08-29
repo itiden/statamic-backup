@@ -12,6 +12,7 @@ use Itiden\Backup\DataTransferObjects\SkippedPipeDto;
  */
 final class MetadataResource extends JsonResource
 {
+    // @mago-expect lint:parameter-type
     public function toArray($request): array
     {
         return [
