@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Itiden\Backup\Support;
 
 use Closure;
+use Exception;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -30,7 +31,7 @@ final class Chunky
     /**
      * Get the path to the chunky directory.
      */
-    public function path(?string $path = ''): string
+    public function path(string $path = ''): string
     {
         return $this->disk->path($path);
     }
@@ -69,6 +70,8 @@ final class Chunky
 
     /**
      * Merge chunks into a single file.
+     *
+     * @throws Exception
      */
     public function mergeChunksIntoFile(string $chunkPath, string $filename, int $totalChunks): string
     {
@@ -80,12 +83,18 @@ final class Chunky
         $file = fopen($assembledPath, 'w');
 
         if (!$file) {
-            throw new \Exception('cannot create the destination file');
+            throw new Exception('cannot create the destination file');
         }
 
         // loop through the chunks and write them to the file
         for ($i = 1; $i <= $totalChunks; $i++) {
-            fwrite($file, file_get_contents($this->path("{$chunkPath}/{$filename}.part{$i}")));
+            $chunk = file_get_contents($this->path("{$chunkPath}/{$filename}.part{$i}"));
+
+            if (!$chunk) {
+                throw new Exception('cannot read the chunk file');
+            }
+
+            fwrite($file, $chunk);
         }
 
         fclose($file);

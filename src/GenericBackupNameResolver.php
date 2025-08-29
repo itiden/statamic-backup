@@ -29,8 +29,9 @@ final readonly class GenericBackupNameResolver implements BackupNameResolver
 
         $parts = explode(static::SEPARATOR, $filename);
 
-        if (count($parts) !== 3)
+        if (count($parts) !== 3) {
             return null;
+        }
 
         [$name, $createdAt, $id] = $parts;
 

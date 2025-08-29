@@ -44,13 +44,16 @@ final class RestoreCommand extends Command
             )),
         };
 
-        if ($this->option('force') || confirm(
+        if (
+            $this->option('force')
+            || confirm(
                 label: 'Are you sure you want to restore your content?',
                 hint: "This will overwrite your current content with state from {$backup->created_at->format(
                     'Y-m-d H:i:s',
                 )}",
                 required: true,
-            )) {
+            )
+        ) {
             spin(static fn() => Restorer::restore($backup), 'Restoring backup');
 
             info('Backup restored!');

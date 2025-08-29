@@ -95,7 +95,8 @@ describe('zipper', function (): void {
     it('can encrypt when zipping', function (): void {
         $target = storage_path('test.zip');
 
-        $password = 'password'; // @mago-expect lint:security/no-literal-password
+        // @mago-expect lint:no-literal-password
+        $password = 'password';
 
         Zipper::write($target)
             ->addFromString('test.txt', 'test')

@@ -18,7 +18,7 @@ use Statamic\Facades\YAML;
 
 use function Illuminate\Filesystem\join_paths;
 
-// @mago-expect lint:maintainability/too-many-methods
+// @mago-expect lint:too-many-methods
 final class Metadata
 {
     private Filesystem $filesystem;

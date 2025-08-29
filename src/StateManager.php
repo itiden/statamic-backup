@@ -38,8 +38,8 @@ final readonly class StateManager
         $state = State::tryFrom($this->filesystem->get($path)) ?? State::Idle;
 
         if (
-            !in_array($state, [State::BackupInProgress, State::RestoreInProgress], strict: true) &&
-                $this->cache->has(self::JOB_QUEUED_KEY)
+            !in_array($state, [State::BackupInProgress, State::RestoreInProgress], strict: true)
+            && $this->cache->has(self::JOB_QUEUED_KEY)
         ) {
             $state = State::Queued;
         }
@@ -65,11 +65,14 @@ final readonly class StateManager
         $lock = Cache::lock(name: StateManager::LOCK);
         $state = $this->getState();
 
-        if (!$lock->get() || in_array(
+        if (
+            !$lock->get()
+            || in_array(
                 needle: $state,
                 haystack: [State::BackupInProgress, State::RestoreInProgress],
                 strict: true,
-            )) {
+            )
+        ) {
             throw ActionAlreadyInProgress::fromInvalidState($state);
         }
 

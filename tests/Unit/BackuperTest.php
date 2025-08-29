@@ -127,7 +127,7 @@ describe('backuper', function (): void {
     it('cannot backup while restoring', function (): void {
         app(StateManager::class)->setState(State::RestoreInProgress);
 
-        expect(fn() => Backuper::backup())->toThrow(Exception::class);
+        expect(Backuper::backup(...))->toThrow(Exception::class);
 
         app(StateManager::class)->setState(State::Idle);
     });
