@@ -38,6 +38,7 @@ final class Chunky
 
     /**
      * Store a chunk of a file. If all chunks are uploaded, merge them into a single file.
+     * @param $dto ChunkyUploadDto
      * @param ?Closure<string> $onCompleted Callback to run when the file is fully uploaded.
      */
     public function put(ChunkyUploadDto $dto, ?Closure $onCompleted = null): JsonResponse

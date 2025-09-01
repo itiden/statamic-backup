@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Itiden\Backup\Pipes;
 
 use Closure;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Abstracts\BackupPipe;
