@@ -55,9 +55,9 @@ describe('backuper', function (): void {
             ->extractTo($unzipped, config('backup.password'))
             ->close();
 
-        $paths = collect(File::allFiles($unzipped))
-            ->map(fn(SplFileInfo $file) => $file->getRelativePathname())
-            ->toArray();
+        $paths = collect(File::allFiles($unzipped))->map(
+            fn(SplFileInfo $file) => $file->getRelativePathname(),
+        )->toArray();
 
         expect($paths)->toEqualCanonicalizing([
             // since the default collection store and entries store have the same directory, we will get duplicates.
@@ -89,9 +89,9 @@ describe('backuper', function (): void {
             ->extractTo($unzipped, config('backup.password'))
             ->close();
 
-        $paths = collect(File::allFiles($unzipped))
-            ->map(fn(SplFileInfo $file) => $file->getRelativePathname())
-            ->toArray();
+        $paths = collect(File::allFiles($unzipped))->map(
+            fn(SplFileInfo $file) => $file->getRelativePathname(),
+        )->toArray();
 
         expect($paths)->toEqualCanonicalizing([
             'stache-content::form-submissions/1743066599.5568.yaml',

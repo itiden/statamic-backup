@@ -22,26 +22,24 @@ final readonly class Assets extends BackupPipe
 
     public function restore(string $restoringFromPath, Closure $next): string
     {
-        AssetContainer::all()
-            ->filter(static::isLocal(...))
-            ->each(function (Container $container) use ($restoringFromPath): void {
-                File::cleanDirectory($container->diskPath());
-                File::copyDirectory(
-                    "{$this->getDirectoryPath($restoringFromPath)}/{$container->handle()}",
-                    $container->diskPath(),
-                );
-            });
+        AssetContainer::all()->filter(static::isLocal(...))->each(function (Container $container) use (
+            $restoringFromPath,
+        ): void {
+            File::cleanDirectory($container->diskPath());
+            File::copyDirectory(
+                "{$this->getDirectoryPath($restoringFromPath)}/{$container->handle()}",
+                $container->diskPath(),
+            );
+        });
 
         return $next($restoringFromPath);
     }
 
     public function backup(Zipper $zip, Closure $next): Zipper
     {
-        AssetContainer::all()
-            ->filter(static::isLocal(...))
-            ->each(function (Container $container) use ($zip): void {
-                $zip->addDirectory($container->diskPath(), static::getKey() . '/' . $container->handle());
-            });
+        AssetContainer::all()->filter(static::isLocal(...))->each(function (Container $container) use ($zip): void {
+            $zip->addDirectory($container->diskPath(), static::getKey() . '/' . $container->handle());
+        });
 
         return $next($zip);
     }

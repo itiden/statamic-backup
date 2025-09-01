@@ -74,8 +74,9 @@ describe('zipper', function (): void {
     });
 
     it('can unzip directory', function (): void {
-        $files = collect(File::allFiles(fixtures_path('content/collections')))
-            ->map(fn(SplFileInfo $file): string => $file->getPathname());
+        $files = collect(File::allFiles(fixtures_path('content/collections')))->map(
+            fn(SplFileInfo $file): string => $file->getPathname(),
+        );
 
         $target = storage_path('test.zip');
 
