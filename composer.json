@@ -10,7 +10,7 @@
   ],
   "require": {
     "ext-zip": "*",
-    "statamic/cms": "6.0.0-alpha.1",
+    "statamic/cms": "6.0.0-alpha.4",
     "pixelfear/composer-dist-plugin": "^0.1.6"
   },
   "require-dev": {
