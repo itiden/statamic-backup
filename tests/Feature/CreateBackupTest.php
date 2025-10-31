@@ -68,9 +68,10 @@ describe('api:create', function (): void {
 
         postJson(cp_route('api.itiden.backup.store'));
 
-        Event::assertDispatched(BackupCreated::class, function (BackupCreated $event): bool {
-            return $event->backup->name === app(BackupRepository::class)->all()->first()->name;
-        });
+        Event::assertDispatched(
+            BackupCreated::class,
+            fn(BackupCreated $event) => $event->backup->name === app(BackupRepository::class)->all()->first()->name,
+        );
     });
 
     it('dispatches failed event when error occurs', function (): void {

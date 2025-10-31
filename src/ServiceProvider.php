@@ -18,7 +18,6 @@ use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
 
-// @mago-expect lint:strictness/require-property-type
 final class ServiceProvider extends AddonServiceProvider
 {
     protected $viewNamespace = 'itiden-backup';

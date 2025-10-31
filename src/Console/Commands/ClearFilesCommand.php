@@ -12,8 +12,6 @@ use function Laravel\Prompts\info;
 
 /**
  * Clear the backup temp directory
- *
- * @mago-expect lint:strictness/require-property-type
  */
 final class ClearFilesCommand extends Command
 {

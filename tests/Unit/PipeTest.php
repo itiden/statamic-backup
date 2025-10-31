@@ -47,9 +47,7 @@ describe('pipes', function (): void {
     test('can skip a pipe with users', function (): void {
         $pipe = app()->make(Users::class);
 
-        $callable = function (Zipper $z): Zipper {
-            return $z;
-        };
+        $callable = fn(Zipper $z) => $z;
 
         File::deleteDirectory(Stache::store('users')->directory());
 
@@ -69,9 +67,7 @@ describe('pipes', function (): void {
     test('can skip a pipe with stache content', function (): void {
         $pipe = app()->make(StacheData::class);
 
-        $callable = function (Zipper $z): Zipper {
-            return $z;
-        };
+        $callable = fn(Zipper $z) => $z;
 
         config()->set('backup.stache_stores', ['non-existing-store']);
 
