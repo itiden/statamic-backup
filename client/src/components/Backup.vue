@@ -1,5 +1,6 @@
 <script setup>
 import { Listing, DropdownItem, Header, Button } from "@statamic/cms/ui";
+import { Head } from "@statamic/cms/inertia";
 import { requireElevatedSession } from "@statamic/cms";
 import { useBackupStore } from "../store";
 import { ref, watch } from "vue";
@@ -13,7 +14,7 @@ const dropZone = ref(null);
 const browseTarget = ref(null);
 
 const { files } = useResumable({
-  chunkSize: 2 * 1024 * 1024,
+  chunkSize: Statamic.$config.get('statamic_backup.chunk_size', 2 * 1024 * 1024),
   dropZone,
   browseTarget,
   onFileUploaded: (file) => {
@@ -82,6 +83,7 @@ const deleteBackup = withErrHandling(async (id) => {
 </script>
 
 <template>
+  <Head title="Backups" />
   <Header :icon="database" :title="__('statamic-backup::backup.title')">
     <Button variant="subtle" ref="browseTarget">{{
       __("statamic-backup::backup.upload.label")

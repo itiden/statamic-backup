@@ -6,6 +6,7 @@ namespace Itiden\Backup;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\View;
 use Itiden\Backup\Console\Commands\BackupCommand;
 use Itiden\Backup\Console\Commands\ClearFilesCommand;
 use Itiden\Backup\Console\Commands\RestoreCommand;
@@ -17,6 +18,7 @@ use Statamic\CP\Navigation\Nav as Navigation;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
+use Statamic\Statamic;
 
 final class ServiceProvider extends AddonServiceProvider
 {
@@ -48,6 +50,7 @@ final class ServiceProvider extends AddonServiceProvider
         $this->configurePermissions();
         $this->configureNavigation();
         $this->configureCommands();
+        $this->configureViewVariables();
     }
 
     public function schedule(Schedule $schedule): void
@@ -76,6 +79,15 @@ final class ServiceProvider extends AddonServiceProvider
             BackupCommand::class,
             ClearFilesCommand::class,
         ]);
+    }
+
+    private function configureViewVariables(): void
+    {
+        View::composer('statamic::layout', function ($view) {
+            Statamic::provideToScript(['statamic_backup' => [
+                'chunk_size' => config('backup.chunk_size'),
+            ]]);
+        });
     }
 
     private function configureNavigation(): void
