@@ -51,10 +51,9 @@ final class Chunky
             ->reduce(fn(int $carry, string $item): int => $carry + $this->disk->size($item), 0);
 
         if ($chunksOnDiskSize < $dto->totalSize) {
-            return response()->json(
-                ['message' => 'uploaded ' . $dto->currentChunk . ' of ' . $dto->totalChunks],
-                Response::HTTP_CREATED,
-            );
+            return response()->json([
+                'message' => 'uploaded ' . $dto->currentChunk . ' of ' . $dto->totalChunks,
+            ], Response::HTTP_CREATED);
         }
 
         $completeFile = $this->mergeChunksIntoFile($dto->identifier, $dto->filename, $dto->totalChunks);
@@ -63,10 +62,10 @@ final class Chunky
             $onCompleted($completeFile);
         }
 
-        return response()->json(
-            ['message' => 'File successfully uploaded', 'file' => $completeFile],
-            Response::HTTP_CREATED,
-        );
+        return response()->json([
+            'message' => 'File successfully uploaded',
+            'file' => $completeFile,
+        ], Response::HTTP_CREATED);
     }
 
     /**

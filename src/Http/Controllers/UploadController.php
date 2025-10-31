@@ -21,16 +21,16 @@ final readonly class UploadController
         BackupRepository $repo,
         Backuper $backuper,
     ): JsonResponse {
-        return $chunky->put(
-            ChunkyUploadDto::fromRequest($request),
-            onCompleted: function (string $completeFile) use ($repo, $backuper): void {
-                $backup = $repo->add($completeFile);
+        return $chunky->put(ChunkyUploadDto::fromRequest($request), onCompleted: function (string $completeFile) use (
+            $repo,
+            $backuper,
+        ): void {
+            $backup = $repo->add($completeFile);
 
-                $backuper->addMetaFromZipToBackupMeta($completeFile, $backup);
+            $backuper->addMetaFromZipToBackupMeta($completeFile, $backup);
 
-                $backuper->enforceMaxBackups();
-            },
-        );
+            $backuper->enforceMaxBackups();
+        });
     }
 
     public function test(Request $request, Chunky $chunky): JsonResponse

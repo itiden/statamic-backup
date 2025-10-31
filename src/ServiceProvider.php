@@ -94,19 +94,15 @@ final class ServiceProvider extends AddonServiceProvider
     private function configurePermissions(): void
     {
         Permission::extend(static function (PermissionContract $permission): void {
-            $permission->group(
-                'itiden-backup',
-                'Backup',
-                static fn() => $permission
-                    ->register('manage backups')
-                    ->label('Manage Backups')
-                    ->children([
-                        $permission->make('create backups')->label('Create Backups'),
-                        $permission->make('restore backups')->label('Restore From Backups'),
-                        $permission->make('download backups')->label('Download Backups'),
-                        $permission->make('delete backups')->label('Delete Backups'),
-                    ]),
-            );
+            $permission->group('itiden-backup', 'Backup', static fn() => $permission
+                ->register('manage backups')
+                ->label('Manage Backups')
+                ->children([
+                    $permission->make('create backups')->label('Create Backups'),
+                    $permission->make('restore backups')->label('Restore From Backups'),
+                    $permission->make('download backups')->label('Download Backups'),
+                    $permission->make('delete backups')->label('Delete Backups'),
+                ]));
         });
     }
 }
