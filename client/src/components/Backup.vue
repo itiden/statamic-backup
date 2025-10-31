@@ -5,8 +5,6 @@ import { useBackupStore } from "../store";
 import { ref, watch } from "vue";
 import { useResumable } from "../resumable";
 
-const props = defineProps(["chunkSize"]);
-
 const backupStore = useBackupStore();
 
 const listing = ref(null);
@@ -15,7 +13,7 @@ const dropZone = ref(null);
 const browseTarget = ref(null);
 
 const { files } = useResumable({
-  chunkSize: props.chunkSize ?? 2 * 1024 * 1024,
+  chunkSize: 2 * 1024 * 1024,
   dropZone,
   browseTarget,
   onFileUploaded: (file) => {
@@ -138,6 +136,7 @@ const deleteBackup = withErrHandling(async (id) => {
       <DropdownItem
         v-if="backupStore.abilities.download.isPermitted"
         :text="__('statamic-backup::backup.download.label')"
+        target="_blank"
         :href="`${cp_url('api/backups/download')}/${row.id}`"
       />
       <DropdownItem

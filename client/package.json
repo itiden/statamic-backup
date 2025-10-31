@@ -2,13 +2,13 @@
   "name": "@statamic-backup/client",
   "type": "module",
   "scripts": {
-    "dev": "vite build --watch --mode development",
+    "dev": "vite",
     "build": "vite build"
   },
   "devDependencies": {
-    "@statamic/cms": "file:./../vendor/statamic/cms/resources/js/package",
+    "@statamic/cms": "file:./../vendor/statamic/cms/resources/dist-package",
     "laravel-vite-plugin": "^2.0.0",
-    "vite": "npm:rolldown-vite@latest"
+    "vite": "^7.1.12"
   },
   "dependencies": {
     "resumablejs": "^1.1.0"

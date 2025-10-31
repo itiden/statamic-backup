@@ -10,14 +10,14 @@
   ],
   "require": {
     "ext-zip": "*",
-    "statamic/cms": "6.0.0-alpha.4",
+    "statamic/cms": "6.0.0-alpha.15",
     "pixelfear/composer-dist-plugin": "^0.1.6"
   },
   "require-dev": {
     "orchestra/testbench": "^9.0",
     "pestphp/pest": "^3.0",
     "pestphp/pest-plugin-laravel": "^3.0",
-    "carthage-software/mago": "1.0.0-beta.5"
+    "carthage-software/mago": "1.0.0-beta.34"
   },
   "autoload": {
     "psr-4": {

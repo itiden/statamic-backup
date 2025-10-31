@@ -11,9 +11,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 final readonly class DownloadBackupController
 {
-    /**
-     * Handle the incoming request.
-     */
     public function __invoke(string $id, BackupRepository $repo): StreamedResponse
     {
         $backup = $repo->find($id);
