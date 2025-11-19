@@ -27,8 +27,8 @@ final readonly class StacheData extends BackupPipe
         collect(Stache::stores())
             ->filter(static::shouldBackupStore(...))
             ->filter(static::storeHasSafeDirectory(...))
-            ->filter(fn(Store $store) => File::exists(join_paths($restoringFromPath, static::prefixer($store))))
-            ->each(function (Store $store) use ($restoringFromPath): void {
+            ->filter(static fn(Store $store) => File::exists(join_paths($restoringFromPath, static::prefixer($store))))
+            ->each(static function (Store $store) use ($restoringFromPath): void {
                 File::cleanDirectory($store->directory());
 
                 File::copyDirectory(
@@ -45,9 +45,9 @@ final readonly class StacheData extends BackupPipe
         return collect(Stache::stores())
             ->filter(static::shouldBackupStore(...))
             ->filter(static::storeHasSafeDirectory(...))
-            ->filter(fn(Store $store) => File::isDirectory($store->directory()))
-            ->whenNotEmpty(function (Collection $stores) use ($zip, $next): Zipper {
-                $stores->each(fn(Store $store) => $zip->addDirectory(
+            ->filter(static fn(Store $store) => File::isDirectory($store->directory()))
+            ->whenNotEmpty(static function (Collection $stores) use ($zip, $next): Zipper {
+                $stores->each(static fn(Store $store) => $zip->addDirectory(
                     path: realpath($store->directory()),
                     prefix: static::prefixer($store),
                 ));

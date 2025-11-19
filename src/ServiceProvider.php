@@ -83,7 +83,7 @@ final class ServiceProvider extends AddonServiceProvider
 
     private function configureViewVariables(): void
     {
-        View::composer('statamic::layout', function ($view) {
+        View::composer('statamic::layout', static function () {
             Statamic::provideToScript(['statamic_backup' => [
                 'chunk_size' => config('backup.chunk_size'),
             ]]);

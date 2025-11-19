@@ -36,7 +36,7 @@ final class FileBackupRepository implements BackupRepository
         return collect($this->filesystem->allFiles($this->path))
             ->map(BackupDto::fromFile(...))
             ->whereInstanceOf(BackupDto::class)
-            ->sortByDesc(fn(BackupDto $backup) => $backup->created_at);
+            ->sortByDesc(static fn(BackupDto $backup) => $backup->created_at);
     }
 
     public function add(string $path): BackupDto
@@ -56,7 +56,7 @@ final class FileBackupRepository implements BackupRepository
 
     public function find(string $id): ?BackupDto
     {
-        return $this->all()->first(fn(BackupDto $backup): bool => $backup->id === $id);
+        return $this->all()->first(static fn(BackupDto $backup): bool => $backup->id === $id);
     }
 
     public function remove(string $id): ?BackupDto

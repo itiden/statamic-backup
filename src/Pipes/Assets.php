@@ -36,7 +36,9 @@ final readonly class Assets extends BackupPipe
 
     public function backup(Zipper $zip, Closure $next): Zipper
     {
-        AssetContainer::all()->filter(static::isLocal(...))->each(function (Container $container) use ($zip): void {
+        AssetContainer::all()->filter(static::isLocal(...))->each(static function (Container $container) use (
+            $zip,
+        ): void {
             $zip->addDirectory($container->diskPath(), static::getKey() . '/' . $container->handle());
         });
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Itiden\Backup\Console\Commands;
 
 use Illuminate\Console\Command;
-use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Backuper;
 
 use function Laravel\Prompts\info;
