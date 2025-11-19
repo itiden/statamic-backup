@@ -94,9 +94,11 @@ final class ServiceProvider extends AddonServiceProvider
     {
         Nav::extend(static function (Navigation $nav): void {
             $nav
-                ->content('Backups')
-                ->can('manage backups')
-                ->section('Tools')
+                ->findOrCreate(
+                    section: 'Tools',
+                    name: 'Backups',
+                )
+                ->can(ability: 'manage backups')
                 ->route('itiden.backup.index')
                 ->icon('save');
         });
