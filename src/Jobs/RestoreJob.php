@@ -29,10 +29,7 @@ final class RestoreJob implements ShouldQueue
      */
     public function handle(Restorer $backuper, Repository $cache): void
     {
-        $backuper->restoreFromId(
-            id: $this->id,
-            user: $this->user,
-        );
+        $backuper->restoreFromId(id: $this->id, user: $this->user);
 
         $cache->forget(StateManager::JOB_QUEUED_KEY);
     }

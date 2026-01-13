@@ -68,20 +68,14 @@ final class Metadata
 
     public function addDownload(Authenticatable $user): void
     {
-        $this->downloads[] = new UserActionDto(
-            userId: $user->getAuthIdentifier(),
-            timestamp: now()->toString(),
-        );
+        $this->downloads[] = new UserActionDto(userId: $user->getAuthIdentifier(), timestamp: now()->toString());
 
         $this->save();
     }
 
     public function addRestore(Authenticatable $user): void
     {
-        $this->restores[] = new UserActionDto(
-            userId: $user->getAuthIdentifier(),
-            timestamp: now()->toString(),
-        );
+        $this->restores[] = new UserActionDto(userId: $user->getAuthIdentifier(), timestamp: now()->toString());
 
         $this->save();
     }
@@ -109,10 +103,7 @@ final class Metadata
      */
     public function addSkippedPipe(string $pipe, string $reason): void
     {
-        $this->skippedPipes[] = new SkippedPipeDto(
-            pipe: $pipe,
-            reason: $reason,
-        );
+        $this->skippedPipes[] = new SkippedPipeDto(pipe: $pipe, reason: $reason);
 
         $this->save();
     }

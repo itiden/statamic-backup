@@ -92,10 +92,7 @@ describe('metadata', function (): void {
 
         expect($metadata->getSkippedPipes())->toBeEmpty();
 
-        $metadata->addSkippedPipe(
-            pipe: UserPipe::class,
-            reason: 'Some reason',
-        );
+        $metadata->addSkippedPipe(pipe: UserPipe::class, reason: 'Some reason');
 
         expect($metadata->getSkippedPipes())->toHaveCount(1);
         expect($metadata->getSkippedPipes()->first()->pipe)->toBe(UserPipe::class);
@@ -106,10 +103,7 @@ describe('metadata', function (): void {
         $backup = Backuper::backup();
 
         $metadata = $backup->getMetadata();
-        $metadata->addSkippedPipe(
-            pipe: UserPipe::class,
-            reason: 'Some reason',
-        );
+        $metadata->addSkippedPipe(pipe: UserPipe::class, reason: 'Some reason');
 
         $file = File::get(config('backup.metadata_path') . '/.meta/' . $backup->id);
         $yaml = app(Yaml::class)->parse($file);

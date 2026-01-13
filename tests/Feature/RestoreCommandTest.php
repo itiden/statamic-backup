@@ -17,10 +17,7 @@ describe('command:restore', function (): void {
         $backups = app(BackupRepository::class)->all();
 
         artisan('statamic:backup:restore')
-            ->expectsQuestion(
-                question: 'Which backup do you want to restore to?',
-                answer: $backups->first()->path,
-            )
+            ->expectsQuestion(question: 'Which backup do you want to restore to?', answer: $backups->first()->path)
             ->expectsConfirmation('Are you sure you want to restore your content?')
             ->assertFailed();
     });

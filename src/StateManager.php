@@ -67,11 +67,7 @@ final readonly class StateManager
 
         if (
             !$lock->get()
-            || in_array(
-                needle: $state,
-                haystack: [State::BackupInProgress, State::RestoreInProgress],
-                strict: true,
-            )
+            || in_array(needle: $state, haystack: [State::BackupInProgress, State::RestoreInProgress], strict: true)
         ) {
             throw ActionAlreadyInProgress::fromInvalidState($state);
         }

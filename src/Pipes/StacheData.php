@@ -46,18 +46,21 @@ final readonly class StacheData extends BackupPipe
             ->filter(static::shouldBackupStore(...))
             ->filter(static::storeHasSafeDirectory(...))
             ->filter(static fn(Store $store) => File::isDirectory($store->directory()))
-            ->whenNotEmpty(static function (Collection $stores) use ($zip, $next): Zipper {
-                $stores->each(static fn(Store $store) => $zip->addDirectory(
-                    path: realpath($store->directory()),
-                    prefix: static::prefixer($store),
-                ));
+            ->whenNotEmpty(
+                static function (Collection $stores) use ($zip, $next): Zipper {
+                    $stores->each(static fn(Store $store) => $zip->addDirectory(
+                        path: realpath($store->directory()),
+                        prefix: static::prefixer($store),
+                    ));
 
-                return $next($zip);
-            }, default: fn() => $this->skip(
-                reason: 'No stores found to backup, is the Stache configured correctly?',
-                next: $next,
-                zip: $zip,
-            ));
+                    return $next($zip);
+                },
+                default: fn() => $this->skip(
+                    reason: 'No stores found to backup, is the Stache configured correctly?',
+                    next: $next,
+                    zip: $zip,
+                ),
+            );
     }
 
     private static function prefixer(Store $store): string

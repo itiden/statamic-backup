@@ -27,9 +27,6 @@ final readonly class SkippedPipeDto implements Arrayable
 
     public static function fromArray(array $array): SkippedPipeDto
     {
-        return new static(
-            pipe: $array['pipe'],
-            reason: $array['reason'],
-        );
+        return new static(pipe: $array['pipe'], reason: $array['reason']);
     }
 }
