@@ -17,6 +17,9 @@ final readonly class SkippedPipeDto implements Arrayable
         public string $reason,
     ) {}
 
+    /**
+     * @return array{pipe: class-string<BackupPipe>, reason: string}
+     */
     public function toArray(): array
     {
         return [
@@ -25,6 +28,9 @@ final readonly class SkippedPipeDto implements Arrayable
         ];
     }
 
+    /**
+     * @param array{pipe: class-string<BackupPipe>, reason: string} $array
+     */
     public static function fromArray(array $array): SkippedPipeDto
     {
         return new static(pipe: $array['pipe'], reason: $array['reason']);

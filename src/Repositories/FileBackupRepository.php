@@ -6,7 +6,6 @@ namespace Itiden\Backup\Repositories;
 
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\File as StreamableFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
@@ -21,7 +20,6 @@ final class FileBackupRepository implements BackupRepository
 {
     private string $path;
 
-    /** @var FilesystemAdapter */
     private Filesystem $filesystem;
 
     public function __construct(

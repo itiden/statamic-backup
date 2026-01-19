@@ -12,7 +12,7 @@ interface BackupRepository
     /**
      * Get all backups.
      *
-     * @return Collection<BackupDto>
+     * @return Collection<array-key, BackupDto>
      */
     public function all(): Collection;
 
