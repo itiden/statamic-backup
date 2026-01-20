@@ -17,6 +17,7 @@ use Itiden\Backup\Tests\SkippingPipe;
 
 use function Itiden\Backup\Tests\user;
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\artisan;
 use function Pest\Laravel\postJson;
 use function Statamic\trans;
 
@@ -52,7 +53,7 @@ describe('api:create', function (): void {
     it('can create backup from command', function (): void {
         expect(app(BackupRepository::class)->all()->count())->toBe(0);
 
-        $this->artisan('statamic:backup')->assertExitCode(0);
+        artisan('statamic:backup')->assertExitCode(0);
 
         expect(app(BackupRepository::class)->all()->count())->toBe(1);
     });
@@ -94,15 +95,13 @@ describe('api:create', function (): void {
     });
 
     it('sets created by metadata when user is authenticated', function (): void {
-        $user = user();
-
-        $user->assignRole('admin')->save();
+        $user = user()->assignRole('admin')->save();
 
         actingAs($user);
 
         postJson(cp_route('api.itiden.backup.store'));
 
-        expect(app(BackupRepository::class)->all()->first()->getMetadata()->getCreatedBy())->toBe($user);
+        expect(app(BackupRepository::class)->all()->first()->getMetadata()->getCreatedBy()->id)->toBe($user->id);
     });
 
     it('adds skipped pipes to meta', function (): void {
