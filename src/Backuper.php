@@ -96,7 +96,7 @@ final class Backuper
         $zip = Zipper::read($pathToZip);
         $zip
             ->getMeta()
-            ->filter(static fn(mixed $data) => is_array($data) && isset($data['skipped']))
+            ->filter(static fn(mixed $data) => is_array($data) && $data['skipped'] !== null)
             ->map(static fn(array $data) => $data['skipped'])
             ->each(static fn(string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason));
 

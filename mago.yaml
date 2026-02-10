@@ -29,10 +29,6 @@ linter:
       enabled: false
     halstead:
       effort-threshold: 7000
-    return-type:
-      ignore-arrow-function: true
-    constant-type:
-      enabled: false
     class-name:
       enabled: false
     interface-name:
