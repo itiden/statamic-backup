@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Itiden\Backup\Console\Commands;
 
 use Illuminate\Console\Command;
-use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Facades\Backuper;
 
 use function Laravel\Prompts\info;
@@ -16,10 +15,8 @@ use function Laravel\Prompts\spin;
  */
 final class BackupCommand extends Command
 {
-    // @mago-expect lint:strictness/require-property-type
     protected $signature = 'statamic:backup';
 
-    // @mago-expect lint:strictness/require-property-type
     protected $description = 'Run the backup pipeline';
 
     public function handle(): void

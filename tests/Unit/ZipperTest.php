@@ -74,8 +74,9 @@ describe('zipper', function (): void {
     });
 
     it('can unzip directory', function (): void {
-        $files = collect(File::allFiles(fixtures_path('content/collections')))
-            ->map(fn(SplFileInfo $file): string => $file->getPathname());
+        $files = collect(File::allFiles(fixtures_path('content/collections')))->map(
+            fn(SplFileInfo $file): string => $file->getPathname(),
+        );
 
         $target = storage_path('test.zip');
 
@@ -95,12 +96,10 @@ describe('zipper', function (): void {
     it('can encrypt when zipping', function (): void {
         $target = storage_path('test.zip');
 
-        $password = 'password'; // @mago-expect lint:security/no-literal-password
+        // @mago-expect lint:no-literal-password
+        $password = 'password';
 
-        Zipper::write($target)
-            ->addFromString('test.txt', 'test')
-            ->encrypt($password)
-            ->close();
+        Zipper::write($target)->addFromString('test.txt', 'test')->encrypt($password)->close();
 
         expect(file_exists($target))->toBeTrue();
         expect(File::mimeType($target))->toBe('application/zip');
@@ -116,10 +115,7 @@ describe('zipper', function (): void {
     it('can write meta to zip', function (): void {
         $target = storage_path('test.zip');
 
-        Zipper::write($target)
-            ->addFromString('test.txt', 'test')
-            ->addMeta('test', 'test')
-            ->close();
+        Zipper::write($target)->addFromString('test.txt', 'test')->addMeta('test', 'test')->close();
 
         $zip = Zipper::read($target);
 

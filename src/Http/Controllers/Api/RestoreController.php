@@ -15,12 +15,10 @@ final readonly class RestoreController
     public function __invoke(
         string $id,
         StateManager $stateManager,
-        #[Authenticated] Authenticatable $user,
+        #[Authenticated]
+        Authenticatable $user,
     ): JsonResponse {
-        $stateManager->dispatch(new RestoreJob(
-            id: $id,
-            user: $user,
-        ));
+        $stateManager->dispatch(new RestoreJob(id: $id, user: $user));
 
         return response()->json(['message' => __('statamic-backup::backup.restore.started')]);
     }

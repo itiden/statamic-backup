@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\Bus;
 use Itiden\Backup\Jobs\BackupJob;
-use Itiden\Backup\Jobs\RestoreFromPathJob;
 use Itiden\Backup\Jobs\RestoreJob;
 use Statamic\Contracts\Auth\User;
 

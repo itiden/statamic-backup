@@ -6,7 +6,6 @@ namespace Itiden\Backup\Repositories;
 
 use Carbon\CarbonImmutable;
 use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\File as StreamableFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
@@ -16,12 +15,12 @@ use Itiden\Backup\Contracts\BackupNameResolver;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Events\BackupDeleted;
+use RuntimeException;
 
 final class FileBackupRepository implements BackupRepository
 {
     private string $path;
 
-    /** @var FilesystemAdapter */
     private Filesystem $filesystem;
 
     public function __construct(
@@ -36,7 +35,7 @@ final class FileBackupRepository implements BackupRepository
         return collect($this->filesystem->allFiles($this->path))
             ->map(BackupDto::fromFile(...))
             ->whereInstanceOf(BackupDto::class)
-            ->sortByDesc(fn(BackupDto $backup) => $backup->created_at);
+            ->sortByDesc(static fn(BackupDto $backup) => $backup->created_at);
     }
 
     public function add(string $path): BackupDto
@@ -51,12 +50,18 @@ final class FileBackupRepository implements BackupRepository
             name: (string) str($this->nameResolver->generateFilename(CarbonImmutable::now(), $id))->finish('.zip'),
         );
 
-        return $this->find($id);
+        $backup = $this->find($id);
+
+        if (!$backup) {
+            throw new RuntimeException('Failed to add backup to repository.');
+        }
+
+        return $backup;
     }
 
     public function find(string $id): ?BackupDto
     {
-        return $this->all()->first(fn(BackupDto $backup): bool => $backup->id === $id);
+        return $this->all()->first(static fn(BackupDto $backup): bool => $backup->id === $id);
     }
 
     public function remove(string $id): ?BackupDto

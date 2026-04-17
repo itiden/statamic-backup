@@ -67,10 +67,7 @@ final class Restorer
                 $path = $this->unzip($path);
             }
 
-            Pipeline::via('restore')
-                ->send($path)
-                ->through(Config::array('backup.pipeline'))
-                ->thenReturn();
+            Pipeline::via('restore')->send($path)->through(Config::array('backup.pipeline'))->thenReturn();
 
             event(new BackupRestored($backup));
 

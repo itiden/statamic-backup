@@ -6,10 +6,11 @@ namespace Itiden\Backup\Support;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
+use SensitiveParameter;
 use Symfony\Component\Finder\SplFileInfo;
 use ZipArchive;
 
-// @mago-expect lint:maintainability/too-many-methods
+// @mago-expect lint:too-many-methods
 final class Zipper
 {
     private ZipArchive $zip;
@@ -48,7 +49,7 @@ final class Zipper
     /**
      * Encrypt the archive with the given password.
      */
-    public function encrypt(string $password): self
+    public function encrypt(#[SensitiveParameter] string $password): self
     {
         $this->zip->setPassword($password);
 
@@ -93,7 +94,7 @@ final class Zipper
     /**
      * Extract the Zipper to the given path.
      */
-    public function extractTo(string $path, ?string $password = null): self
+    public function extractTo(string $path, #[SensitiveParameter] ?string $password = null): self
     {
         if ($password) {
             $this->zip->setPassword($password);

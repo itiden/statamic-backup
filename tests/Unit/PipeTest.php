@@ -47,18 +47,13 @@ describe('pipes', function (): void {
     test('can skip a pipe with users', function (): void {
         $pipe = app()->make(Users::class);
 
-        $callable = function (Zipper $z): Zipper {
-            return $z;
-        };
+        $callable = fn(Zipper $z) => $z;
 
         File::deleteDirectory(Stache::store('users')->directory());
 
         $zipper = Zipper::write(config('backup.temp_path') . '/backup.zip');
 
-        $pipe->backup(
-            zip: $zipper,
-            next: $callable,
-        );
+        $pipe->backup(zip: $zipper, next: $callable);
 
         expect($zipper->getMeta())->toHaveKey(Users::class);
         expect($zipper->getMeta()[Users::class])->toHaveKey('skipped', 'No users found.');
@@ -69,18 +64,13 @@ describe('pipes', function (): void {
     test('can skip a pipe with stache content', function (): void {
         $pipe = app()->make(StacheData::class);
 
-        $callable = function (Zipper $z): Zipper {
-            return $z;
-        };
+        $callable = fn(Zipper $z) => $z;
 
         config()->set('backup.stache_stores', ['non-existing-store']);
 
         $zipper = Zipper::write(config('backup.temp_path') . '/backup.zip');
 
-        $pipe->backup(
-            zip: $zipper,
-            next: $callable,
-        );
+        $pipe->backup(zip: $zipper, next: $callable);
 
         expect($zipper->getMeta())->toHaveKey(StacheData::class);
         expect($zipper->getMeta()[StacheData::class])

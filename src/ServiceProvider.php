@@ -6,6 +6,7 @@ namespace Itiden\Backup;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\View;
 use Itiden\Backup\Console\Commands\BackupCommand;
 use Itiden\Backup\Console\Commands\ClearFilesCommand;
 use Itiden\Backup\Console\Commands\RestoreCommand;
@@ -17,8 +18,8 @@ use Statamic\CP\Navigation\Nav as Navigation;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
+use Statamic\Statamic;
 
-// @mago-expect lint:strictness/require-property-type
 final class ServiceProvider extends AddonServiceProvider
 {
     protected $viewNamespace = 'itiden-backup';
@@ -49,6 +50,7 @@ final class ServiceProvider extends AddonServiceProvider
         $this->configurePermissions();
         $this->configureNavigation();
         $this->configureCommands();
+        $this->configureViewVariables();
     }
 
     public function schedule(Schedule $schedule): void
@@ -79,15 +81,23 @@ final class ServiceProvider extends AddonServiceProvider
         ]);
     }
 
+    private function configureViewVariables(): void
+    {
+        View::composer('statamic::layout', static function () {
+            Statamic::provideToScript(['statamic_backup' => [
+                'chunk_size' => config('backup.chunk_size'),
+            ]]);
+        });
+    }
+
     private function configureNavigation(): void
     {
         Nav::extend(static function (Navigation $nav): void {
             $nav
-                ->content('Backups')
-                ->can('manage backups')
-                ->section('Tools')
+                ->findOrCreate(section: 'Tools', name: 'Backups')
+                ->can(ability: 'manage backups')
                 ->route('itiden.backup.index')
-                ->icon('table');
+                ->icon('save');
         });
     }
 

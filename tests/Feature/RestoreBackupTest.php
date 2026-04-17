@@ -89,9 +89,7 @@ describe('api:restore', function (): void {
 
         $response = postJson(cp_route('api.itiden.backup.restore', $backup->id));
 
-        Event::assertDispatched(BackupRestored::class, function (BackupRestored $event) use ($backup): bool {
-            return $event->backup->id === $backup->id;
-        });
+        Event::assertDispatched(BackupRestored::class, fn(BackupRestored $event) => $event->backup->id === $backup->id);
         expect($response->status())->toBe(Response::HTTP_OK);
     });
 

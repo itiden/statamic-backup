@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Itiden\Backup\Support;
 
 use Closure;
+use Exception;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -30,14 +31,15 @@ final class Chunky
     /**
      * Get the path to the chunky directory.
      */
-    public function path(?string $path = ''): string
+    public function path(string $path = ''): string
     {
         return $this->disk->path($path);
     }
 
     /**
      * Store a chunk of a file. If all chunks are uploaded, merge them into a single file.
-     * @param ?Closure<string> $onCompleted Callback to run when the file is fully uploaded.
+     *
+     * @param ?Closure(string):void $onCompleted Callback to run when the file is fully uploaded.
      */
     public function put(ChunkyUploadDto $dto, ?Closure $onCompleted = null): JsonResponse
     {
@@ -49,10 +51,9 @@ final class Chunky
             ->reduce(fn(int $carry, string $item): int => $carry + $this->disk->size($item), 0);
 
         if ($chunksOnDiskSize < $dto->totalSize) {
-            return response()->json(
-                ['message' => 'uploaded ' . $dto->currentChunk . ' of ' . $dto->totalChunks],
-                Response::HTTP_CREATED,
-            );
+            return response()->json([
+                'message' => 'uploaded ' . $dto->currentChunk . ' of ' . $dto->totalChunks,
+            ], Response::HTTP_CREATED);
         }
 
         $completeFile = $this->mergeChunksIntoFile($dto->identifier, $dto->filename, $dto->totalChunks);
@@ -61,14 +62,16 @@ final class Chunky
             $onCompleted($completeFile);
         }
 
-        return response()->json(
-            ['message' => 'File successfully uploaded', 'file' => $completeFile],
-            Response::HTTP_CREATED,
-        );
+        return response()->json([
+            'message' => 'File successfully uploaded',
+            'file' => $completeFile,
+        ], Response::HTTP_CREATED);
     }
 
     /**
      * Merge chunks into a single file.
+     *
+     * @throws Exception
      */
     public function mergeChunksIntoFile(string $chunkPath, string $filename, int $totalChunks): string
     {
@@ -80,16 +83,23 @@ final class Chunky
         $file = fopen($assembledPath, 'w');
 
         if (!$file) {
-            throw new \Exception('cannot create the destination file');
+            throw new Exception('cannot create the destination file');
         }
 
-        // loop through the chunks and write them to the file
-        for ($i = 1; $i <= $totalChunks; $i++) {
-            fwrite($file, file_get_contents($this->path("{$chunkPath}/{$filename}.part{$i}")));
+        try {
+            // loop through the chunks and write them to the file
+            for ($i = 1; $i <= $totalChunks; $i++) {
+                $chunk = file_get_contents($this->path("{$chunkPath}/{$filename}.part{$i}"));
+
+                if (!$chunk) {
+                    throw new Exception('cannot read the chunk file');
+                }
+
+                fwrite($file, $chunk);
+            }
+        } finally {
+            fclose($file);
         }
-
-        fclose($file);
-
         // delete the chunks
         $this->disk->deleteDirectory($chunkPath);
 

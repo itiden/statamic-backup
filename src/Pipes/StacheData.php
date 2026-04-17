@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Itiden\Backup\Pipes;
 
 use Closure;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Abstracts\BackupPipe;
 use Itiden\Backup\Support\Zipper;
+use LogicException;
 use Statamic\Facades\Stache;
 use Statamic\Stache\Stores\Store;
 
@@ -27,8 +27,8 @@ final readonly class StacheData extends BackupPipe
         collect(Stache::stores())
             ->filter(static::shouldBackupStore(...))
             ->filter(static::storeHasSafeDirectory(...))
-            ->filter(fn(Store $store) => File::exists(join_paths($restoringFromPath, static::prefixer($store))))
-            ->each(function (Store $store) use ($restoringFromPath): void {
+            ->filter(static fn(Store $store) => File::exists(join_paths($restoringFromPath, static::prefixer($store))))
+            ->each(static function (Store $store) use ($restoringFromPath): void {
                 File::cleanDirectory($store->directory());
 
                 File::copyDirectory(
@@ -42,25 +42,38 @@ final readonly class StacheData extends BackupPipe
 
     public function backup(Zipper $zip, Closure $next): Zipper
     {
-        return collect(Stache::stores())
+        $stores = collect(Stache::stores())
             ->filter(static::shouldBackupStore(...))
             ->filter(static::storeHasSafeDirectory(...))
-            ->filter(fn(Store $store) => File::isDirectory($store->directory()))
-            ->whenNotEmpty(
-                function (Collection $stores) use ($zip, $next): Zipper {
-                    $stores->each(fn(Store $store) => $zip->addDirectory(
-                        path: realpath($store->directory()),
-                        prefix: static::prefixer($store),
-                    ));
+            ->filter(static fn(Store $store) => File::isDirectory($store->directory()));
 
-                    return $next($zip);
-                },
-                default: fn() => $this->skip(
-                    reason: 'No stores found to backup, is the Stache configured correctly?',
-                    next: $next,
-                    zip: $zip,
-                ),
+        if ($stores->isEmpty()) {
+            return $this->skip(
+                reason: 'No stores found to backup, is the Stache configured correctly?',
+                next: $next,
+                zip: $zip,
             );
+        }
+
+        $stores->each(static fn(Store $store) => $zip->addDirectory(
+            path: static::realPath($store),
+            prefix: static::prefixer($store),
+        ));
+
+        return $next($zip);
+    }
+
+    private static function realPath(Store $store): string
+    {
+        $path = $store->directory();
+
+        $realPath = realpath($path);
+
+        if (!$realPath) {
+            throw new LogicException("Unable to resolve real path for store [{$store->key()}] at [{$path}].");
+        }
+
+        return $realPath;
     }
 
     private static function prefixer(Store $store): string
@@ -70,7 +83,6 @@ final readonly class StacheData extends BackupPipe
 
     private static function storeHasSafeDirectory(Store $store): bool
     {
-        /** @var string */
         $path = $store->directory();
 
         return !in_array(

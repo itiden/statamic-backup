@@ -42,10 +42,7 @@ final class Backuper
 
             $zipper = Zipper::write($temp_zip_path);
 
-            Pipeline::via('backup')
-                ->send($zipper)
-                ->through(Config::array('backup.pipeline'))
-                ->thenReturn();
+            Pipeline::via('backup')->send($zipper)->through(Config::array('backup.pipeline'))->thenReturn();
 
             /** @var string|null */
             $password = Config::get('backup.password');
@@ -96,7 +93,7 @@ final class Backuper
         $zip = Zipper::read($pathToZip);
         $zip
             ->getMeta()
-            ->filter(static fn(mixed $data) => is_array($data) && isset($data['skipped']))
+            ->filter(static fn(mixed $data) => is_array($data) && $data['skipped'] !== null)
             ->map(static fn(array $data) => $data['skipped'])
             ->each(static fn(string $reason, string $pipe) => $metadata->addSkippedPipe($pipe, $reason));
 

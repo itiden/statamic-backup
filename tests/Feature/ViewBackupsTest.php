@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Inertia\Testing\AssertableInertia;
 use Itiden\Backup\Facades\Backuper;
 use Itiden\Backup\Pipes\Users;
 
@@ -32,7 +33,11 @@ describe('api:view', function (): void {
 
         actingAs($user);
 
-        get(cp_route('itiden.backup.index'))->assertOk()->assertViewIs('itiden-backup::backups');
+        $response = get(cp_route('itiden.backup.index'));
+
+        $response->assertInertia(function (AssertableInertia $page) {
+            $page->component('statamic-backup::page');
+        });
     });
 
     test('user without permission cant get backups from api', function (): void {

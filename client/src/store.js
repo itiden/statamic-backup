@@ -13,8 +13,7 @@ const calculatePollDelay = (state) => {
   return 5000;
 };
 
-export const store = {
-  namespaced: true,
+export const useBackupStore = Statamic.$pinia.defineStore("itiden::backup", {
   state: () => ({
     status: "initializing",
     timeout: null,
@@ -24,75 +23,51 @@ export const store = {
       return {
         backup: {
           isPossible: !INPROGRESS_STATES.includes(state.status),
-          isPermitted:
-            Statamic.$store.state.statamic.config.user.super ??
-            Statamic.$store.state.statamic.config.user.permissions.includes(
-              "download backups"
-            ),
+          isPermitted: Statamic.$permissions.has("download backups"),
         },
         download: {
           isPossible: !INPROGRESS_STATES.includes(state.status),
-          isPermitted:
-            Statamic.$store.state.statamic.config.user.super ??
-            Statamic.$store.state.statamic.config.user.permissions.includes(
-              "restore backups"
-            ),
+          isPermitted: Statamic.$permissions.has("restore backups"),
         },
         restore: {
           isPossible: !INPROGRESS_STATES.includes(state.status),
-          isPermitted:
-            Statamic.$store.state.statamic.config.user.super ??
-            Statamic.$store.state.statamic.config.user.permissions.includes(
-              "restore backups"
-            ),
+          isPermitted: Statamic.$permissions.has("restore backups"),
         },
         destroy: {
           isPossible: !INPROGRESS_STATES.includes(state.status),
-          isPermitted:
-            Statamic.$store.state.statamic.config.user.super ??
-            Statamic.$store.state.statamic.config.user.permissions.includes(
-              "delete backups"
-            ),
+          isPermitted: Statamic.$permissions.has("delete backups"),
         },
       };
     },
   },
-  mutations: {
-    setStatus(state, payload) {
-      state.status = payload;
-      // console.log("Server state:", state.status);
-    },
-    cancelPoll(state) {
-      clearTimeout(state.timeout);
-      state.commit("timeout", null);
-    },
-  },
   actions: {
-    setStatus: ({ commit }, payload) => {
-      commit("setStatus", payload);
+    setStatus(payload) {
+      this.status = payload;
     },
-    stopPolling: ({ commit }) => {
-      commit("cancelPoll");
+    stopPolling() {
+      clearTimeout(this.timeout);
+      this.timeout = null;
     },
-    pollEndpoint: ({ commit }) => {
+    startPolling() {
       const pollServerState = async () => {
         let state;
         try {
-          const response = await Statamic.$axios.get(
-            cp_url("api/backups/state")
-          );
+          const response =
+            await window.Statamic.$app.config.globalProperties.$axios.get(
+              cp_url("api/backups/state")
+            );
           state = response.data.state;
-          commit("setStatus", response.data.state);
+          this.setStatus(response.data.state);
         } catch (error) {
           console.error("Error fetching server state:", error);
         } finally {
           const pollDelay = calculatePollDelay(state);
-          // console.log("Polling delay:", pollDelay);
-          commit("timeout", setTimeout(pollServerState, pollDelay));
+
+          this.timeout = setTimeout(pollServerState, pollDelay);
         }
       };
 
       pollServerState();
     },
   },
-};
+});

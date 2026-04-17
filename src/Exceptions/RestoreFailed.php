@@ -14,9 +14,8 @@ final class RestoreFailed extends Exception
         public BackupDto $backup,
         ?Throwable $previous = null,
     ) {
-        parent::__construct(
-            message: __('statamic-backup::backup.restore.failed', ['name' => $backup->name]),
-            previous: $previous,
-        );
+        parent::__construct(message: __('statamic-backup::backup.restore.failed', [
+            'name' => $backup->name,
+        ]), previous: $previous);
     }
 }

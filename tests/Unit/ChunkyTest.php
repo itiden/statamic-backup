@@ -45,10 +45,9 @@ describe('chunky', function (): void {
         $uploadedFile = null;
 
         $responses = $dtos->map(function (ChunkyUploadDto $r) use (&$uploadedFile): JsonResponse {
-            return app(Chunky::class)
-                ->put($r, onCompleted: function (string $file) use (&$uploadedFile): void {
-                    $uploadedFile = $file;
-                });
+            return app(Chunky::class)->put($r, onCompleted: function (string $file) use (&$uploadedFile): void {
+                $uploadedFile = $file;
+            });
         });
 
         expect($responses->every(fn(JsonResponse $res): bool => $res->getStatusCode() === 201))->toBeTrue();

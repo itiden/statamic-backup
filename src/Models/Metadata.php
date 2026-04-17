@@ -18,7 +18,7 @@ use Statamic\Facades\YAML;
 
 use function Illuminate\Filesystem\join_paths;
 
-// @mago-expect lint:maintainability/too-many-methods
+// @mago-expect lint:too-many-methods
 final class Metadata
 {
     private Filesystem $filesystem;
@@ -68,20 +68,14 @@ final class Metadata
 
     public function addDownload(Authenticatable $user): void
     {
-        $this->downloads[] = new UserActionDto(
-            userId: $user->getAuthIdentifier(),
-            timestamp: now()->toString(),
-        );
+        $this->downloads[] = new UserActionDto(userId: $user->getAuthIdentifier(), timestamp: now()->toString());
 
         $this->save();
     }
 
     public function addRestore(Authenticatable $user): void
     {
-        $this->restores[] = new UserActionDto(
-            userId: $user->getAuthIdentifier(),
-            timestamp: now()->toString(),
-        );
+        $this->restores[] = new UserActionDto(userId: $user->getAuthIdentifier(), timestamp: now()->toString());
 
         $this->save();
     }
@@ -109,10 +103,7 @@ final class Metadata
      */
     public function addSkippedPipe(string $pipe, string $reason): void
     {
-        $this->skippedPipes[] = new SkippedPipeDto(
-            pipe: $pipe,
-            reason: $reason,
-        );
+        $this->skippedPipes[] = new SkippedPipeDto(pipe: $pipe, reason: $reason);
 
         $this->save();
     }
@@ -126,9 +117,9 @@ final class Metadata
     {
         $this->filesystem->put($this->backup->id, YAML::dump([
             'created_by' => $this->createdBy,
-            'downloads' => array_map(fn(UserActionDto $action): array => $action->toArray(), $this->downloads),
-            'restores' => array_map(fn(UserActionDto $action): array => $action->toArray(), $this->restores),
-            'skipped_pipes' => array_map(fn(SkippedPipeDto $dto): array => $dto->toArray(), $this->skippedPipes),
+            'downloads' => array_map(static fn(UserActionDto $action): array => $action->toArray(), $this->downloads),
+            'restores' => array_map(static fn(UserActionDto $action): array => $action->toArray(), $this->restores),
+            'skipped_pipes' => array_map(static fn(SkippedPipeDto $dto): array => $dto->toArray(), $this->skippedPipes),
         ]));
     }
 }
