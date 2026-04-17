@@ -92,30 +92,30 @@ export const useResumable = ({
     );
   });
 
-  resumable.on("fileError", (file) => {
-    const file = findFile(file);
+  resumable.on("fileError", (resumableFile) => {
+    const file = findFile(resumableFile);
 
     if (!file) return;
 
     file.status = "error";
   });
 
-  resumable.on("fileRetry", (file) => {
-    const file = findFile(file);
+  resumable.on("fileRetry", (resumableFile) => {
+    const file = findFile(resumableFile);
 
     if (!file) return;
 
     file.status = "retrying";
   });
 
-  resumable.on("fileProgress", (file) => {
-    const localFile = findFile(file);
+  resumable.on("fileProgress", (resumableFile) => {
+    const file = findFile(resumableFile);
 
-    if (!localFile) return;
+    if (!file) return;
 
     // if we are doing multiple chunks we may get a lower progress number if one chunk response comes back early
-    const progress = file.progress();
-    if (progress > localFile.progress) localFile.progress = progress;
+    const progress = resumableFile.progress();
+    if (progress > file.progress) file.progress = progress;
   });
 
   return { files };
