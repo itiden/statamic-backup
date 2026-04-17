@@ -48,10 +48,7 @@ function chunk_file(string $file, string $path, int $buffer = 1024): Collection
  */
 function user(): StatamicUser
 {
-    Role::make('user')
-        ->title('User')
-        ->addPermission('access cp')
-        ->save();
+    Role::make('user')->title('User')->addPermission('access cp')->save();
 
     Role::make('admin')
         ->title('Admin')
@@ -71,11 +68,7 @@ function user(): StatamicUser
         ->addPermission('delete backups')
         ->save();
 
-    return User::make()
-        ->email('test@example.com')
-        ->set('password', 'password')
-        ->set('roles', ['user'])
-        ->save();
+    return User::make()->email('test@example.com')->set('password', 'password')->set('roles', ['user'])->save();
 }
 
 function fixtures_path(string $path): string

@@ -15,6 +15,7 @@ use Itiden\Backup\Contracts\BackupNameResolver;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
 use Itiden\Backup\Events\BackupDeleted;
+use RuntimeException;
 
 final class FileBackupRepository implements BackupRepository
 {
@@ -49,7 +50,13 @@ final class FileBackupRepository implements BackupRepository
             name: (string) str($this->nameResolver->generateFilename(CarbonImmutable::now(), $id))->finish('.zip'),
         );
 
-        return $this->find($id);
+        $backup = $this->find($id);
+
+        if (!$backup) {
+            throw new RuntimeException('Failed to add backup to repository.');
+        }
+
+        return $backup;
     }
 
     public function find(string $id): ?BackupDto

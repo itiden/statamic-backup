@@ -25,11 +25,11 @@ final readonly class ChunkyUploadDto
     public static function fromRequest(Request $request): static
     {
         return new static(
-            filename: $request->input('resumableFilename'),
-            totalChunks: (int) $request->input('resumableTotalChunks'),
-            currentChunk: (int) $request->input('resumableChunkNumber'),
-            totalSize: (int) $request->input('resumableTotalSize'),
-            identifier: $request->input('resumableIdentifier'),
+            filename: $request->string('resumableFilename')->toString(),
+            totalChunks: $request->integer('resumableTotalChunks'),
+            currentChunk: $request->integer('resumableChunkNumber'),
+            totalSize: $request->integer('resumableTotalSize'),
+            identifier: $request->string('resumableIdentifier')->toString(),
             file: $request->file('file'),
         );
     }

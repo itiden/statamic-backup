@@ -99,10 +99,7 @@ describe('zipper', function (): void {
         // @mago-expect lint:no-literal-password
         $password = 'password';
 
-        Zipper::write($target)
-            ->addFromString('test.txt', 'test')
-            ->encrypt($password)
-            ->close();
+        Zipper::write($target)->addFromString('test.txt', 'test')->encrypt($password)->close();
 
         expect(file_exists($target))->toBeTrue();
         expect(File::mimeType($target))->toBe('application/zip');
@@ -118,10 +115,7 @@ describe('zipper', function (): void {
     it('can write meta to zip', function (): void {
         $target = storage_path('test.zip');
 
-        Zipper::write($target)
-            ->addFromString('test.txt', 'test')
-            ->addMeta('test', 'test')
-            ->close();
+        Zipper::write($target)->addFromString('test.txt', 'test')->addMeta('test', 'test')->close();
 
         $zip = Zipper::read($target);
 

@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Itiden\Backup\DataTransferObjects;
 
 use Carbon\CarbonImmutable;
-use Illuminate\Contracts\Support\Arrayable;
 use Statamic\Contracts\Auth\User;
 use Statamic\Facades\User as UserFacade;
 
-final readonly class UserActionDto implements Arrayable
+final readonly class UserActionDto
 {
     public function __construct(
         public string $userId,
@@ -26,6 +25,7 @@ final readonly class UserActionDto implements Arrayable
         return CarbonImmutable::createFromDate($this->timestamp);
     }
 
+    /** @return array{user_id: string, timestamp: string}*/
     public function toArray(): array
     {
         return [

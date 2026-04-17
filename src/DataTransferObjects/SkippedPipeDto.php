@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Itiden\Backup\DataTransferObjects;
 
-use Illuminate\Contracts\Support\Arrayable;
 use Itiden\Backup\Abstracts\BackupPipe;
 
-final readonly class SkippedPipeDto implements Arrayable
+final readonly class SkippedPipeDto
 {
     /**
      * @param class-string<BackupPipe> $pipe
@@ -17,9 +16,7 @@ final readonly class SkippedPipeDto implements Arrayable
         public string $reason,
     ) {}
 
-    /**
-     * @return array{pipe: class-string<BackupPipe>, reason: string}
-     */
+    /** @return array{pipe: class-string<BackupPipe>, reason: string}*/
     public function toArray(): array
     {
         return [

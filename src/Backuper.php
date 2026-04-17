@@ -42,10 +42,7 @@ final class Backuper
 
             $zipper = Zipper::write($temp_zip_path);
 
-            Pipeline::via('backup')
-                ->send($zipper)
-                ->through(Config::array('backup.pipeline'))
-                ->thenReturn();
+            Pipeline::via('backup')->send($zipper)->through(Config::array('backup.pipeline'))->thenReturn();
 
             /** @var string|null */
             $password = Config::get('backup.password');
