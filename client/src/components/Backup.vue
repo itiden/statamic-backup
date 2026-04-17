@@ -3,7 +3,7 @@ import { Listing, DropdownItem, Header, Button } from "@statamic/cms/ui";
 import { Head } from "@statamic/cms/inertia";
 import { requireElevatedSession } from "@statamic/cms";
 import { useBackupStore } from "../store";
-import { ref, watch } from "vue";
+import { onUnmounted, ref, watch } from "vue";
 import { useResumable } from "../resumable";
 
 const backupStore = useBackupStore();
@@ -23,6 +23,10 @@ const { files } = useResumable({
 });
 
 backupStore.startPolling();
+
+onUnmounted(() => {
+    backupStore.stopPolling();
+})
 
 watch(
   () => backupStore.status,
