@@ -86,19 +86,20 @@ final class Chunky
             throw new Exception('cannot create the destination file');
         }
 
-        // loop through the chunks and write them to the file
-        for ($i = 1; $i <= $totalChunks; $i++) {
-            $chunk = file_get_contents($this->path("{$chunkPath}/{$filename}.part{$i}"));
+        try {
+            // loop through the chunks and write them to the file
+            for ($i = 1; $i <= $totalChunks; $i++) {
+                $chunk = file_get_contents($this->path("{$chunkPath}/{$filename}.part{$i}"));
 
-            if (!$chunk) {
-                throw new Exception('cannot read the chunk file');
+                if (!$chunk) {
+                    throw new Exception('cannot read the chunk file');
+                }
+
+                fwrite($file, $chunk);
             }
-
-            fwrite($file, $chunk);
+        } finally {
+            fclose($file);
         }
-
-        fclose($file);
-
         // delete the chunks
         $this->disk->deleteDirectory($chunkPath);
 
