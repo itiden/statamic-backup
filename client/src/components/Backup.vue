@@ -84,7 +84,7 @@ const deleteBackup = withErrHandling(async (id) => {
 
 <template>
   <Head title="Backups" />
-  <Header :icon="database" :title="__('statamic-backup::backup.title')">
+  <Header icon="database" :title="__('statamic-backup::backup.title')">
     <Button variant="subtle" ref="browseTarget">{{
       __("statamic-backup::backup.upload.label")
     }}</Button>
