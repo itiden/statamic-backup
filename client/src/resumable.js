@@ -2,11 +2,13 @@ import Resumable from "resumablejs";
 import { ref, watch } from "vue";
 
 /**
+ * @typedef {{file:File,status: "uploading"|"canceled"|"error"|"retrying"|"success",progress: number,path: string|null}} RFile
+ *
  * @param {{
  *  chunkSize: number,
  *  dropZone:  import("vue").Ref<HTMLElement>,
  *  browseTarget: import("vue").Ref<HTMLElement>,
- *  onFileUploaded: (file: File) => void
+ *  onFileUploaded: (file: RFile) => void
  * }}
  */
 export const useResumable = ({
@@ -15,6 +17,7 @@ export const useResumable = ({
   browseTarget,
   onFileUploaded,
 }) => {
+  /** @type {import("vue").Ref<RFile[]>} */
   const files = ref([]);
 
   const findFile = (file) =>
@@ -22,7 +25,7 @@ export const useResumable = ({
       (item) =>
         item.file.uniqueIdentifier === file.uniqueIdentifier &&
         item.status !== "canceled"
-    ) ?? {};
+    ) ?? null;
 
   const resumable = new Resumable({
     target: cp_url("backups/chunky"),
@@ -77,23 +80,39 @@ export const useResumable = ({
     window.Statamic.$toast.success(data.message);
 
     window.Statamic.$progress.complete(file.uniqueIdentifier);
-    onFileUploaded?.(findFile(file));
+
+    const foundFile = findFile(file);
+
+    if (!foundFile) return;
+
+    onFileUploaded?.(foundFile);
 
     files.value = files.value.filter(
       (item) => item.file.uniqueIdentifier !== file.uniqueIdentifier
     );
   });
 
-  resumable.on("fileError", (file, event) => {
-    findFile(file).status = "error";
+  resumable.on("fileError", (file) => {
+    const file = findFile(file);
+
+    if (!file) return;
+
+    file.status = "error";
   });
 
-  resumable.on("fileRetry", (file, event) => {
-    findFile(file).status = "retrying";
+  resumable.on("fileRetry", (file) => {
+    const file = findFile(file);
+
+    if (!file) return;
+
+    file.status = "retrying";
   });
 
   resumable.on("fileProgress", (file) => {
     const localFile = findFile(file);
+
+    if (!localFile) return;
+
     // if we are doing multiple chunks we may get a lower progress number if one chunk response comes back early
     const progress = file.progress();
     if (progress > localFile.progress) localFile.progress = progress;
