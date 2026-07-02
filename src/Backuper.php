@@ -51,21 +51,32 @@ final class Backuper
             $temp_zip_path = join_paths(Config::string('backup.temp_path'), 'temp.zip');
             $completed = false;
 
-            register_shutdown_function(static function () use (&$completed, $temp_zip_path): void {
-                if ($completed) {
-                    return;
-                }
+register_shutdown_function(static function () use (&$completed, $temp_zip_path): void {
+    if ($completed) {
+        return;
+    }
 
-                Log::error('backup: process killed mid-backup', [
-                    'temp_zip_exists' => File::exists($temp_zip_path),
-                ]);
+    $error = error_get_last();
 
-                if (File::exists($temp_zip_path)) {
-                    File::delete($temp_zip_path);
-                }
+    // Only treat true fatal errors as a "killed mid-backup" scenario.
+    if ($error === null || !in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR], true)) {
+        return;
+    }
 
-                app(StateManager::class)->setState(State::BackupFailed);
-            });
+    Log::error('backup: fatal error mid-backup', [
+        'error' => $error,
+        'temp_zip_exists' => File::exists($temp_zip_path),
+    ]);
+
+    if (File::exists($temp_zip_path)) {
+        File::delete($temp_zip_path);
+    }
+
+    // Ensure the lock doesn't remain held indefinitely after a fatal error.
+    \Illuminate\Support\Facades\Cache::lock(StateManager::LOCK)->forceRelease();
+
+    app(StateManager::class)->setState(State::BackupFailed);
+});
 
             Log::info('backup: started', [
                 'user' => $user?->getAuthIdentifier(),
