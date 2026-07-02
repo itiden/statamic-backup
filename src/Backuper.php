@@ -7,6 +7,7 @@ namespace Itiden\Backup;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Pipeline;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
 use Itiden\Backup\DataTransferObjects\BackupDto;
@@ -15,6 +16,7 @@ use Itiden\Backup\Events\BackupCreated;
 use Itiden\Backup\Events\BackupFailed;
 use Itiden\Backup\Models\Metadata;
 use Itiden\Backup\Support\Zipper;
+use RuntimeException;
 use Throwable;
 
 use function Illuminate\Filesystem\join_paths;
@@ -33,12 +35,41 @@ final class Backuper
      */
     public function backup(?Authenticatable $user = null): BackupDto
     {
+        if (function_exists('set_time_limit')) {
+            set_time_limit(0);
+        }
+
+        ignore_user_abort(true);
+
         $lock = $this->stateManager->getLock();
+
+        $temp_zip_path = null;
 
         try {
             $this->stateManager->setState(State::BackupInProgress);
 
             $temp_zip_path = join_paths(Config::string('backup.temp_path'), 'temp.zip');
+            $completed = false;
+
+            register_shutdown_function(static function () use (&$completed, $temp_zip_path): void {
+                if ($completed) {
+                    return;
+                }
+
+                Log::error('backup: process killed mid-backup', [
+                    'temp_zip_exists' => File::exists($temp_zip_path),
+                ]);
+
+                if (File::exists($temp_zip_path)) {
+                    File::delete($temp_zip_path);
+                }
+
+                app(StateManager::class)->setState(State::BackupFailed);
+            });
+
+            Log::info('backup: started', [
+                'user' => $user?->getAuthIdentifier(),
+            ]);
 
             $zipper = Zipper::write($temp_zip_path);
 
@@ -57,6 +88,18 @@ final class Backuper
 
             $zipper->close();
 
+            Log::info('backup: zip closed', [
+                'size' => File::size($temp_zip_path),
+            ]);
+
+            if (!Zipper::verify($temp_zip_path)) {
+                File::delete($temp_zip_path);
+
+                throw new RuntimeException('Zip verification failed — the backup archive is invalid.');
+            }
+
+            Log::info('backup: zip verified');
+
             $backup = $this->repository->add($temp_zip_path);
 
             $metadata = static::addMetaFromZipToBackupMeta($temp_zip_path, $backup);
@@ -73,8 +116,18 @@ final class Backuper
 
             $this->stateManager->setState(State::BackupCompleted);
 
+            Log::info('backup: completed', ['path' => $backup->path]);
+
+            $completed = true;
+
             return $backup;
         } catch (Throwable $e) {
+            if ($temp_zip_path !== null && File::exists($temp_zip_path)) {
+                File::delete($temp_zip_path);
+            }
+
+            Log::error('backup: failed', ['error' => $e->getMessage()]);
+
             $exception = new Exceptions\BackupFailed(previous: $e);
 
             event(new BackupFailed($exception));
