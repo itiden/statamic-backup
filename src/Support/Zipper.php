@@ -20,11 +20,34 @@ final class Zipper
      * without re-compression to save CPU cycles and I/O bandwidth.
      */
     private const STORED_EXTENSIONS = [
-        'zip', 'mp4', 'webm', 'png', 'jpg', 'jpeg', 'webp', 'gif', 'pdf',
-        'mp3', 'wav', 'mov', 'avi', 'ogg', 'gz', 'tar', 'tgz',
-        'woff', 'woff2', 'ttf', 'otf',
-        'ico', 'avif', 'heic',
-        'bz2', 'xz', '7z', 'rar',
+        'zip',
+        'mp4',
+        'webm',
+        'png',
+        'jpg',
+        'jpeg',
+        'webp',
+        'gif',
+        'pdf',
+        'mp3',
+        'wav',
+        'mov',
+        'avi',
+        'ogg',
+        'gz',
+        'tar',
+        'tgz',
+        'woff',
+        'woff2',
+        'ttf',
+        'otf',
+        'ico',
+        'avif',
+        'heic',
+        'bz2',
+        'xz',
+        '7z',
+        'rar',
     ];
 
     private ZipArchive $zip;
@@ -122,9 +145,7 @@ final class Zipper
         }
 
         $extension = strtolower(pathinfo($entryName, PATHINFO_EXTENSION));
-        $method = in_array($extension, self::STORED_EXTENSIONS, true)
-            ? ZipArchive::CM_STORE
-            : ZipArchive::CM_DEFLATE;
+        $method = in_array($extension, self::STORED_EXTENSIONS, true) ? ZipArchive::CM_STORE : ZipArchive::CM_DEFLATE;
 
         $this->zip->setCompressionName($entryName, $method);
 
@@ -148,7 +169,10 @@ final class Zipper
      */
     public function addDirectory(string $path, ?string $prefix = null): self
     {
-        $finder = (new Finder())->files()->ignoreDotFiles(false)->in($path);
+        $finder = new Finder()
+            ->files()
+            ->ignoreDotFiles(false)
+            ->in($path);
 
         $count = 0;
 
@@ -157,7 +181,7 @@ final class Zipper
 
             $count++;
 
-            if ($count % 500 === 0) {
+            if (($count % 500) === 0) {
                 Log::info('zipper: addDirectory progress', [
                     'directory' => $path,
                     'files_added' => $count,
