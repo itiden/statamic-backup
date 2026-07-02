@@ -169,10 +169,8 @@ final class Zipper
      */
     public function addDirectory(string $path, ?string $prefix = null): self
     {
-        $finder = new Finder()
-            ->files()
-            ->ignoreDotFiles(false)
-            ->in($path);
+        $finder = new Finder();
+        $finder->files()->ignoreDotFiles(false)->in($path);
 
         $count = 0;
 
