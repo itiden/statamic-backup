@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Support\Zipper;
+use Itiden\Backup\Support\ZipperFailed;
 
 use function Itiden\Backup\Tests\fixtures_path;
 
@@ -176,6 +177,6 @@ describe('zipper', function (): void {
     });
 
     it('throws when opening a non-existent zip for reading', function (): void {
-        expect(fn() => Zipper::read(storage_path('nonexistent.zip')))->toThrow(RuntimeException::class);
+        expect(fn() => Zipper::read(storage_path('nonexistent.zip')))->toThrow(ZipperFailed::class);
     });
 })->group('zipper');

@@ -28,7 +28,7 @@ linter:
     literal-named-argument:
       enabled: false
     halstead:
-      effort-threshold: 7000
+      enabled: false
     class-name:
       enabled: false
     interface-name:

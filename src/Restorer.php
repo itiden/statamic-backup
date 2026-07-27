@@ -89,8 +89,6 @@ final class Restorer
 
             $this->stateManager->setState(State::RestoreCompleted);
         } catch (Throwable $e) {
-            report($e);
-
             $exception = new Exceptions\RestoreFailed($backup, previous: $e);
 
             $this->stateManager->setState(State::RestoreFailed);

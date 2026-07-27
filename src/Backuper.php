@@ -43,15 +43,14 @@ final class Backuper
 
         $lock = $this->stateManager->getLock();
 
-        $temp_zip_path = null;
+        $temp_zip_path = join_paths(Config::string('backup.temp_path'), 'temp.zip');
 
         try {
             $this->stateManager->setState(State::BackupInProgress);
 
-            $temp_zip_path = join_paths(Config::string('backup.temp_path'), 'temp.zip');
             $completed = false;
 
-            register_shutdown_function(static function () use (&$completed, $temp_zip_path): void {
+            register_shutdown_function(function () use (&$completed, $temp_zip_path, $lock): void {
                 if ($completed) {
                     return;
                 }
@@ -66,24 +65,15 @@ final class Backuper
                     return;
                 }
 
-                Log::error('backup: fatal error mid-backup', [
-                    'error' => $error,
-                    'temp_zip_exists' => File::exists($temp_zip_path),
-                ]);
-
                 if (File::exists($temp_zip_path)) {
                     File::delete($temp_zip_path);
                 }
 
                 // Ensure the lock doesn't remain held indefinitely after a fatal error.
-                \Illuminate\Support\Facades\Cache::lock(StateManager::LOCK)->forceRelease();
+                $lock->forceRelease();
 
-                app(StateManager::class)->setState(State::BackupFailed);
+                $this->stateManager->setState(State::BackupFailed);
             });
-
-            Log::info('backup: started', [
-                'user' => $user?->getAuthIdentifier(),
-            ]);
 
             $zipper = Zipper::write($temp_zip_path);
 
@@ -102,17 +92,11 @@ final class Backuper
 
             $zipper->close();
 
-            Log::info('backup: zip closed', [
-                'size' => File::size($temp_zip_path),
-            ]);
-
             if (!Zipper::verify($temp_zip_path)) {
                 File::delete($temp_zip_path);
 
                 throw new RuntimeException('Zip verification failed — the backup archive is invalid.');
             }
-
-            Log::info('backup: zip verified');
 
             $backup = $this->repository->add($temp_zip_path);
 
@@ -136,11 +120,9 @@ final class Backuper
 
             return $backup;
         } catch (Throwable $e) {
-            if ($temp_zip_path !== null && File::exists($temp_zip_path)) {
+            if (File::exists($temp_zip_path)) {
                 File::delete($temp_zip_path);
             }
-
-            Log::error('backup: failed', ['error' => $e->getMessage()]);
 
             $exception = new Exceptions\BackupFailed(previous: $e);
 

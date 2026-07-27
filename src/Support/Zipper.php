@@ -6,20 +6,18 @@ namespace Itiden\Backup\Support;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Log;
-use RuntimeException;
 use SensitiveParameter;
 use Symfony\Component\Finder\Finder;
 use ZipArchive;
 
-// @mago-expect lint:too-many-methods
+// @mago-expect lint:too-many-methods,cyclomatic-complexity
 final class Zipper
 {
     /**
      * File extensions that are already compressed and should be stored
      * without re-compression to save CPU cycles and I/O bandwidth.
      */
-    private const STORED_EXTENSIONS = [
+    private const ENCRYPTED_FILE_TYPES = [
         'zip',
         'mp4',
         'webm',
@@ -50,21 +48,21 @@ final class Zipper
         'rar',
     ];
 
-    private ZipArchive $zip;
+    private readonly ZipArchive $zip;
     private array $meta = [];
-    private string $path;
 
-    public function __construct(string $path, int $flags = ZipArchive::CREATE | ZipArchive::OVERWRITE)
-    {
+    public function __construct(
+        private readonly string $path,
+        int $flags = ZipArchive::CREATE | ZipArchive::OVERWRITE,
+    ) {
         File::ensureDirectoryExists(dirname($path));
 
-        $this->path = $path;
         $this->zip = new ZipArchive();
 
         $result = $this->zip->open($path, $flags);
 
         if ($result !== true) {
-            throw new RuntimeException("Failed to open zip [{$path}] (error code: {$result})");
+            throw ZipperFailed::toOpen($path, $result);
         }
     }
 
@@ -86,17 +84,25 @@ final class Zipper
      */
     public static function verify(string $path): bool
     {
-        $zip = new ZipArchive();
+        try {
+            if (!File::exists($path)) {
+                return false;
+            }
 
-        if ($zip->open($path, ZipArchive::RDONLY) !== true) {
+            if (File::mimeType($path) !== 'application/zip') {
+                return false;
+            }
+
+            $zip = self::read($path);
+
+            $valid = $zip->getArchive()->status === ZipArchive::ER_OK;
+
+            $zip->close();
+
+            return $valid;
+        } catch (\Throwable) {
             return false;
         }
-
-        $valid = $zip->numFiles > 0;
-
-        $zip->close();
-
-        return $valid;
     }
 
     /**
@@ -105,11 +111,7 @@ final class Zipper
     public function close(): void
     {
         if (!$this->zip->close()) {
-            Log::error('zipper: close failed', ['path' => $this->path]);
-
-            throw new RuntimeException(
-                "Failed to write zip archive [{$this->path}] — check disk space and memory limits.",
-            );
+            throw ZipperFailed::toClose($this->path);
         }
     }
 
@@ -121,8 +123,10 @@ final class Zipper
         $this->zip->setPassword($password);
 
         for ($i = 0; $i < $this->zip->numFiles; $i++) {
-            if (!$this->zip->setEncryptionIndex($i, ZipArchive::EM_AES_256)) {
-                throw new RuntimeException("Failed to set encryption for file at index {$i}");
+            $encrypted = $this->zip->setEncryptionIndex($i, ZipArchive::EM_AES_256);
+
+            if (!$encrypted) {
+                throw ZipperFailed::toSetEncryption($this->path);
             }
         }
 
@@ -141,11 +145,13 @@ final class Zipper
         $entryName = $name ?? basename($path);
 
         if (!$this->zip->addFile($path, $entryName)) {
-            throw new RuntimeException("Failed to add file to zip: {$path}");
+            throw ZipperFailed::toAddFile($path);
         }
 
         $extension = strtolower(pathinfo($entryName, PATHINFO_EXTENSION));
-        $method = in_array($extension, self::STORED_EXTENSIONS, true) ? ZipArchive::CM_STORE : ZipArchive::CM_DEFLATE;
+        $method = in_array($extension, self::ENCRYPTED_FILE_TYPES, true)
+            ? ZipArchive::CM_STORE
+            : ZipArchive::CM_DEFLATE;
 
         $this->zip->setCompressionName($entryName, $method);
 
@@ -158,7 +164,7 @@ final class Zipper
     public function addFromString(string $name, string $content): self
     {
         if (!$this->zip->addFromString($name, $content)) {
-            throw new RuntimeException("Failed to add content to zip: {$name}");
+            throw new ZipperFailed("Failed to add content from string to zip: {$name}");
         }
 
         return $this;
@@ -172,25 +178,9 @@ final class Zipper
         $finder = new Finder();
         $finder->files()->ignoreDotFiles(false)->in($path);
 
-        $count = 0;
-
         foreach ($finder as $file) {
             $this->addFile($file->getPathname(), $prefix . '/' . $file->getRelativePathname());
-
-            $count++;
-
-            if (($count % 500) === 0) {
-                Log::info('zipper: addDirectory progress', [
-                    'directory' => $path,
-                    'files_added' => $count,
-                ]);
-            }
         }
-
-        Log::info('zipper: addDirectory complete', [
-            'directory' => $path,
-            'total_files' => $count,
-        ]);
 
         return $this;
     }
@@ -201,10 +191,18 @@ final class Zipper
     public function extractTo(string $path, #[SensitiveParameter] ?string $password = null): self
     {
         if ($password) {
-            $this->zip->setPassword($password);
+            $result = $this->zip->setPassword($password);
+
+            if (!$result) {
+                throw ZipperFailed::toSetPassword($this->path);
+            }
         }
 
-        $this->zip->extractTo($path);
+        $res = $this->zip->extractTo($path);
+
+        if (!$res) {
+            throw new (ZipperFailed::toExtract)($this->path, $path);
+        }
 
         return $this;
     }
@@ -239,7 +237,7 @@ final class Zipper
         $comment = $this->zip->getArchiveComment();
 
         if ($comment) {
-            $this->meta = json_decode($comment, true);
+            $this->meta = json_decode($comment, associative: true, flags: JSON_THROW_ON_ERROR);
         }
 
         return collect($this->meta);

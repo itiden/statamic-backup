@@ -30,18 +30,15 @@ final readonly class DownloadBackupController
             set_time_limit(0);
         }
 
-        // Clean and close all active output buffers to allow streaming without running out of memory
-        while (ob_get_level() > 0) {
-            ob_end_clean();
-        }
-
         $disk = Storage::disk(Config::string('backup.destination.disk'));
 
-        try {
-            $path = $disk->path($backup->path);
-            return response()->download($path);
-        } catch (\Throwable) {
-            return $disk->download($backup->path);
-        }
+        return response()->streamDownload(
+            callback: static fn() => $disk->readStream($backup->path),
+            name: $backup->name,
+            headers: [
+                'Content-Type' => 'application/octet-stream',
+                'Content-Length' => $disk->size($backup->path),
+            ],
+        );
     }
 }
