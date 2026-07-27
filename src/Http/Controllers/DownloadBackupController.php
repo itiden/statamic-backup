@@ -32,12 +32,20 @@ final readonly class DownloadBackupController
 
         $disk = Storage::disk(Config::string('backup.destination.disk'));
 
+        $size = $disk->size($backup->path);
+
         return response()->streamDownload(
-            callback: static fn() => $disk->readStream($backup->path),
-            name: $backup->name,
+            callback: static function () use ($disk, $backup) {
+                $stream = $disk->readStream($backup->path);
+
+                fpassthru($stream);
+
+                fclose($stream);
+            },
+            name: basename($backup->path),
             headers: [
                 'Content-Type' => 'application/octet-stream',
-                'Content-Length' => $disk->size($backup->path),
+                'Content-Length' => $size,
             ],
         );
     }
