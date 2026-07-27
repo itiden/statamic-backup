@@ -40,6 +40,8 @@ abstract readonly class BackupPipe
 
     /**
      * Mark pipe as skipped.
+     *
+     * @param Closure(Zipper): Zipper $next
      */
     protected function skip(string $reason, Closure $next, Zipper $zip): Zipper
     {

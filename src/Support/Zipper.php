@@ -10,6 +10,8 @@ use SensitiveParameter;
 use Symfony\Component\Finder\Finder;
 use ZipArchive;
 
+use function Illuminate\Filesystem\join_paths;
+
 // @mago-expect lint:too-many-methods,cyclomatic-complexity
 final class Zipper
 {
@@ -179,7 +181,7 @@ final class Zipper
         $finder->files()->ignoreDotFiles(false)->in($path);
 
         foreach ($finder as $file) {
-            $this->addFile($file->getPathname(), $prefix . '/' . $file->getRelativePathname());
+            $this->addFile($file->getPathname(), join_paths($prefix, $file->getRelativePathname()));
         }
 
         return $this;
@@ -201,7 +203,7 @@ final class Zipper
         $res = $this->zip->extractTo($path);
 
         if (!$res) {
-            throw new (ZipperFailed::toExtract)($this->path, $path);
+            throw ZipperFailed::toExtract($this->path, $path);
         }
 
         return $this;

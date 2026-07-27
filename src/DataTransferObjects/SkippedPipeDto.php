@@ -8,10 +8,8 @@ use Itiden\Backup\Abstracts\BackupPipe;
 
 final readonly class SkippedPipeDto
 {
-    /**
-     * @param class-string<BackupPipe> $pipe
-     */
     public function __construct(
+        /** @var class-string<BackupPipe> */
         public string $pipe,
         public string $reason,
     ) {}

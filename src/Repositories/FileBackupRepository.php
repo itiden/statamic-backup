@@ -30,6 +30,7 @@ final class FileBackupRepository implements BackupRepository
         $this->filesystem = Storage::disk(Config::string('backup.destination.disk'));
     }
 
+    /** {@inheritdoc} */
     public function all(): Collection
     {
         return collect($this->filesystem->allFiles($this->path))
