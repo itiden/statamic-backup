@@ -61,11 +61,11 @@ describe('backuper', function (): void {
 
         expect($paths)->toEqualCanonicalizing([
             // since the default collection store and entries store have the same directory, we will get duplicates.
-            'stache-content::collections/pages.yaml',
-            'stache-content::collections/pages/homepage.md',
-            'stache-content::entries/pages.yaml',
-            'stache-content::entries/pages/homepage.md',
-            'stache-content::form-submissions/1743066599.5568.yaml',
+            'stache-content/collections/pages.yaml',
+            'stache-content/collections/pages/homepage.md',
+            'stache-content/entries/pages.yaml',
+            'stache-content/entries/pages/homepage.md',
+            'stache-content/form-submissions/1743066599.5568.yaml',
             'users/test@example.com.yaml',
         ]);
 
@@ -94,7 +94,7 @@ describe('backuper', function (): void {
         )->toArray();
 
         expect($paths)->toEqualCanonicalizing([
-            'stache-content::form-submissions/1743066599.5568.yaml',
+            'stache-content/form-submissions/1743066599.5568.yaml',
             'users/test@example.com.yaml',
         ]);
 

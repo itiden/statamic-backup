@@ -96,6 +96,7 @@ final readonly class StacheData extends BackupPipe
 
     private static function shouldBackupStore(Store $store): bool
     {
+        // dd($store->key(), config('backup.stache_stores'));
         return in_array($store->key(), Config::array('backup.stache_stores', []), strict: true);
     }
 }
