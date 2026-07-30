@@ -38,9 +38,11 @@ final readonly class DownloadBackupController
             callback: static function () use ($disk, $backup) {
                 $stream = $disk->readStream($backup->path);
 
-                fpassthru($stream);
-
-                fclose($stream);
+                try {
+                    fpassthru($stream);
+                } finally {
+                    fclose($stream);
+                }
             },
             name: basename($backup->path),
             headers: [

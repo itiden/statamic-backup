@@ -60,10 +60,16 @@ final class Backuper
                 // Only treat true fatal errors as a "killed mid-backup" scenario.
                 if (
                     $error === null
-                    || !in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR], true)
+                    || !in_array(
+                        $error['type'],
+                        [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR],
+                        strict: true,
+                    )
                 ) {
                     return;
                 }
+
+                Log::error('backup failed due to timeout', $error);
 
                 if (File::exists($temp_zip_path)) {
                     File::delete($temp_zip_path);

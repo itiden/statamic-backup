@@ -19,7 +19,7 @@ final class Zipper
      * File extensions that are already compressed and should be stored
      * without re-compression to save CPU cycles and I/O bandwidth.
      */
-    private const ENCRYPTED_FILE_TYPES = [
+    private const COMPRESSED_FILE_TYPES = [
         'zip',
         'mp4',
         'webm',
@@ -91,10 +91,6 @@ final class Zipper
                 return false;
             }
 
-            if (File::mimeType($path) !== 'application/zip') {
-                return false;
-            }
-
             $zip = self::read($path);
 
             $valid = $zip->getArchive()->status === ZipArchive::ER_OK;
@@ -122,13 +118,15 @@ final class Zipper
      */
     public function encrypt(#[SensitiveParameter] string $password): self
     {
-        $this->zip->setPassword($password);
+        if (!$this->zip->setPassword($password)) {
+            throw ZipperFailed::toSetEncryption($this->path);
+        }
 
         for ($i = 0; $i < $this->zip->numFiles; $i++) {
             $encrypted = $this->zip->setEncryptionIndex($i, ZipArchive::EM_AES_256);
 
             if (!$encrypted) {
-                throw ZipperFailed::toSetEncryption($this->path);
+                throw ZipperFailed::toSetEncryption($this->zip->getNameIndex($i));
             }
         }
 
@@ -151,7 +149,7 @@ final class Zipper
         }
 
         $extension = strtolower(pathinfo($entryName, PATHINFO_EXTENSION));
-        $method = in_array($extension, self::ENCRYPTED_FILE_TYPES, true)
+        $method = in_array($extension, self::COMPRESSED_FILE_TYPES, true)
             ? ZipArchive::CM_STORE
             : ZipArchive::CM_DEFLATE;
 
