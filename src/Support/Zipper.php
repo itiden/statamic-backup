@@ -7,22 +7,65 @@ namespace Itiden\Backup\Support;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use SensitiveParameter;
-use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\Finder\Finder;
 use ZipArchive;
 
-// @mago-expect lint:too-many-methods
+use function Illuminate\Filesystem\join_paths;
+
+// @mago-expect lint:too-many-methods,cyclomatic-complexity
 final class Zipper
 {
-    private ZipArchive $zip;
+    /**
+     * File extensions that are already compressed and should be stored
+     * without re-compression to save CPU cycles and I/O bandwidth.
+     */
+    private const COMPRESSED_FILE_TYPES = [
+        'zip',
+        'mp4',
+        'webm',
+        'png',
+        'jpg',
+        'jpeg',
+        'webp',
+        'gif',
+        'pdf',
+        'mp3',
+        'wav',
+        'mov',
+        'avi',
+        'ogg',
+        'gz',
+        'tar',
+        'tgz',
+        'woff',
+        'woff2',
+        'ttf',
+        'otf',
+        'ico',
+        'avif',
+        'heic',
+        'bz2',
+        'xz',
+        '7z',
+        'rar',
+    ];
+
+    private readonly ZipArchive $zip;
     private array $meta = [];
 
-    public function __construct(string $path, int $flags = ZipArchive::CREATE | ZipArchive::OVERWRITE)
-    {
+    public function __construct(
+        private readonly string $path,
+        int $flags = ZipArchive::CREATE | ZipArchive::OVERWRITE,
+    ) {
         File::ensureDirectoryExists(dirname($path));
 
         $this->zip = new ZipArchive();
 
-        $this->zip->open($path, $flags);
+        $result = $this->zip->open($path, $flags);
+
+        if ($result !== true) {
+            throw ZipperFailed::toOpen($path, $result);
+        }
     }
 
     /**
@@ -39,11 +82,35 @@ final class Zipper
     }
 
     /**
+     * Verify that a zip file at the given path is a valid archive.
+     */
+    public static function verify(string $path): bool
+    {
+        try {
+            if (!File::exists($path)) {
+                return false;
+            }
+
+            $zip = self::read($path);
+
+            $valid = $zip->getArchive()->status === ZipArchive::ER_OK;
+
+            $zip->close();
+
+            return $valid;
+        } catch (\Throwable) {
+            return false;
+        }
+    }
+
+    /**
      * Close the Zipper and write the archive to the filesystem.
      */
     public function close(): void
     {
-        $this->zip->close();
+        if (!$this->zip->close()) {
+            throw ZipperFailed::toClose($this->path);
+        }
     }
 
     /**
@@ -51,20 +118,42 @@ final class Zipper
      */
     public function encrypt(#[SensitiveParameter] string $password): self
     {
-        $this->zip->setPassword($password);
+        if (!$this->zip->setPassword($password)) {
+            throw ZipperFailed::toSetEncryption($this->path);
+        }
 
-        collect(range(0, $this->zip->numFiles - 1))
-            ->each(fn(int $file): bool => $this->zip->setEncryptionIndex($file, ZipArchive::EM_AES_256));
+        for ($i = 0; $i < $this->zip->numFiles; $i++) {
+            $encrypted = $this->zip->setEncryptionIndex($i, ZipArchive::EM_AES_256);
+
+            if (!$encrypted) {
+                throw ZipperFailed::toSetEncryption($this->zip->getNameIndex($i));
+            }
+        }
 
         return $this;
     }
 
     /**
      * Add a file to the archive.
+     *
+     * Pre-compressed file types (images, videos, archives) are stored
+     * without re-compression using CM_STORE for maximum I/O performance.
+     * Text-based files use CM_DEFLATE for size reduction.
      */
     public function addFile(string $path, ?string $name = null): self
     {
-        $this->zip->addFile($path, $name ?? basename($path));
+        $entryName = $name ?? basename($path);
+
+        if (!$this->zip->addFile($path, $entryName)) {
+            throw ZipperFailed::toAddFile($path);
+        }
+
+        $extension = strtolower(pathinfo($entryName, PATHINFO_EXTENSION));
+        $method = in_array($extension, self::COMPRESSED_FILE_TYPES, true)
+            ? ZipArchive::CM_STORE
+            : ZipArchive::CM_DEFLATE;
+
+        $this->zip->setCompressionName($entryName, $method);
 
         return $this;
     }
@@ -74,7 +163,9 @@ final class Zipper
      */
     public function addFromString(string $name, string $content): self
     {
-        $this->zip->addFromString($name, $content);
+        if (!$this->zip->addFromString($name, $content)) {
+            throw new ZipperFailed("Failed to add content from string to zip: {$name}");
+        }
 
         return $this;
     }
@@ -84,9 +175,12 @@ final class Zipper
      */
     public function addDirectory(string $path, ?string $prefix = null): self
     {
-        collect(File::allFiles($path))->each(function (SplFileInfo $file) use ($prefix): void {
-            $this->addFile($file->getPathname(), $prefix . '/' . $file->getRelativePathname());
-        });
+        $finder = new Finder();
+        $finder->files()->ignoreDotFiles(false)->in($path);
+
+        foreach ($finder as $file) {
+            $this->addFile($file->getPathname(), join_paths($prefix, $file->getRelativePathname()));
+        }
 
         return $this;
     }
@@ -97,10 +191,18 @@ final class Zipper
     public function extractTo(string $path, #[SensitiveParameter] ?string $password = null): self
     {
         if ($password) {
-            $this->zip->setPassword($password);
+            $result = $this->zip->setPassword($password);
+
+            if (!$result) {
+                throw ZipperFailed::toSetPassword($this->path);
+            }
         }
 
-        $this->zip->extractTo($path);
+        $res = $this->zip->extractTo($path);
+
+        if (!$res) {
+            throw ZipperFailed::toExtract($this->path, $path);
+        }
 
         return $this;
     }
@@ -135,7 +237,7 @@ final class Zipper
         $comment = $this->zip->getArchiveComment();
 
         if ($comment) {
-            $this->meta = json_decode($comment, true);
+            $this->meta = json_decode($comment, associative: true, flags: JSON_THROW_ON_ERROR);
         }
 
         return collect($this->meta);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Illuminate\Support\Facades\File;
 use Itiden\Backup\Support\Zipper;
+use Itiden\Backup\Support\ZipperFailed;
 
 use function Itiden\Backup\Tests\fixtures_path;
 
@@ -123,5 +124,59 @@ describe('zipper', function (): void {
         expect($zip->getMeta())->get('test')->toBe('test');
 
         $zip->close();
+    });
+
+    it('uses CM_STORE for pre-compressed media extensions', function (): void {
+        $target = storage_path('test.zip');
+        $source = storage_path('test_media.png');
+
+        File::put($source, str_repeat('a', 10_000));
+
+        Zipper::write($target)->addFile($source, 'test.png')->close();
+
+        $archive = new ZipArchive();
+        $archive->open($target);
+        $stat = $archive->statName('test.png');
+
+        expect($stat['comp_size'])->toBe($stat['size']);
+
+        $archive->close();
+    });
+
+    it('uses CM_DEFLATE for text files', function (): void {
+        $target = storage_path('test.zip');
+        $source = storage_path('test_text.txt');
+
+        File::put($source, str_repeat('a', 10_000));
+
+        Zipper::write($target)->addFile($source, 'test.txt')->close();
+
+        $archive = new ZipArchive();
+        $archive->open($target);
+        $stat = $archive->statName('test.txt');
+
+        expect($stat['comp_size'])->toBeLessThan($stat['size']);
+
+        $archive->close();
+    });
+
+    it('can verify a valid zip', function (): void {
+        $target = storage_path('test.zip');
+
+        Zipper::write($target)->addFromString('test.txt', 'test')->close();
+
+        expect(Zipper::verify($target))->toBeTrue();
+    });
+
+    it('returns false when verifying an invalid zip', function (): void {
+        $target = storage_path('invalid.zip');
+
+        File::put($target, 'not a zip file');
+
+        expect(Zipper::verify($target))->toBeFalse();
+    });
+
+    it('throws when opening a non-existent zip for reading', function (): void {
+        expect(fn() => Zipper::read(storage_path('nonexistent.zip')))->toThrow(ZipperFailed::class);
     });
 })->group('zipper');

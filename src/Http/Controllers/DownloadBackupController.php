@@ -9,11 +9,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Itiden\Backup\Contracts\Repositories\BackupRepository;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 final readonly class DownloadBackupController
 {
-    public function __invoke(Request $request, string $id, BackupRepository $repo): StreamedResponse
+    public function __invoke(Request $request, string $id, BackupRepository $repo): Response
     {
         $backup = $repo->find($id);
 
@@ -26,6 +26,29 @@ final readonly class DownloadBackupController
 
         $backup->getMetadata()->addDownload($user);
 
-        return Storage::disk(Config::string('backup.destination.disk'))->download($backup->path);
+        if (function_exists('set_time_limit')) {
+            set_time_limit(0);
+        }
+
+        $disk = Storage::disk(Config::string('backup.destination.disk'));
+
+        $size = $disk->size($backup->path);
+
+        return response()->streamDownload(
+            callback: static function () use ($disk, $backup) {
+                $stream = $disk->readStream($backup->path);
+
+                try {
+                    fpassthru($stream);
+                } finally {
+                    fclose($stream);
+                }
+            },
+            name: basename($backup->path),
+            headers: [
+                'Content-Type' => 'application/octet-stream',
+                'Content-Length' => $size,
+            ],
+        );
     }
 }

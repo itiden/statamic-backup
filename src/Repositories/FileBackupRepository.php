@@ -30,6 +30,7 @@ final class FileBackupRepository implements BackupRepository
         $this->filesystem = Storage::disk(Config::string('backup.destination.disk'));
     }
 
+    /** {@inheritdoc} */
     public function all(): Collection
     {
         return collect($this->filesystem->allFiles($this->path))
@@ -72,7 +73,7 @@ final class FileBackupRepository implements BackupRepository
             return null;
         }
 
-        Storage::disk(Config::string('backup.destination.disk'))->delete($backup->path);
+        $this->filesystem->delete($backup->path);
 
         event(new BackupDeleted($backup));
 
@@ -82,8 +83,6 @@ final class FileBackupRepository implements BackupRepository
     public function empty(): bool
     {
         $this->all()->each(fn(BackupDto $backup): ?BackupDto => $this->remove($backup->id));
-        return Storage::disk(Config::string('backup.destination.disk'))->deleteDirectory(Config::string(
-            'backup.destination.path',
-        ));
+        return $this->filesystem->deleteDirectory($this->path);
     }
 }

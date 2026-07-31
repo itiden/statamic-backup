@@ -12,6 +12,7 @@ final readonly class UserActionDto
 {
     public function __construct(
         public string $userId,
+        /** A human readable string */
         public string $timestamp,
     ) {}
 
@@ -22,7 +23,7 @@ final readonly class UserActionDto
 
     public function getTimestamp(): CarbonImmutable
     {
-        return CarbonImmutable::createFromDate($this->timestamp);
+        return CarbonImmutable::parse($this->timestamp);
     }
 
     /** @return array{user_id: string, timestamp: string}*/

@@ -70,24 +70,28 @@ describe('api:view', function (): void {
         getJson(cp_route('api.itiden.backup.index'))
             ->assertOk()
             ->assertJsonStructure([
-                'data' => ['*' => [
-                    'name',
-                    'size',
-                    'path',
-                    'created_at',
-                    'id',
-                    'metadata' => [
-                        'created_by',
-                        'downloads',
-                        'restores',
-                        'skipped_pipes',
+                'data' => [
+                    '*' => [
+                        'name',
+                        'size',
+                        'path',
+                        'created_at',
+                        'id',
+                        'metadata' => [
+                            'created_by',
+                            'downloads',
+                            'restores',
+                            'skipped_pipes',
+                        ],
                     ],
-                ]],
-                'meta' => ['columns' => ['*' => [
-                    'label',
-                    'field',
-                    'visible',
-                ]]],
+                ],
+                'meta' => [
+                    'columns' => ['*' => [
+                        'label',
+                        'field',
+                        'visible',
+                    ]],
+                ],
             ]);
     });
 })->group('view');

@@ -78,7 +78,7 @@ final readonly class StacheData extends BackupPipe
 
     private static function prefixer(Store $store): string
     {
-        return self::getKey() . '::' . $store->key();
+        return self::getKey() . '/' . $store->key();
     }
 
     private static function storeHasSafeDirectory(Store $store): bool

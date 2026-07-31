@@ -27,9 +27,9 @@ describe('command:restore', function (): void {
 
         $backup = Backuper::backup();
 
-        artisan('statamic:backup:restore', ['--path' => Storage::disk(config(
-            'backup.destination.disk',
-        ))->path($backup->path)])
+        artisan('statamic:backup:restore', [
+            '--path' => Storage::disk(config('backup.destination.disk'))->path($backup->path),
+        ])
             ->expectsConfirmation('Are you sure you want to restore your content?')
             ->assertFailed();
     });

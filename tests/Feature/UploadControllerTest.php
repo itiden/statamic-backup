@@ -50,7 +50,7 @@ describe('api:upload', function (): void {
             ->take($chunks->count() - 1)
             ->each(function (array $values): void {
                 $res = postJson(cp_route('itiden.backup.chunky.upload'), $values);
-                $res->assertStatus(201);
+                $res->assertCreated();
                 $res->assertJsonStructure(['message']);
             });
 
@@ -99,12 +99,12 @@ describe('api:upload', function (): void {
 
         $chunksToTest->each(function (array $values): void {
             $res = postJson(cp_route('itiden.backup.chunky.upload'), $values);
-            $res->assertStatus(201);
+            $res->assertCreated();
         });
 
         $chunksToTest->each(function (array $values): void {
             $res = getJson(cp_route('itiden.backup.chunky.test', $values));
-            $res->assertStatus(200);
+            $res->assertOk();
         });
 
         File::cleanDirectory(app(Chunky::class)->path());
@@ -128,6 +128,6 @@ describe('api:upload', function (): void {
             'resumableChunkNumber' => 1,
         ]));
 
-        $res->assertStatus(404);
+        $res->assertNotFound();
     });
 });

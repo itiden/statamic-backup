@@ -43,7 +43,7 @@
       "@php vendor/bin/mago format"
     ],
     "test": [
-      "XDEBUG_MODE=coverage vendor/bin/pest --coverage --compact"
+      "vendor/bin/pest"
     ],
     "qa": [
       "@format",
