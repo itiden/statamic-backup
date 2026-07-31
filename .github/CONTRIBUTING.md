@@ -8,7 +8,7 @@ When creating issues, please include the exception that was thrown or if you did
 
 ## Security issue?
 
-Please send an email to dev@itiden.se with the issue.
+Report it [here](https://github.com/itiden/statamic-backup/security/advisories/new) please.
 
 ## Want to contribute with a pull request?
 
